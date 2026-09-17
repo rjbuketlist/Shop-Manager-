@@ -1165,14 +1165,19 @@ let total=subtotal-discountAmount;
 
 product.stock-=qty;
 
+let saleId=Date.now();
+
 sales.push({
-id:Date.now(),
+id:saleId,
+billNo:"BILL-"+saleId,
 date:new Date().toLocaleDateString(),
 product:product.name,
 qty,
 subtotal,
 discount:discountAmount,
-total
+total,
+paid:0,
+remaining:total
 });
 
 save();
