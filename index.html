@@ -1,12 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shop Manager</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shop Manager</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial;background:#f4f6f8;color:#222}
+header{background:#176b45;color:white;padding:18px}
+header h1{margin:0;font-size:24px}
+header p{margin:5px 0 0}
+.container{padding:16px;max-width:1100px;margin:auto}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.card{background:white;padding:18px;border-radius:12px;box-shadow:0 2px 8px #0001}
+.card h3{margin:0 0 8px;font-size:15px;color:#666}
+.card strong{font-size:24px}
+.menu{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:20px}
+button{border:0;border-radius:10px;padding:16px;background:white;box-shadow:0 2px 8px #0001;font-size:15px;cursor:pointer}
+button:hover{background:#eaf7f0}
+@media(max-width:700px){
+.cards,.menu{grid-template-columns:repeat(2,1fr)}
+}
+</style>
 </head>
+
 <body>
-  <h1>Shop Manager</h1>
-  <p>Simple Tally Style Shop Management</p>
+
+<header>
+<h1>Shop Manager</h1>
+<p>Simple Tally Style Shop Management</p>
+</header>
+
+<div class="container">
+
+<h2>Dashboard</h2>
+
+<div class="cards">
+<div class="card">
+<h3>Total Products</h3>
+<strong>0</strong>
+</div>
+
+<div class="card">
+<h3>Today's Sales</h3>
+<strong>₹0</strong>
+</div>
+
+<div class="card">
+<h3>Today's Purchase</h3>
+<strong>₹0</strong>
+</div>
+
+<div class="card">
+<h3>Low Stock</h3>
+<strong>0</strong>
+</div>
+</div>
+
+<h2>Quick Menu</h2>
+
+<div class="menu">
+<button>📦 Products / Stock</button>
+<button>🛒 Purchase</button>
+<button>💰 Sales</button>
+<button>👥 Customers</button>
+<button>🏪 Suppliers</button>
+<button>📊 Reports</button>
+<button>💳 Payments</button>
+<button>⚙️ Settings</button>
+</div>
+
+</div>
+
 </body>
 </html>
