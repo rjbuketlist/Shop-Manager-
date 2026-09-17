@@ -851,6 +851,30 @@ select.innerHTML+=`
 
 }
 
+function updatePaymentBills(){
+
+let select=document.getElementById("paymentBill");
+
+select.innerHTML='<option value="">Select Bill</option>';
+
+sales.slice().reverse().forEach(s=>{
+
+let remaining=s.remaining!==undefined?s.remaining:s.total;
+
+if(remaining>0){
+
+select.innerHTML+=`
+<option value="${s.id}">
+${s.billNo||"-"} — ₹${s.total} (Due: ₹${remaining})
+</option>
+`;
+
+}
+
+});
+
+}
+
 function updatePaymentParty(){
 
 let type=document.getElementById("paymentType").value;
@@ -1282,7 +1306,7 @@ updateDashboard();
 updateProductSelects();
 updatePaymentCustomers(); 
 updatePaymentSuppliers();
-
+updatePaymentBills();
 
 </script>
 
