@@ -441,11 +441,28 @@ Final Amount: <span id="saleTotal">₹0</span>
 <div class="form-grid">
 
 <div>
-<label>Select Bill</label>
-<select id="paymentBill" onchange="loadPaymentBill()">
-<option value="">Select Bill</option>
-</select>
+<label>Bill No.</label>
+<input id="paymentBillNo" type="text" readonly placeholder="Auto from Sales">
 </div>
+
+</div>
+
+<div class="total-box">
+
+Bill Amount:
+<span id="paymentBillAmount">₹0</span><br>
+
+Previous Balance:
+<span id="paymentPreviousBalance">₹0</span><br>
+
+Total Due:
+<span id="paymentTotalDue">₹0</span><br>
+
+Payment Received:
+<span id="paymentReceived">₹0</span><br>
+
+Remaining / Advance:
+<span id="paymentBalance">₹0</span>
 
 </div>
 
@@ -456,9 +473,9 @@ Final Amount: <span id="saleTotal">₹0</span>
 <select id="paymentType" onchange="updatePaymentParty()">
 <option value="customer">Customer Payment</option>
 <option value="supplier">Supplier Payment</option>
+<option value="cash">Cash Customer</option>
 </select>
 </div>
-  
 <div id="paymentCustomerBox">
 <label>Customer</label>
 <select id="paymentCustomer">
@@ -853,25 +870,34 @@ select.innerHTML+=`
 
 function updatePaymentBills(){
 
-let select=document.getElementById("paymentBill");
+let billNo=document.getElementById("paymentBillNo");
 
-select.innerHTML='<option value="">Select Bill</option>';
+if(!billNo)return;
 
-sales.slice().reverse().forEach(s=>{
+if(sales.length===0){
 
-let remaining=s.remaining!==undefined?s.remaining:s.total;
+billNo.value="";
 
-if(remaining>0){
-
-select.innerHTML+=`
-<option value="${s.id}">
-${s.billNo||"-"} — ₹${s.total} (Due: ₹${remaining})
-</option>
-`;
+return;
 
 }
 
-});
+let latestSale=sales[sales.length-1];
+
+billNo.value=latestSale.billNo||"";
+
+document.getElementById("paymentBillAmount").textContent=
+"₹"+(latestSale.total||0);
+
+document.getElementById("paymentPreviousBalance").textContent="₹0";
+
+document.getElementById("paymentTotalDue").textContent=
+"₹"+(latestSale.remaining||latestSale.total||0);
+
+document.getElementById("paymentReceived").textContent="₹0";
+
+document.getElementById("paymentBalance").textContent=
+"₹"+(latestSale.remaining||latestSale.total||0);
 
 }
 
@@ -879,19 +905,24 @@ function updatePaymentParty(){
 
 let type=document.getElementById("paymentType").value;
 
-displayPayments();
-  
 if(type==="customer"){
 
 document.getElementById("paymentCustomerBox").style.display="block";
 document.getElementById("paymentSupplierBox").style.display="none";
 
-}else{
+}else if(type==="supplier"){
 
 document.getElementById("paymentCustomerBox").style.display="none";
 document.getElementById("paymentSupplierBox").style.display="block";
 
+}else{
+
+document.getElementById("paymentCustomerBox").style.display="none";
+document.getElementById("paymentSupplierBox").style.display="none";
+
 }
+
+displayPayments();
 
 }
 
