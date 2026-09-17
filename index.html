@@ -807,6 +807,72 @@ select.innerHTML+=`
 
 }
 
+function addPayment(){
+
+let customerId=document.getElementById("paymentCustomer").value;
+let amount=Number(document.getElementById("paymentAmount").value);
+let mode=document.getElementById("paymentMode").value;
+let note=document.getElementById("paymentNote").value.trim();
+
+if(!customerId){
+alert("Please select customer");
+return;
+}
+
+if(!amount || amount<=0){
+alert("Please enter payment amount");
+return;
+}
+
+let customer=customers.find(c=>c.id==customerId);
+
+let payment={
+id:Date.now(),
+date:new Date().toLocaleString(),
+customerId:customerId,
+customerName:customer.name,
+amount:amount,
+mode:mode,
+note:note
+};
+
+payments.push(payment);
+
+save();
+
+displayPayments();
+
+document.getElementById("paymentCustomer").value="";
+document.getElementById("paymentAmount").value="";
+document.getElementById("paymentMode").value="Cash";
+document.getElementById("paymentNote").value="";
+
+alert("Payment saved successfully");
+
+}
+
+  function displayPayments(){
+
+let list=document.getElementById("paymentsList");
+
+list.innerHTML="";
+
+payments.forEach(p=>{
+
+list.innerHTML+=`
+<tr>
+<td>${p.date}</td>
+<td>${p.customerName}</td>
+<td>₹${p.amount}</td>
+<td>${p.mode}</td>
+<td>${p.note||"-"}</td>
+</tr>
+`;
+
+});
+
+  }
+
 function setPurchasePrice(){
 
 let id=Number(document.getElementById("purchaseProduct").value);
@@ -1107,6 +1173,7 @@ displayPurchases();
 displaySales();
 displayCustomers();
 displaySuppliers();
+displayPayments();
 updateDashboard();
 updateProductSelects();
 updatePaymentCustomers();
