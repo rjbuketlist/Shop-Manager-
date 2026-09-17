@@ -67,6 +67,8 @@ margin:2px;
 font-size:12px
 }
 
+.hidden{display:none}
+
 @media(max-width:700px){
 .cards,.menu,.form-grid{grid-template-columns:repeat(2,1fr)}
 table{font-size:13px}
@@ -99,12 +101,12 @@ th,td{padding:7px}
 
 <div class="card">
 <h3>Today's Sales</h3>
-<strong>₹0</strong>
+<strong id="todaySales">₹0</strong>
 </div>
 
 <div class="card">
 <h3>Today's Purchase</h3>
-<strong>₹0</strong>
+<strong id="todayPurchase">₹0</strong>
 </div>
 
 <div class="card">
@@ -117,8 +119,8 @@ th,td{padding:7px}
 <h2>Quick Menu</h2>
 
 <div class="menu">
-<button onclick="showProducts()">📦 Products / Stock</button>
-<button>🛒 Purchase</button>
+<button onclick="showSection('productsSection')">📦 Products / Stock</button>
+<button onclick="showSection('purchaseSection')">🛒 Purchase</button>
 <button>💰 Sales</button>
 <button>👥 Customers</button>
 <button>🏪 Suppliers</button>
@@ -126,6 +128,9 @@ th,td{padding:7px}
 <button>💳 Payments</button>
 <button>⚙️ Settings</button>
 </div>
+
+
+<!-- PRODUCTS -->
 
 <div class="section" id="productsSection">
 
@@ -181,21 +186,73 @@ th,td{padding:7px}
 <th>Action</th>
 </tr>
 </thead>
-
 <tbody id="productList"></tbody>
+</table>
+
+</div>
+
+
+<!-- PURCHASE -->
+
+<div class="section" id="purchaseSection">
+
+<h2>🛒 Purchase</h2>
+
+<div class="form-grid">
+
+<div>
+<label>Select Product</label>
+<select id="purchaseProduct">
+<option value="">Select Product</option>
+</select>
+</div>
+
+<div>
+<label>Quantity</label>
+<input id="purchaseQty" type="number" min="1" placeholder="Enter quantity">
+</div>
+
+<div>
+<label>Purchase Price</label>
+<input id="purchasePrice" type="number" min="0" placeholder="Price per unit">
+</div>
+
+</div>
+
+<button class="primary" onclick="addPurchase()">🛒 Save Purchase</button>
+
+<h3>Purchase History</h3>
+
+<table>
+<thead>
+<tr>
+<th>Date</th>
+<th>Product</th>
+<th>Qty</th>
+<th>Price</th>
+<th>Total</th>
+</tr>
+</thead>
+
+<tbody id="purchaseList"></tbody>
+
 </table>
 
 </div>
 
 </div>
 
+
 <script>
 
-let products = JSON.parse(localStorage.getItem("products")) || [];
+let products=JSON.parse(localStorage.getItem("products"))||[];
+let purchases=JSON.parse(localStorage.getItem("purchases"))||[];
 
 function save(){
 localStorage.setItem("products",JSON.stringify(products));
+localStorage.setItem("purchases",JSON.stringify(purchases));
 }
+
 
 function addProduct(){
 
@@ -225,19 +282,24 @@ save();
 clearForm();
 displayProducts();
 updateDashboard();
+updatePurchaseProducts();
 
 alert("Product added successfully!");
 
 }
 
+
 function clearForm(){
+
 document.getElementById("name").value="";
 document.getElementById("category").value="";
 document.getElementById("purchase").value="";
 document.getElementById("selling").value="";
 document.getElementById("stock").value="";
 document.getElementById("minimum").value="";
+
 }
+
 
 function displayProducts(){
 
@@ -273,16 +335,22 @@ list.innerHTML+=`
 
 }
 
+
 function deleteProduct(id){
 
 if(confirm("Delete this product?")){
+
 products=products.filter(p=>p.id!==id);
+
 save();
 displayProducts();
 updateDashboard();
+updatePurchaseProducts();
+
 }
 
 }
+
 
 function editProduct(id){
 
@@ -300,8 +368,10 @@ p.stock=Number(stock);
 save();
 displayProducts();
 updateDashboard();
+updatePurchaseProducts();
 
 }
+
 
 function updateDashboard(){
 
@@ -311,17 +381,125 @@ let low=products.filter(p=>p.stock<=p.minimum).length;
 
 document.getElementById("lowStock").innerText=low;
 
+let today=new Date().toLocaleDateString();
+
+let total=purchases
+.filter(x=>x.date===today)
+.reduce((sum,x)=>sum+x.total,0);
+
+document.getElementById("todayPurchase").innerText="₹"+total;
+
 }
 
-function showProducts(){
 
-document.getElementById("productsSection")
+function updatePurchaseProducts(){
+
+let select=document.getElementById("purchaseProduct");
+
+select.innerHTML='<option value="">Select Product</option>';
+
+products.forEach(p=>{
+
+select.innerHTML+=`
+<option value="${p.id}">
+${p.name} (Stock: ${p.stock})
+</option>
+`;
+
+});
+
+}
+
+
+function addPurchase(){
+
+let productId=Number(document.getElementById("purchaseProduct").value);
+let qty=Number(document.getElementById("purchaseQty").value);
+let price=Number(document.getElementById("purchasePrice").value);
+
+if(!productId){
+alert("Please select a product");
+return;
+}
+
+if(qty<=0){
+alert("Enter valid quantity");
+return;
+}
+
+if(price<0){
+alert("Enter valid purchase price");
+return;
+}
+
+let product=products.find(p=>p.id===productId);
+
+if(!product)return;
+
+product.stock+=qty;
+product.purchase=price;
+
+let total=qty*price;
+
+purchases.push({
+id:Date.now(),
+date:new Date().toLocaleDateString(),
+product:product.name,
+qty:qty,
+price:price,
+total:total
+});
+
+save();
+
+document.getElementById("purchaseQty").value="";
+document.getElementById("purchasePrice").value="";
+
+displayProducts();
+displayPurchases();
+updateDashboard();
+updatePurchaseProducts();
+
+alert("Purchase saved! Stock updated.");
+
+}
+
+
+function displayPurchases(){
+
+let list=document.getElementById("purchaseList");
+
+list.innerHTML="";
+
+purchases.slice().reverse().forEach(p=>{
+
+list.innerHTML+=`
+<tr>
+<td>${p.date}</td>
+<td>${p.product}</td>
+<td>${p.qty}</td>
+<td>₹${p.price}</td>
+<td>₹${p.total}</td>
+</tr>
+`;
+
+});
+
+}
+
+
+function showSection(id){
+
+document.getElementById(id)
 .scrollIntoView({behavior:"smooth"});
 
 }
 
+
 displayProducts();
+displayPurchases();
 updateDashboard();
+updatePurchaseProducts();
 
 </script>
 
