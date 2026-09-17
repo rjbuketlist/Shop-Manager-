@@ -134,7 +134,7 @@ th,td{padding:7px}
 <button onclick="showSection('customersSection')">👥 Customers</button>
 <button onclick="showSection('suppliersSection')">🏪 Suppliers</button>
 <button>📊 Reports</button>
-<button>💳 Payments</button>
+<button onclick="showSection('paymentsSection')">💳 Payments</button>
 <button>⚙️ Settings</button>
 </div>
 
@@ -431,6 +431,63 @@ Final Amount: <span id="saleTotal">₹0</span>
 
   </div>
 
+  <!-- Payment -->
+
+  <div class="section" id="paymentsSection">
+
+<h2>💳 Payments</h2>
+
+<div class="form-grid">
+
+<div>
+<label>Customer</label>
+<select id="paymentCustomer">
+<option value="">Select Customer</option>
+</select>
+</div>
+
+<div>
+<label>Payment Amount</label>
+<input id="paymentAmount" type="number" min="0" placeholder="Enter amount">
+</div>
+
+<div>
+<label>Payment Mode</label>
+<select id="paymentMode">
+<option value="Cash">Cash</option>
+<option value="UPI">UPI</option>
+<option value="Bank">Bank</option>
+<option value="Other">Other</option>
+</select>
+</div>
+
+<div>
+<label>Note</label>
+<input id="paymentNote" type="text" placeholder="Optional note">
+</div>
+
+</div>
+
+<button class="primary" onclick="addPayment()">💳 Save Payment</button>
+
+<h3>Payment History</h3>
+
+<table>
+<thead>
+<tr>
+<th>Date</th>
+<th>Customer</th>
+<th>Amount</th>
+<th>Mode</th>
+<th>Note</th>
+</tr>
+</thead>
+
+<tbody id="paymentsList"></tbody>
+</table>
+
+  </div>
+
 <script>
 
 let products=JSON.parse(localStorage.getItem("products"))||[];
@@ -438,6 +495,7 @@ let purchases=JSON.parse(localStorage.getItem("purchases"))||[];
 let sales=JSON.parse(localStorage.getItem("sales"))||[];
 let customers=JSON.parse(localStorage.getItem("customers"))||[];
 let suppliers=JSON.parse(localStorage.getItem("suppliers"))||[];
+let payments=JSON.parse(localStorage.getItem("payments"))||[];
   
 function save(){
 localStorage.setItem("products",JSON.stringify(products));
@@ -445,6 +503,7 @@ localStorage.setItem("purchases",JSON.stringify(purchases));
 localStorage.setItem("sales",JSON.stringify(sales));
 localStorage.setItem("customers",JSON.stringify(customers));
 localStorage.setItem("suppliers",JSON.stringify(suppliers));
+localStorage.setItem("payments",JSON.stringify(payments));
 }
 
 
@@ -726,6 +785,22 @@ saleSelect.innerHTML+=`
 <option value="${p.id}">
 ${p.name} (Stock: ${p.stock})
 </option>
+`;
+
+});
+
+}
+
+function updatePaymentCustomers(){
+
+let select=document.getElementById("paymentCustomer");
+
+select.innerHTML='<option value="">Select Customer</option>';
+
+customers.forEach(c=>{
+
+select.innerHTML+=`
+<option value="${c.id}">${c.name} - ${c.mobile||""}</option>
 `;
 
 });
@@ -1034,7 +1109,8 @@ displayCustomers();
 displaySuppliers();
 updateDashboard();
 updateProductSelects();
-  
+updatePaymentCustomers();
+
 
 </script>
 
