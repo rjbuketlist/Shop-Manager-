@@ -336,19 +336,61 @@ Final Amount: <span id="saleTotal">₹0</span>
 </div>
 
 </div>
+<div class="section" id="customersSection">
 
+<h2>👥 Customers</h2>
+
+<div class="form-grid">
+
+<div>
+<label>Customer Name</label>
+<input id="customerName" type="text" placeholder="Enter customer name">
+</div>
+
+<div>
+<label>Mobile Number</label>
+<input id="customerMobile" type="tel" placeholder="Enter mobile number">
+</div>
+
+<div>
+<label>Address</label>
+<input id="customerAddress" type="text" placeholder="Optional address">
+</div>
+
+</div>
+
+<button class="primary" onclick="addCustomer()">➕ Add Customer</button>
+
+<h3>Customer List</h3>
+
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Mobile</th>
+<th>Address</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody id="customersList"></tbody>
+</table>
+
+</div>
 
 <script>
 
 let products=JSON.parse(localStorage.getItem("products"))||[];
 let purchases=JSON.parse(localStorage.getItem("purchases"))||[];
 let sales=JSON.parse(localStorage.getItem("sales"))||[];
+let customers=JSON.parse(localStorage.getItem("customers"))||[];
 
 function save(){
 
 localStorage.setItem("products",JSON.stringify(products));
 localStorage.setItem("purchases",JSON.stringify(purchases));
 localStorage.setItem("sales",JSON.stringify(sales));
+localstorage.setItem("customers",JSON.stringify(customers));
 
 }
 
