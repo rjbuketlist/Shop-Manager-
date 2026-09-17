@@ -934,7 +934,7 @@ payments.forEach(p=>{
 list.innerHTML+=`
 <tr>
 <td>${p.date}</td>
-<td>${p.customerName}</td>
+<td>${p.partyName}</td>
 <td>₹${p.amount}</td>
 <td>${p.mode}</td>
 <td>${p.note||"-"}</td>
@@ -1248,7 +1248,8 @@ displaySuppliers();
 displayPayments();
 updateDashboard();
 updateProductSelects();
-updatePaymentCustomers();
+updatePaymentCustomers(); 
+updatePaymentSuppliers();
 
 
 </script>
