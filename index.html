@@ -491,8 +491,9 @@ Final Amount: <span id="saleTotal">₹0</span>
 <table>
 <thead>
 <tr>
+<th>Bill No.</th>
 <th>Date</th>
-<th>Customer</th>
+<th>Customer/Supplier</th>
 <th>Amount</th>
 <th>Mode</th>
 <th>Note</th>
@@ -946,6 +947,7 @@ filteredPayments.forEach(p=>{
 
 list.innerHTML+=`
 <tr>
+<td>${p.billNo||"-"}</td>
 <td>${p.date}</td>
 <td>${p.partyName||p.customerName||"-"}</td>
 <td>₹${p.amount}</td>
