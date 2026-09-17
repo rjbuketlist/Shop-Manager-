@@ -842,6 +842,8 @@ function updatePaymentParty(){
 
 let type=document.getElementById("paymentType").value;
 
+displayPayments();
+  
 if(type==="customer"){
 
 document.getElementById("paymentCustomerBox").style.display="block";
@@ -926,15 +928,25 @@ alert("Payment saved successfully");
   function displayPayments(){
 
 let list=document.getElementById("paymentsList");
+let type=document.getElementById("paymentType").value;
 
 list.innerHTML="";
 
-payments.forEach(p=>{
+let filteredPayments=payments.filter(p=>{
+
+if(p.type){
+return p.type===type;
+}
+
+return type==="customer";
+});
+
+filteredPayments.forEach(p=>{
 
 list.innerHTML+=`
 <tr>
 <td>${p.date}</td>
-<td>${p.partyName}</td>
+<td>${p.partyName||p.customerName||"-"}</td>
 <td>₹${p.amount}</td>
 <td>${p.mode}</td>
 <td>${p.note||"-"}</td>
@@ -943,7 +955,7 @@ list.innerHTML+=`
 
 });
 
-  }
+}
 
 function setPurchasePrice(){
 
