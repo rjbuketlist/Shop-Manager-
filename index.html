@@ -945,7 +945,8 @@ date:new Date().toLocaleString(),
 type:type,
 amount:amount,
 mode:mode,
-note:note
+note:note,
+billNo:document.getElementById("paymentBillNo").value
 };
 
 if(type==="customer"){
@@ -959,10 +960,17 @@ return;
 
 let customer=customers.find(c=>c.id==customerId);
 
+if(!customer){
+alert("Customer not found");
+return;
+}
+
 payment.partyId=customerId;
 payment.partyName=customer.name;
 
-}else{
+}
+
+else if(type==="supplier"){
 
 let supplierId=document.getElementById("paymentSupplier").value;
 
@@ -973,8 +981,19 @@ return;
 
 let supplier=suppliers.find(s=>s.id==supplierId);
 
+if(!supplier){
+alert("Supplier not found");
+return;
+}
+
 payment.partyId=supplierId;
 payment.partyName=supplier.name;
+
+}
+
+else if(type==="cash"){
+
+payment.partyName="Cash Customer";
 
 }
 
@@ -982,12 +1001,6 @@ payments.push(payment);
 
 save();
 displayPayments();
-
-document.getElementById("paymentCustomer").value="";
-document.getElementById("paymentSupplier").value="";
-document.getElementById("paymentAmount").value="";
-document.getElementById("paymentMode").value="Cash";
-document.getElementById("paymentNote").value="";
 
 alert("Payment saved successfully");
 
