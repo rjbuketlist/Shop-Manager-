@@ -430,6 +430,74 @@ updateProductSelects();
 alert("Product added successfully!");
 
 }
+  
+function addCustomer(){
+
+let name=document.getElementById("customerName").value.trim();
+let mobile=document.getElementById("customerMobile").value.trim();
+let address=document.getElementById("customerAddress").value.trim();
+
+if(!name){
+alert("Please enter customer name");
+return;
+}
+
+let customer={
+id:Date.now(),
+name:name,
+mobile:mobile,
+address:address
+};
+
+customers.push(customer);
+
+save();
+  
+displayCustomers();
+
+document.getElementById("customerName").value="";
+document.getElementById("customerMobile").value="";
+document.getElementById("customerAddress").value="";
+
+alert("Customer added successfully");
+
+}
+  
+function displayCustomers(){
+
+let list=document.getElementById("customersList");
+
+list.innerHTML="";
+
+customers.forEach(c=>{
+
+list.innerHTML+=`
+<tr>
+<td>${c.name}</td>
+<td>${c.mobile||"-"}</td>
+<td>${c.address||"-"}</td>
+<td>
+<button onclick="deleteCustomer(${c.id})">🗑️ Delete</button>
+</td>
+</tr>
+`;
+
+});
+
+}
+
+function deleteCustomer(id){
+
+if(confirm("Delete this customer?")){
+
+customers=customers.filter(c=>c.id!==id);
+
+save();
+displayCustomers();
+
+}
+
+}
 
 function clearForm(){
 
@@ -838,8 +906,10 @@ document.getElementById(id)
 displayProducts();
 displayPurchases();
 displaySales();
+displaycustomers();
 updateDashboard();
 updateProductSelects();
+  
 
 </script>
 
