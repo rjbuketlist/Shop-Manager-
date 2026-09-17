@@ -492,7 +492,7 @@ Remaining / Advance:
 
 <div>
 <label>Payment Amount</label>
-<input id="paymentAmount" type="number" min="0" placeholder="Enter amount">
+<input id="paymentAmount" type="number" min="0" placeholder="Enter amount" oninput="loadPaymentBill()">
 </div>
 
 <div>
@@ -1339,6 +1339,56 @@ updatePaymentCustomers();
 updatePaymentSuppliers();
 updatePaymentBills();
 
+
+  function loadPaymentBill(){
+
+let billNo=document.getElementById("paymentBillNo").value;
+
+let bill=sales.find(s=>s.billNo===billNo);
+
+if(!bill){
+return;
+}
+
+let paymentAmount=
+Number(document.getElementById("paymentAmount").value)||0;
+
+let totalDue=bill.total;
+let balance=totalDue-paymentAmount;
+
+document.getElementById("paymentBillAmount").textContent=
+"₹"+bill.total;
+
+document.getElementById("paymentPreviousBalance").textContent=
+"₹0";
+
+document.getElementById("paymentTotalDue").textContent=
+"₹"+totalDue;
+
+document.getElementById("paymentReceived").textContent=
+"₹"+paymentAmount;
+
+let box=document.getElementById("paymentBalance");
+
+if(balance>0){
+
+box.textContent="-₹"+balance;
+box.style.color="red";
+
+}else if(balance<0){
+
+box.textContent="+₹"+Math.abs(balance);
+box.style.color="green";
+
+}else{
+
+box.textContent="₹0";
+box.style.color="green";
+
+}
+
+  }
+  
 </script>
 
 </body>
