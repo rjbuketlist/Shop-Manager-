@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Shop Manager</title>
+
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial;background:#f4f6f8;color:#222}
@@ -11,15 +12,69 @@ header{background:#176b45;color:white;padding:18px}
 header h1{margin:0;font-size:24px}
 header p{margin:5px 0 0}
 .container{padding:16px;max-width:1100px;margin:auto}
+
 .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 .card{background:white;padding:18px;border-radius:12px;box-shadow:0 2px 8px #0001}
 .card h3{margin:0 0 8px;font-size:15px;color:#666}
 .card strong{font-size:24px}
+
 .menu{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:20px}
-button{border:0;border-radius:10px;padding:16px;background:white;box-shadow:0 2px 8px #0001;font-size:15px;cursor:pointer}
+button{border:0;border-radius:10px;padding:14px;background:white;box-shadow:0 2px 8px #0001;font-size:15px;cursor:pointer}
 button:hover{background:#eaf7f0}
+
+.section{background:white;margin-top:20px;padding:18px;border-radius:12px;box-shadow:0 2px 8px #0001}
+
+input,select{
+width:100%;
+padding:12px;
+margin:6px 0;
+border:1px solid #ddd;
+border-radius:8px;
+font-size:15px
+}
+
+.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+
+.primary{
+background:#176b45;
+color:white;
+width:100%;
+margin-top:8px
+}
+
+.search{margin:15px 0}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:15px
+}
+
+th,td{
+padding:10px;
+border-bottom:1px solid #eee;
+text-align:left
+}
+
+th{background:#f4f6f8}
+
+.low{color:#c62828;font-weight:bold}
+.ok{color:#176b45;font-weight:bold}
+
+.actions button{
+padding:7px 10px;
+margin:2px;
+font-size:12px
+}
+
 @media(max-width:700px){
-.cards,.menu{grid-template-columns:repeat(2,1fr)}
+.cards,.menu,.form-grid{grid-template-columns:repeat(2,1fr)}
+table{font-size:13px}
+th,td{padding:7px}
+}
+
+@media(max-width:500px){
+.cards,.menu,.form-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -36,9 +91,10 @@ button:hover{background:#eaf7f0}
 <h2>Dashboard</h2>
 
 <div class="cards">
+
 <div class="card">
 <h3>Total Products</h3>
-<strong>0</strong>
+<strong id="totalProducts">0</strong>
 </div>
 
 <div class="card">
@@ -53,14 +109,15 @@ button:hover{background:#eaf7f0}
 
 <div class="card">
 <h3>Low Stock</h3>
-<strong>0</strong>
+<strong id="lowStock">0</strong>
 </div>
+
 </div>
 
 <h2>Quick Menu</h2>
 
 <div class="menu">
-<button>📦 Products / Stock</button>
+<button onclick="showProducts()">📦 Products / Stock</button>
 <button>🛒 Purchase</button>
 <button>💰 Sales</button>
 <button>👥 Customers</button>
@@ -70,7 +127,203 @@ button:hover{background:#eaf7f0}
 <button>⚙️ Settings</button>
 </div>
 
+<div class="section" id="productsSection">
+
+<h2>📦 Products / Stock</h2>
+
+<div class="form-grid">
+
+<div>
+<label>Product Name</label>
+<input id="name" placeholder="e.g. Rice">
 </div>
+
+<div>
+<label>Category</label>
+<input id="category" placeholder="e.g. Grocery">
+</div>
+
+<div>
+<label>Purchase Price</label>
+<input id="purchase" type="number" placeholder="0">
+</div>
+
+<div>
+<label>Selling Price</label>
+<input id="selling" type="number" placeholder="0">
+</div>
+
+<div>
+<label>Current Stock</label>
+<input id="stock" type="number" placeholder="0">
+</div>
+
+<div>
+<label>Minimum Stock</label>
+<input id="minimum" type="number" placeholder="5">
+</div>
+
+</div>
+
+<button class="primary" onclick="addProduct()">➕ Add Product</button>
+
+<input class="search" id="search" oninput="displayProducts()" placeholder="🔍 Search product...">
+
+<table>
+<thead>
+<tr>
+<th>Product</th>
+<th>Category</th>
+<th>Buy</th>
+<th>Sell</th>
+<th>Stock</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody id="productList"></tbody>
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+let products = JSON.parse(localStorage.getItem("products")) || [];
+
+function save(){
+localStorage.setItem("products",JSON.stringify(products));
+}
+
+function addProduct(){
+
+let name=document.getElementById("name").value.trim();
+let category=document.getElementById("category").value.trim();
+let purchase=Number(document.getElementById("purchase").value);
+let selling=Number(document.getElementById("selling").value);
+let stock=Number(document.getElementById("stock").value);
+let minimum=Number(document.getElementById("minimum").value);
+
+if(!name){
+alert("Please enter product name");
+return;
+}
+
+products.push({
+id:Date.now(),
+name,
+category,
+purchase,
+selling,
+stock,
+minimum
+});
+
+save();
+clearForm();
+displayProducts();
+updateDashboard();
+
+alert("Product added successfully!");
+
+}
+
+function clearForm(){
+document.getElementById("name").value="";
+document.getElementById("category").value="";
+document.getElementById("purchase").value="";
+document.getElementById("selling").value="";
+document.getElementById("stock").value="";
+document.getElementById("minimum").value="";
+}
+
+function displayProducts(){
+
+let list=document.getElementById("productList");
+let search=document.getElementById("search").value.toLowerCase();
+
+list.innerHTML="";
+
+products
+.filter(p=>p.name.toLowerCase().includes(search))
+.forEach(p=>{
+
+let status=p.stock<=p.minimum
+?'<span class="low">Low Stock</span>'
+:'<span class="ok">OK</span>';
+
+list.innerHTML+=`
+<tr>
+<td>${p.name}</td>
+<td>${p.category}</td>
+<td>₹${p.purchase}</td>
+<td>₹${p.selling}</td>
+<td>${p.stock}</td>
+<td>${status}</td>
+<td class="actions">
+<button onclick="editProduct(${p.id})">✏️</button>
+<button onclick="deleteProduct(${p.id})">🗑️</button>
+</td>
+</tr>
+`;
+
+});
+
+}
+
+function deleteProduct(id){
+
+if(confirm("Delete this product?")){
+products=products.filter(p=>p.id!==id);
+save();
+displayProducts();
+updateDashboard();
+}
+
+}
+
+function editProduct(id){
+
+let p=products.find(x=>x.id===id);
+
+let name=prompt("Product name:",p.name);
+if(name===null)return;
+
+let stock=prompt("Current stock:",p.stock);
+if(stock===null)return;
+
+p.name=name;
+p.stock=Number(stock);
+
+save();
+displayProducts();
+updateDashboard();
+
+}
+
+function updateDashboard(){
+
+document.getElementById("totalProducts").innerText=products.length;
+
+let low=products.filter(p=>p.stock<=p.minimum).length;
+
+document.getElementById("lowStock").innerText=low;
+
+}
+
+function showProducts(){
+
+document.getElementById("productsSection")
+.scrollIntoView({behavior:"smooth"});
+
+}
+
+displayProducts();
+updateDashboard();
+
+</script>
 
 </body>
 </html>
