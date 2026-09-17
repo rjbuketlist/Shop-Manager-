@@ -856,42 +856,65 @@ document.getElementById("paymentSupplierBox").style.display="block";
 
 }
 
+  
 function addPayment(){
 
-let customerId=document.getElementById("paymentCustomer").value;
+let type=document.getElementById("paymentType").value;
 let amount=Number(document.getElementById("paymentAmount").value);
 let mode=document.getElementById("paymentMode").value;
 let note=document.getElementById("paymentNote").value.trim();
-
-if(!customerId){
-alert("Please select customer");
-return;
-}
 
 if(!amount || amount<=0){
 alert("Please enter payment amount");
 return;
 }
 
-let customer=customers.find(c=>c.id==customerId);
-
 let payment={
 id:Date.now(),
 date:new Date().toLocaleString(),
-customerId:customerId,
-customerName:customer.name,
+type:type,
 amount:amount,
 mode:mode,
 note:note
 };
 
+if(type==="customer"){
+
+let customerId=document.getElementById("paymentCustomer").value;
+
+if(!customerId){
+alert("Please select customer");
+return;
+}
+
+let customer=customers.find(c=>c.id==customerId);
+
+payment.partyId=customerId;
+payment.partyName=customer.name;
+
+}else{
+
+let supplierId=document.getElementById("paymentSupplier").value;
+
+if(!supplierId){
+alert("Please select supplier");
+return;
+}
+
+let supplier=suppliers.find(s=>s.id==supplierId);
+
+payment.partyId=supplierId;
+payment.partyName=supplier.name;
+
+}
+
 payments.push(payment);
 
 save();
-
 displayPayments();
 
 document.getElementById("paymentCustomer").value="";
+document.getElementById("paymentSupplier").value="";
 document.getElementById("paymentAmount").value="";
 document.getElementById("paymentMode").value="Cash";
 document.getElementById("paymentNote").value="";
