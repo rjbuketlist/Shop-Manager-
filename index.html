@@ -822,6 +822,40 @@ select.innerHTML+=`
 
 }
 
+function updatePaymentSuppliers(){
+
+let select=document.getElementById("paymentSupplier");
+
+select.innerHTML='<option value="">Select Supplier</option>';
+
+suppliers.forEach(s=>{
+
+select.innerHTML+=`
+<option value="${s.id}">${s.name} - ${s.mobile||""}</option>
+`;
+
+});
+
+}
+
+function updatePaymentParty(){
+
+let type=document.getElementById("paymentType").value;
+
+if(type==="customer"){
+
+document.getElementById("paymentCustomerBox").style.display="block";
+document.getElementById("paymentSupplierBox").style.display="none";
+
+}else{
+
+document.getElementById("paymentCustomerBox").style.display="none";
+document.getElementById("paymentSupplierBox").style.display="block";
+
+}
+
+}
+
 function addPayment(){
 
 let customerId=document.getElementById("paymentCustomer").value;
