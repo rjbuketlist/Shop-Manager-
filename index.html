@@ -321,6 +321,7 @@ Final Amount: <span id="saleTotal">₹0</span>
 <table>
 <thead>
 <tr>
+<th>Bill No.</th>
 <th>Date</th>
 <th>Product</th>
 <th>Qty</th>
@@ -1205,6 +1206,7 @@ sales.slice().reverse().forEach(s=>{
 
 list.innerHTML+=`
 <tr>
+<td>${s.billNo||"-"}</td>
 <td>${s.date}</td>
 <td>${s.product}</td>
 <td>${s.qty}</td>
