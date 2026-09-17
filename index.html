@@ -67,6 +67,15 @@ margin:2px;
 font-size:12px
 }
 
+.total-box{
+background:#eaf7f0;
+padding:14px;
+border-radius:10px;
+margin-top:10px;
+font-size:18px;
+font-weight:bold
+}
+
 .hidden{display:none}
 
 @media(max-width:700px){
@@ -121,7 +130,7 @@ th,td{padding:7px}
 <div class="menu">
 <button onclick="showSection('productsSection')">📦 Products / Stock</button>
 <button onclick="showSection('purchaseSection')">🛒 Purchase</button>
-<button>💰 Sales</button>
+<button onclick="showSection('salesSection')">💰 Sales</button>
 <button>👥 Customers</button>
 <button>🏪 Suppliers</button>
 <button>📊 Reports</button>
@@ -186,6 +195,7 @@ th,td{padding:7px}
 <th>Action</th>
 </tr>
 </thead>
+
 <tbody id="productList"></tbody>
 </table>
 
@@ -202,21 +212,38 @@ th,td{padding:7px}
 
 <div>
 <label>Select Product</label>
-<select id="purchaseProduct">
+<select id="purchaseProduct" onchange="setPurchasePrice()">
 <option value="">Select Product</option>
 </select>
 </div>
 
 <div>
 <label>Quantity</label>
-<input id="purchaseQty" type="number" min="1" placeholder="Enter quantity">
+<input id="purchaseQty" type="number" min="1" placeholder="Enter quantity" oninput="calculatePurchase()">
 </div>
 
 <div>
-<label>Purchase Price</label>
-<input id="purchasePrice" type="number" min="0" placeholder="Price per unit">
+<label>Purchase Price / Unit</label>
+<input id="purchasePrice" type="number" min="0" placeholder="Price per unit" oninput="calculatePurchase()">
 </div>
 
+<div>
+<label>Discount Type</label>
+<select id="purchaseDiscountType" onchange="calculatePurchase()">
+<option value="percent">Percentage (%)</option>
+<option value="amount">Rupee (₹)</option>
+</select>
+</div>
+
+<div>
+<label>Discount</label>
+<input id="purchaseDiscount" type="number" min="0" value="0" oninput="calculatePurchase()">
+</div>
+
+</div>
+
+<div class="total-box">
+Purchase Total: <span id="purchaseTotal">₹0</span>
 </div>
 
 <button class="primary" onclick="addPurchase()">🛒 Save Purchase</button>
@@ -229,13 +256,81 @@ th,td{padding:7px}
 <th>Date</th>
 <th>Product</th>
 <th>Qty</th>
-<th>Price</th>
+<th>Subtotal</th>
+<th>Discount</th>
 <th>Total</th>
 </tr>
 </thead>
 
 <tbody id="purchaseList"></tbody>
+</table>
 
+</div>
+
+
+<!-- SALES -->
+
+<div class="section" id="salesSection">
+
+<h2>💰 Sales</h2>
+
+<div class="form-grid">
+
+<div>
+<label>Select Product</label>
+<select id="saleProduct" onchange="setSalePrice()">
+<option value="">Select Product</option>
+</select>
+</div>
+
+<div>
+<label>Quantity</label>
+<input id="saleQty" type="number" min="1" placeholder="Enter quantity" oninput="calculateSale()">
+</div>
+
+<div>
+<label>Selling Price / Unit</label>
+<input id="salePrice" type="number" min="0" placeholder="Selling price" oninput="calculateSale()">
+</div>
+
+<div>
+<label>Discount Type</label>
+<select id="saleDiscountType" onchange="calculateSale()">
+<option value="percent">Percentage (%)</option>
+<option value="amount">Rupee (₹)</option>
+</select>
+</div>
+
+<div>
+<label>Discount</label>
+<input id="saleDiscount" type="number" min="0" value="0" oninput="calculateSale()">
+</div>
+
+</div>
+
+<div class="total-box">
+Subtotal: <span id="saleSubtotal">₹0</span><br>
+Discount: <span id="saleDiscountAmount">₹0</span><br>
+Final Amount: <span id="saleTotal">₹0</span>
+</div>
+
+<button class="primary" onclick="addSale()">💰 Save Sale</button>
+
+<h3>Sales History</h3>
+
+<table>
+<thead>
+<tr>
+<th>Date</th>
+<th>Product</th>
+<th>Qty</th>
+<th>Subtotal</th>
+<th>Discount</th>
+<th>Total</th>
+</tr>
+</thead>
+
+<tbody id="salesList"></tbody>
 </table>
 
 </div>
@@ -247,12 +342,18 @@ th,td{padding:7px}
 
 let products=JSON.parse(localStorage.getItem("products"))||[];
 let purchases=JSON.parse(localStorage.getItem("purchases"))||[];
+let sales=JSON.parse(localStorage.getItem("sales"))||[];
 
 function save(){
+
 localStorage.setItem("products",JSON.stringify(products));
 localStorage.setItem("purchases",JSON.stringify(purchases));
+localStorage.setItem("sales",JSON.stringify(sales));
+
 }
 
+
+/* PRODUCT */
 
 function addProduct(){
 
@@ -282,12 +383,11 @@ save();
 clearForm();
 displayProducts();
 updateDashboard();
-updatePurchaseProducts();
+updateProductSelects();
 
 alert("Product added successfully!");
 
 }
-
 
 function clearForm(){
 
@@ -299,7 +399,6 @@ document.getElementById("stock").value="";
 document.getElementById("minimum").value="";
 
 }
-
 
 function displayProducts(){
 
@@ -335,7 +434,6 @@ list.innerHTML+=`
 
 }
 
-
 function deleteProduct(id){
 
 if(confirm("Delete this product?")){
@@ -345,12 +443,11 @@ products=products.filter(p=>p.id!==id);
 save();
 displayProducts();
 updateDashboard();
-updatePurchaseProducts();
+updateProductSelects();
 
 }
 
 }
-
 
 function editProduct(id){
 
@@ -368,39 +465,30 @@ p.stock=Number(stock);
 save();
 displayProducts();
 updateDashboard();
-updatePurchaseProducts();
+updateProductSelects();
 
 }
 
 
-function updateDashboard(){
+/* PURCHASE */
 
-document.getElementById("totalProducts").innerText=products.length;
+function updateProductSelects(){
 
-let low=products.filter(p=>p.stock<=p.minimum).length;
+let purchaseSelect=document.getElementById("purchaseProduct");
+let saleSelect=document.getElementById("saleProduct");
 
-document.getElementById("lowStock").innerText=low;
-
-let today=new Date().toLocaleDateString();
-
-let total=purchases
-.filter(x=>x.date===today)
-.reduce((sum,x)=>sum+x.total,0);
-
-document.getElementById("todayPurchase").innerText="₹"+total;
-
-}
-
-
-function updatePurchaseProducts(){
-
-let select=document.getElementById("purchaseProduct");
-
-select.innerHTML='<option value="">Select Product</option>';
+purchaseSelect.innerHTML='<option value="">Select Product</option>';
+saleSelect.innerHTML='<option value="">Select Product</option>';
 
 products.forEach(p=>{
 
-select.innerHTML+=`
+purchaseSelect.innerHTML+=`
+<option value="${p.id}">
+${p.name} (Stock: ${p.stock})
+</option>
+`;
+
+saleSelect.innerHTML+=`
 <option value="${p.id}">
 ${p.name} (Stock: ${p.stock})
 </option>
@@ -410,12 +498,49 @@ ${p.name} (Stock: ${p.stock})
 
 }
 
+function setPurchasePrice(){
+
+let id=Number(document.getElementById("purchaseProduct").value);
+let p=products.find(x=>x.id===id);
+
+if(p){
+document.getElementById("purchasePrice").value=p.purchase;
+}
+
+calculatePurchase();
+
+}
+
+function calculatePurchase(){
+
+let qty=Number(document.getElementById("purchaseQty").value)||0;
+let price=Number(document.getElementById("purchasePrice").value)||0;
+let discount=Number(document.getElementById("purchaseDiscount").value)||0;
+let type=document.getElementById("purchaseDiscountType").value;
+
+let subtotal=qty*price;
+
+let discountAmount=type==="percent"
+?(subtotal*discount/100)
+:discount;
+
+if(discountAmount>subtotal){
+discountAmount=subtotal;
+}
+
+let total=subtotal-discountAmount;
+
+document.getElementById("purchaseTotal").innerText="₹"+total;
+
+}
 
 function addPurchase(){
 
 let productId=Number(document.getElementById("purchaseProduct").value);
 let qty=Number(document.getElementById("purchaseQty").value);
 let price=Number(document.getElementById("purchasePrice").value);
+let discount=Number(document.getElementById("purchaseDiscount").value)||0;
+let type=document.getElementById("purchaseDiscountType").value;
 
 if(!productId){
 alert("Please select a product");
@@ -436,34 +561,45 @@ let product=products.find(p=>p.id===productId);
 
 if(!product)return;
 
+let subtotal=qty*price;
+
+let discountAmount=type==="percent"
+?(subtotal*discount/100)
+:discount;
+
+if(discountAmount>subtotal){
+discountAmount=subtotal;
+}
+
+let total=subtotal-discountAmount;
+
 product.stock+=qty;
 product.purchase=price;
-
-let total=qty*price;
 
 purchases.push({
 id:Date.now(),
 date:new Date().toLocaleDateString(),
 product:product.name,
-qty:qty,
-price:price,
-total:total
+qty,
+subtotal,
+discount:discountAmount,
+total
 });
 
 save();
 
 document.getElementById("purchaseQty").value="";
-document.getElementById("purchasePrice").value="";
+document.getElementById("purchaseDiscount").value="0";
 
-displayProducts();
 displayPurchases();
+displayProducts();
 updateDashboard();
-updatePurchaseProducts();
+updateProductSelects();
+calculatePurchase();
 
 alert("Purchase saved! Stock updated.");
 
 }
-
 
 function displayPurchases(){
 
@@ -478,7 +614,8 @@ list.innerHTML+=`
 <td>${p.date}</td>
 <td>${p.product}</td>
 <td>${p.qty}</td>
-<td>₹${p.price}</td>
+<td>₹${p.subtotal}</td>
+<td>₹${p.discount}</td>
 <td>₹${p.total}</td>
 </tr>
 `;
@@ -488,6 +625,164 @@ list.innerHTML+=`
 }
 
 
+/* SALES */
+
+function setSalePrice(){
+
+let id=Number(document.getElementById("saleProduct").value);
+let p=products.find(x=>x.id===id);
+
+if(p){
+document.getElementById("salePrice").value=p.selling;
+}
+
+calculateSale();
+
+}
+
+function calculateSale(){
+
+let qty=Number(document.getElementById("saleQty").value)||0;
+let price=Number(document.getElementById("salePrice").value)||0;
+let discount=Number(document.getElementById("saleDiscount").value)||0;
+let type=document.getElementById("saleDiscountType").value;
+
+let subtotal=qty*price;
+
+let discountAmount=type==="percent"
+?(subtotal*discount/100)
+:discount;
+
+if(discountAmount>subtotal){
+discountAmount=subtotal;
+}
+
+let total=subtotal-discountAmount;
+
+document.getElementById("saleSubtotal").innerText="₹"+subtotal;
+document.getElementById("saleDiscountAmount").innerText="₹"+discountAmount;
+document.getElementById("saleTotal").innerText="₹"+total;
+
+}
+
+function addSale(){
+
+let productId=Number(document.getElementById("saleProduct").value);
+let qty=Number(document.getElementById("saleQty").value);
+let price=Number(document.getElementById("salePrice").value);
+let discount=Number(document.getElementById("saleDiscount").value)||0;
+let type=document.getElementById("saleDiscountType").value;
+
+if(!productId){
+alert("Please select a product");
+return;
+}
+
+if(qty<=0){
+alert("Enter valid quantity");
+return;
+}
+
+let product=products.find(p=>p.id===productId);
+
+if(!product)return;
+
+if(qty>product.stock){
+alert("Not enough stock available!");
+return;
+}
+
+let subtotal=qty*price;
+
+let discountAmount=type==="percent"
+?(subtotal*discount/100)
+:discount;
+
+if(discountAmount>subtotal){
+discountAmount=subtotal;
+}
+
+let total=subtotal-discountAmount;
+
+product.stock-=qty;
+
+sales.push({
+id:Date.now(),
+date:new Date().toLocaleDateString(),
+product:product.name,
+qty,
+subtotal,
+discount:discountAmount,
+total
+});
+
+save();
+
+document.getElementById("saleQty").value="";
+document.getElementById("saleDiscount").value="0";
+
+displaySales();
+displayProducts();
+updateDashboard();
+updateProductSelects();
+calculateSale();
+
+alert("Sale saved! Stock updated.");
+
+}
+
+function displaySales(){
+
+let list=document.getElementById("salesList");
+
+list.innerHTML="";
+
+sales.slice().reverse().forEach(s=>{
+
+list.innerHTML+=`
+<tr>
+<td>${s.date}</td>
+<td>${s.product}</td>
+<td>${s.qty}</td>
+<td>₹${s.subtotal}</td>
+<td>₹${s.discount}</td>
+<td>₹${s.total}</td>
+</tr>
+`;
+
+});
+
+}
+
+
+/* DASHBOARD */
+
+function updateDashboard(){
+
+document.getElementById("totalProducts").innerText=products.length;
+
+let low=products.filter(p=>p.stock<=p.minimum).length;
+
+document.getElementById("lowStock").innerText=low;
+
+let today=new Date().toLocaleDateString();
+
+let purchaseTotal=purchases
+.filter(x=>x.date===today)
+.reduce((sum,x)=>sum+x.total,0);
+
+let salesTotal=sales
+.filter(x=>x.date===today)
+.reduce((sum,x)=>sum+x.total,0);
+
+document.getElementById("todayPurchase").innerText="₹"+purchaseTotal;
+document.getElementById("todaySales").innerText="₹"+salesTotal;
+
+}
+
+
+/* NAVIGATION */
+
 function showSection(id){
 
 document.getElementById(id)
@@ -496,10 +791,13 @@ document.getElementById(id)
 }
 
 
+/* START */
+
 displayProducts();
 displayPurchases();
+displaySales();
 updateDashboard();
-updatePurchaseProducts();
+updateProductSelects();
 
 </script>
 
