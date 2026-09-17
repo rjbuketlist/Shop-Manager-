@@ -438,11 +438,26 @@ Final Amount: <span id="saleTotal">₹0</span>
 <h2>💳 Payments</h2>
 
 <div class="form-grid">
-
+  
 <div>
+<label>Payment Type</label>
+<select id="paymentType" onchange="updatePaymentParty()">
+<option value="customer">Customer Payment</option>
+<option value="supplier">Supplier Payment</option>
+</select>
+</div>
+  
+<div id="paymentCustomerBox">
 <label>Customer</label>
 <select id="paymentCustomer">
 <option value="">Select Customer</option>
+</select>
+</div>
+
+<div id="paymentSupplierBox" style="display:none;">
+<label>Supplier</label>
+<select id="paymentSupplier">
+<option value="">Select Supplier</option>
 </select>
 </div>
 
