@@ -378,20 +378,68 @@ Final Amount: <span id="saleTotal">₹0</span>
 
 </div>
 
+  <div class="section" id="suppliersSection">
+
+<h2>🏪 Suppliers</h2>
+
+<div class="form-grid">
+
+<div>
+<label>Supplier Name</label>
+<input id="supplierName" type="text" placeholder="Enter supplier name">
+</div>
+
+<div>
+<label>Mobile Number</label>
+<input id="supplierMobile" type="tel" placeholder="Enter mobile number">
+</div>
+
+<div>
+<label>Company / Shop Name</label>
+<input id="supplierCompany" type="text" placeholder="Optional company/shop">
+</div>
+
+<div>
+<label>Address</label>
+<input id="supplierAddress" type="text" placeholder="Optional address">
+</div>
+
+</div>
+
+<button class="primary" onclick="addSupplier()">➕ Add Supplier</button>
+
+<h3>Supplier List</h3>
+
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Mobile</th>
+<th>Company</th>
+<th>Address</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody id="suppliersList"></tbody>
+</table>
+
+  </div>
+
 <script>
 
 let products=JSON.parse(localStorage.getItem("products"))||[];
 let purchases=JSON.parse(localStorage.getItem("purchases"))||[];
 let sales=JSON.parse(localStorage.getItem("sales"))||[];
 let customers=JSON.parse(localStorage.getItem("customers"))||[];
-
+let suppliers=JSON.parse(localStorage.getItem("suppliers"))||[];
+  
 function save(){
-
 localStorage.setItem("products",JSON.stringify(products));
 localStorage.setItem("purchases",JSON.stringify(purchases));
 localStorage.setItem("sales",JSON.stringify(sales));
 localStorage.setItem("customers",JSON.stringify(customers));
-
+localStorage.setItem("suppliers",JSON.stringify(suppliers));
 }
 
 
@@ -460,6 +508,77 @@ document.getElementById("customerMobile").value="";
 document.getElementById("customerAddress").value="";
 
 alert("Customer added successfully");
+
+}
+
+function addSupplier(){
+
+let name=document.getElementById("supplierName").value.trim();
+let mobile=document.getElementById("supplierMobile").value.trim();
+let company=document.getElementById("supplierCompany").value.trim();
+let address=document.getElementById("supplierAddress").value.trim();
+
+if(!name){
+alert("Please enter supplier name");
+return;
+}
+
+let supplier={
+id:Date.now(),
+name:name,
+mobile:mobile,
+company:company,
+address:address
+};
+
+suppliers.push(supplier);
+
+save();
+displaySuppliers();
+
+document.getElementById("supplierName").value="";
+document.getElementById("supplierMobile").value="";
+document.getElementById("supplierCompany").value="";
+document.getElementById("supplierAddress").value="";
+
+alert("Supplier added successfully");
+
+}
+
+function displaySuppliers(){
+
+let list=document.getElementById("suppliersList");
+
+list.innerHTML="";
+
+suppliers.forEach(s=>{
+
+list.innerHTML+=`
+<tr>
+<td>${s.name}</td>
+<td>${s.mobile||"-"}</td>
+<td>${s.company||"-"}</td>
+<td>${s.address||"-"}</td>
+<td>
+<button onclick="deleteSupplier(${s.id})">🗑️ Delete</button>
+</td>
+</tr>
+`;
+
+});
+
+}
+
+function deleteSupplier(id){
+
+if(confirm("Delete this supplier?")){
+
+suppliers=suppliers.filter(s=>s.id!==id);
+
+save();
+displaySuppliers();
+
+}
 
 }
   
@@ -907,6 +1026,7 @@ displayProducts();
 displayPurchases();
 displaySales();
 displaycustomers();
+displaySuppliers();
 updateDashboard();
 updateProductSelects();
   
