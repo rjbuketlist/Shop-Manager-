@@ -931,18 +931,28 @@ if(type==="customer"){
 document.getElementById("paymentCustomerBox").style.display="block";
 document.getElementById("paymentSupplierBox").style.display="none";
 
-}else if(type==="supplier"){
+updatePaymentCustomers();
+
+}
+
+else if(type==="supplier"){
 
 document.getElementById("paymentCustomerBox").style.display="none";
 document.getElementById("paymentSupplierBox").style.display="block";
 
-}else{
+updatePaymentSuppliers();
+
+}
+
+else{
 
 document.getElementById("paymentCustomerBox").style.display="none";
 document.getElementById("paymentSupplierBox").style.display="none";
 
 }
 
+updatePaymentBills();
+loadPaymentPartyBalance();
 displayPayments();
 
 }
