@@ -548,6 +548,92 @@ function openCreateShop() {
 
   }
   }
+
+  function continuePurchase() {
+
+  const supplier = document.getElementById("purchaseSupplier").value.trim();
+  const category = document.getElementById("purchaseCategory").value;
+  const productName = document.getElementById("purchaseProduct").value.trim();
+  const quantity = Number(document.getElementById("purchaseQty").value);
+  const purchasePrice = Number(document.getElementById("purchasePrice").value);
+  const minStock = Number(document.getElementById("purchaseMinStock").value) || 20;
+
+  if (!supplier) {
+    alert("Please enter Supplier Name");
+    return;
+  }
+
+  if (!category) {
+    alert("Please select Category");
+    return;
+  }
+
+  if (!productName) {
+    alert("Please enter Product Name");
+    return;
+  }
+
+  if (!quantity || quantity <= 0) {
+    alert("Please enter valid Quantity");
+    return;
+  }
+
+  if (!purchasePrice || purchasePrice <= 0) {
+    alert("Please enter valid Purchase Price");
+    return;
+  }
+
+  let product = db.products.find(
+    p => p.name.toLowerCase() === productName.toLowerCase()
+  );
+
+  if (product) {
+
+    product.stock = Number(product.stock || 0) + quantity;
+    product.purchasePrice = purchasePrice;
+    product.minStockPercent = minStock;
+
+  } else {
+
+    product = {
+      id: "PROD-" + Date.now(),
+      name: productName,
+      category: category,
+      purchasePrice: purchasePrice,
+      sellingPrice: 0,
+      stock: quantity,
+      minStockPercent: minStock,
+      purchases: []
+    };
+
+    db.products.push(product);
+  }
+
+  product.purchases.push({
+    date: new Date().toISOString(),
+    supplier: supplier,
+    quantity: quantity,
+    purchasePrice: purchasePrice,
+    discount: 0,
+    purId: generatePurId(),
+    paymentStatus: "Pending"
+  });
+
+  if (product.purchases.length > 3) {
+    product.purchases = product.purchases.slice(-3);
+  }
+
+  saveDB();
+
+  document.getElementById("purchaseStock").textContent = product.stock;
+
+  alert("Product added successfully!");
+
+  document.getElementById("purchaseProduct").value = "";
+  document.getElementById("purchaseQty").value = "";
+  document.getElementById("purchasePrice").value = "";
+  document.getElementById("purchaseMinStock").value = "20";
+  }
     initApp();
 </script>
 
