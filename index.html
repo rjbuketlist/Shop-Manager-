@@ -577,6 +577,8 @@ let currentPurchase = {
   products: []
 };
 
+  let editingPurchaseIndex = null;
+
   function continuePurchase() {
 
   const supplier = document.getElementById("purchaseSupplier").value.trim();
@@ -627,15 +629,27 @@ let currentPurchase = {
 
   const amount = quantity * purchasePrice;
 
-  currentPurchase.products.push({
-    productName: productName,
-    category: category,
-    quantity: quantity,
-    unit: unit,
-    purchasePrice: purchasePrice,
-    amount: amount,
-    minStockPercent: minStock
-  });
+  const productData = {
+  productName: productName,
+  category: category,
+  quantity: quantity,
+  unit: unit,
+  purchasePrice: purchasePrice,
+  amount: amount,
+  minStockPercent: minStock
+};
+
+if (editingPurchaseIndex !== null) {
+
+  currentPurchase.products[editingPurchaseIndex] = productData;
+
+  editingPurchaseIndex = null;
+
+} else {
+
+  currentPurchase.products.push(productData);
+
+}
 
   renderPurchaseList();
 
@@ -754,7 +768,7 @@ function editPurchaseItem(index) {
   document.getElementById("purchasePrice").value = item.purchasePrice;
   document.getElementById("purchaseMinStock").value = item.minStockPercent;
 
-  currentPurchase.products.splice(index, 1);
+  editingPurchaseIndex = index;
 
   renderPurchaseList();
 
