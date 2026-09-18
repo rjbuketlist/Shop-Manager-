@@ -471,21 +471,21 @@ Remaining / Advance:
 <div>
 <label>Payment Type</label>
 <select id="paymentType" onchange="updatePaymentParty()">
+<option value="cash">Cash Customer</option>
 <option value="customer">Customer Payment</option>
 <option value="supplier">Supplier Payment</option>
-<option value="cash">Cash Customer</option>
 </select>
 </div>
 <div id="paymentCustomerBox">
 <label>Customer</label>
-<select id="paymentCustomer">
+<select id="paymentCustomer" onchange="loadPaymentPartyBalance()">
 <option value="">Select Customer</option>
 </select>
 </div>
 
 <div id="paymentSupplierBox" style="display:none;">
 <label>Supplier</label>
-<select id="paymentSupplier">
+<select id="paymentSupplier" onchange="loadPaymentPartyBalance()">
 <option value="">Select Supplier</option>
 </select>
 </div>
@@ -1446,6 +1446,85 @@ box.style.color="green";
 }
 
   }
+
+function loadPaymentPartyBalance(){
+
+let type=document.getElementById("paymentType").value;
+
+let billNo=document.getElementById("paymentBillNo").value;
+
+if(!billNo)return;
+
+let currentBill=0;
+let previousBalance=0;
+
+if(type==="customer"){
+
+let customerId=document.getElementById("paymentCustomer").value;
+
+if(!customerId)return;
+
+let bill=sales.find(s=>s.billNo===billNo);
+
+if(bill){
+currentBill=Number(bill.total)||0;
+}
+
+sales.forEach(s=>{
+
+if(s.billNo===billNo)return;
+
+if(s.customerId==customerId){
+
+previousBalance+=Number(s.remaining)||0;
+
+}
+
+});
+
+}
+
+else if(type==="supplier"){
+
+let supplierId=document.getElementById("paymentSupplier").value;
+
+if(!supplierId)return;
+
+let purchase=purchases[purchases.length-1];
+
+if(purchase){
+currentBill=Number(purchase.total)||0;
+}
+
+purchases.forEach(p=>{
+
+if(p.supplierId==supplierId){
+
+previousBalance+=Number(p.remaining)||0;
+
+}
+
+});
+
+}
+
+let totalDue=previousBalance+currentBill;
+
+document.getElementById("paymentBillAmount").textContent=
+"₹"+currentBill;
+
+document.getElementById("paymentPreviousBalance").textContent=
+"₹"+previousBalance;
+
+document.getElementById("paymentTotalDue").textContent=
+"₹"+totalDue;
+
+document.getElementById("paymentReceived").textContent="₹0";
+
+document.getElementById("paymentBalance").textContent=
+"₹"+totalDue;
+
+}
   
 </script>
 
