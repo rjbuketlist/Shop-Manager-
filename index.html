@@ -162,6 +162,70 @@ main{padding:15px}
 </main>
 
 <script>
+  <script>
+/* ================================
+   SHOP MANAGER - OFFLINE DATABASE
+   ================================ */
+
+const DB_KEY = "shop_manager_database";
+
+let db = JSON.parse(localStorage.getItem(DB_KEY)) || {
+    shop: {
+        name: "",
+        owner: "",
+        mobile: "",
+        address: "",
+        gst: ""
+    },
+
+    products: [],
+    purchases: [],
+    sales: [],
+    customers: [],
+    suppliers: [],
+    payments: [],
+
+    settings: {
+        currency: "₹",
+        nextPurNo: 1,
+        nextBillNo: 1
+    }
+};
+
+function saveDB() {
+    localStorage.setItem(DB_KEY, JSON.stringify(db));
+}
+
+function generatePurId() {
+    const id = "PUR-" + String(db.settings.nextPurNo).padStart(5, "0");
+    db.settings.nextPurNo++;
+    saveDB();
+    return id;
+}
+
+function generateBillNo() {
+    const id = "INV-" + String(db.settings.nextBillNo).padStart(5, "0");
+    db.settings.nextBillNo++;
+    saveDB();
+    return id;
+}
+
+function getProduct(id) {
+    return db.products.find(p => p.id === id);
+}
+
+function getCustomer(id) {
+    return db.customers.find(c => c.id === id);
+}
+
+function getSupplier(id) {
+    return db.suppliers.find(s => s.id === id);
+}
+
+saveDB();
+
+console.log("Shop Manager Offline Database Ready");
+</script>
 function showSection(id,button){
 
   document.querySelectorAll('.section')
