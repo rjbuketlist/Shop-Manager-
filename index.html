@@ -1002,9 +1002,27 @@ payments.push(payment);
 save();
 displayPayments();
 
+document.getElementById("paymentBillNo").value="";
+document.getElementById("paymentBillAmount").textContent="₹0";
+document.getElementById("paymentPreviousBalance").textContent="₹0";
+document.getElementById("paymentTotalDue").textContent="₹0";
+document.getElementById("paymentReceived").textContent="₹0";
+document.getElementById("paymentBalance").textContent="₹0";
+
+document.getElementById("paymentAmount").value="";
+document.getElementById("paymentCustomer").value="";
+document.getElementById("paymentSupplier").value="";
+document.getElementById("paymentNote").value="";
+
+document.getElementById("paymentType").value="customer";
+updatePaymentParty();
+
+displayPayments();
+
 alert("Payment saved successfully");
 
 }
+
 
   function displayPayments(){
 
