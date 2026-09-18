@@ -343,6 +343,7 @@ console.log("Shop Manager Offline Database Ready");
 
   alert("Shop details saved successfully!");
   }
+
   function createShop() {
 
   const name = document.getElementById("shopName").value.trim();
@@ -380,13 +381,11 @@ console.log("Shop Manager Offline Database Ready");
 
   alert("Shop created successfully!");
 
-document.getElementById("mainNav").style.display = "block";
+  document.getElementById("mainNav").style.display = "block";
 
-showSection("dashboard", null);
-
-function openCreateShop() {
-  showSection("createShop", null);
+  showSection("dashboard", null);
 }
+
   
 function showSection(id,button){
 
