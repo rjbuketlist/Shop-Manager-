@@ -933,6 +933,7 @@ let type=document.getElementById("paymentType").value;
 let amount=Number(document.getElementById("paymentAmount").value);
 let mode=document.getElementById("paymentMode").value;
 let note=document.getElementById("paymentNote").value.trim();
+let billNo=document.getElementById("paymentBillNo").value;
 
 if(!amount || amount<=0){
 alert("Please enter payment amount");
@@ -946,7 +947,7 @@ type:type,
 amount:amount,
 mode:mode,
 note:note,
-billNo:document.getElementById("paymentBillNo").value
+billNo:billNo
 };
 
 if(type==="customer"){
@@ -997,10 +998,36 @@ payment.partyName="Cash Customer";
 
 }
 
+
+/* UPDATE SALES BILL */
+
+if(billNo){
+
+let bill=sales.find(s=>s.billNo===billNo);
+
+if(bill){
+
+let oldPaid=Number(bill.paid)||0;
+let newPaid=oldPaid+amount;
+
+if(newPaid>bill.total){
+newPaid=bill.total;
+}
+
+bill.paid=newPaid;
+bill.remaining=bill.total-newPaid;
+
+}
+
+}
+
 payments.push(payment);
 
 save();
+
 displayPayments();
+displaySales();
+updateDashboard();
 
 document.getElementById("paymentBillNo").value="";
 document.getElementById("paymentBillAmount").textContent="₹0";
@@ -1014,15 +1041,11 @@ document.getElementById("paymentCustomer").value="";
 document.getElementById("paymentSupplier").value="";
 document.getElementById("paymentNote").value="";
 
-document.getElementById("paymentType").value="customer";
-updatePaymentParty();
-
 displayPayments();
 
 alert("Payment saved successfully");
 
 }
-
 
   function displayPayments(){
 
