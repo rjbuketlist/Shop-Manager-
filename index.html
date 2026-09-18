@@ -255,8 +255,84 @@ main{padding:15px}
 </section>
 
 <section id="purchase" class="section">
+
   <h2>Purchase</h2>
-  <div class="empty">Purchase module will be added here.</div>
+
+  <div class="card">
+
+    <label>Supplier Name</label>
+    <input id="purchaseSupplier"
+      placeholder="Enter Supplier Name"
+      style="width:100%;padding:12px;margin:6px 0 12px;">
+
+    <label>Select Category</label>
+    <select id="purchaseCategory"
+      style="width:100%;padding:12px;margin:6px 0 12px;">
+      <option value="">Select Category</option>
+      <option>General</option>
+      <option>Grocery</option>
+      <option>Food</option>
+      <option>Beverage</option>
+      <option>Electronics</option>
+      <option>Clothing</option>
+      <option>Other</option>
+    </select>
+
+    <label>Product Name</label>
+    <input id="purchaseProduct"
+      placeholder="Enter Product Name"
+      style="width:100%;padding:12px;margin:6px 0 12px;">
+
+    <label>Quantity</label>
+    <input id="purchaseQty"
+      type="number"
+      min="1"
+      placeholder="Enter Quantity"
+      style="width:100%;padding:12px;margin:6px 0 12px;">
+
+    <label>Purchase Price</label>
+    <input id="purchasePrice"
+      type="number"
+      min="0"
+      placeholder="Enter Purchase Price"
+      style="width:100%;padding:12px;margin:6px 0 12px;">
+
+    <label>Current Stock</label>
+    <input id="purchaseStock"
+      type="number"
+      min="0"
+      placeholder="Current Stock"
+      style="width:100%;padding:12px;margin:6px 0 12px;">
+
+    <label>Minimum Stock</label>
+    <input id="purchaseMinStock"
+      type="number"
+      min="0"
+      placeholder="Minimum Stock"
+      style="width:100%;padding:12px;margin:6px 0 12px;">
+
+    <button onclick="continuePurchase()"
+      style="padding:12px 22px;
+             background:#1f6f43;
+             color:white;
+             border:0;
+             border-radius:6px;
+             margin-top:8px;">
+      Continue
+    </button>
+
+    <button onclick="finishPurchase()"
+      style="padding:12px 22px;
+             background:#555;
+             color:white;
+             border:0;
+             border-radius:6px;
+             margin-top:8px;">
+      Done
+    </button>
+
+  </div>
+
 </section>
 
 <section id="products" class="section">
