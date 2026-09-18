@@ -1353,9 +1353,12 @@ calculateSale();
 alert("Sale saved! Stock updated.");
 
 showSection("paymentsSection");
+
+document.getElementById("paymentType").value="cash";
+
+updatePaymentParty();
 updatePaymentBills();
 loadPaymentBill();
-
 }
 
 function displaySales(){
