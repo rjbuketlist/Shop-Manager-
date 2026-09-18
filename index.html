@@ -577,12 +577,13 @@ let currentPurchase = {
   products: []
 };
 
-function continuePurchase() {
+  function continuePurchase() {
 
   const supplier = document.getElementById("purchaseSupplier").value.trim();
   const category = document.getElementById("purchaseCategory").value;
   const productName = document.getElementById("purchaseProduct").value.trim();
   const quantity = Number(document.getElementById("purchaseQty").value);
+  const unit = document.getElementById("purchaseUnit").value;
   const purchasePrice = Number(document.getElementById("purchasePrice").value);
   const minStock = Number(document.getElementById("purchaseMinStock").value) || 20;
 
@@ -611,12 +612,10 @@ function continuePurchase() {
     return;
   }
 
-  // Set supplier for current purchase
   if (!currentPurchase.supplier) {
     currentPurchase.supplier = supplier;
   }
 
-  // Prevent changing supplier during same purchase
   if (currentPurchase.supplier !== supplier) {
     alert(
       "Current purchase is for " +
@@ -626,73 +625,144 @@ function continuePurchase() {
     return;
   }
 
-  // Add product to current purchase
+  const amount = quantity * purchasePrice;
+
   currentPurchase.products.push({
     productName: productName,
     category: category,
     quantity: quantity,
+    unit: unit,
     purchasePrice: purchasePrice,
+    amount: amount,
     minStockPercent: minStock
   });
 
-  // Find existing product
-  let product = db.products.find(
-    p => p.name.toLowerCase() === productName.toLowerCase()
-  );
+  renderPurchaseList();
 
-  if (product) {
-
-    product.stock = Number(product.stock || 0) + quantity;
-    product.purchasePrice = purchasePrice;
-    product.category = category;
-    product.minStockPercent = minStock;
-
-  } else {
-
-    product = {
-      id: "PROD-" + Date.now(),
-      name: productName,
-      category: category,
-      purchasePrice: purchasePrice,
-      sellingPrice: 0,
-      stock: quantity,
-      minStockPercent: minStock,
-      purchases: []
-    };
-
-    db.products.push(product);
-  }
-
-  // Save purchase history
-  product.purchases.push({
-    date: new Date().toISOString(),
-    supplier: supplier,
-    quantity: quantity,
-    purchasePrice: purchasePrice,
-    discount: 0,
-    paymentStatus: "Pending"
-  });
-
-  // Keep last 3 purchase entries
-  if (product.purchases.length > 3) {
-    product.purchases = product.purchases.slice(-3);
-  }
-
-  saveDB();
-
-  // Prepare for next product
   document.getElementById("purchaseCategory").value = "";
   document.getElementById("purchaseProduct").value = "";
   document.getElementById("purchaseQty").value = "";
+  document.getElementById("purchaseUnit").value = "KG";
   document.getElementById("purchasePrice").value = "";
   document.getElementById("purchaseMinStock").value = "20";
-
-  // Current Stock box resets for next product
   document.getElementById("purchaseStock").textContent = "0";
 
-  alert("Product added successfully!");
+  alert("Product added to current purchase!");
 }
+
+
+function renderPurchaseList() {
+
+  const box = document.getElementById("purchaseProductList");
+
+  if (currentPurchase.products.length === 0) {
+    box.style.display = "none";
+    box.innerHTML = "";
+    return;
+  }
+
+  box.style.display = "block";
+
+  let total = 0;
+
+  let html = `
+    <h3 style="margin:0 0 10px;">
+      Current Purchase — ${currentPurchase.supplier}
+    </h3>
+
+    <div style="overflow-x:auto;">
+      <table style="width:100%;border-collapse:collapse;font-size:13px;">
+        <tr style="background:#e9ecef;">
+          <th style="padding:8px;border:1px solid #ddd;">#</th>
+          <th style="padding:8px;border:1px solid #ddd;">Product</th>
+          <th style="padding:8px;border:1px solid #ddd;">Qty</th>
+          <th style="padding:8px;border:1px solid #ddd;">Rate</th>
+          <th style="padding:8px;border:1px solid #ddd;">Amount</th>
+          <th style="padding:8px;border:1px solid #ddd;">Action</th>
+        </tr>
+  `;
+
+  currentPurchase.products.forEach((item, index) => {
+
+    total += item.amount;
+
+    html += `
+      <tr>
+        <td style="padding:8px;border:1px solid #ddd;">
+          ${index + 1}
+        </td>
+
+        <td style="padding:8px;border:1px solid #ddd;">
+          ${item.productName}
+        </td>
+
+        <td style="padding:8px;border:1px solid #ddd;">
+          ${item.quantity} ${item.unit}
+        </td>
+
+        <td style="padding:8px;border:1px solid #ddd;">
+          ₹${item.purchasePrice.toFixed(2)}
+        </td>
+
+        <td style="padding:8px;border:1px solid #ddd;">
+          ₹${item.amount.toFixed(2)}
+        </td>
+
+        <td style="padding:8px;border:1px solid #ddd;">
+          <button onclick="editPurchaseItem(${index})"
+            style="
+              padding:6px 10px;
+              border:0;
+              border-radius:5px;
+              background:#1f6f43;
+              color:white;">
+            Edit
+          </button>
+        </td>
+      </tr>
+    `;
+  });
+
+  html += `
+      </table>
+    </div>
+
+    <div style="
+      margin-top:12px;
+      padding:10px;
+      background:white;
+      border-radius:6px;
+      font-weight:bold;">
+      Total Products: ${currentPurchase.products.length}
+      <br>
+      Total Purchase: ₹${total.toFixed(2)}
+    </div>
+  `;
+
+  box.innerHTML = html;
+}
+
+
+function editPurchaseItem(index) {
+
+  const item = currentPurchase.products[index];
+
+  document.getElementById("purchaseCategory").value = item.category;
+  document.getElementById("purchaseProduct").value = item.productName;
+  document.getElementById("purchaseQty").value = item.quantity;
+  document.getElementById("purchaseUnit").value = item.unit;
+  document.getElementById("purchasePrice").value = item.purchasePrice;
+  document.getElementById("purchaseMinStock").value = item.minStockPercent;
+
+  currentPurchase.products.splice(index, 1);
+
+  renderPurchaseList();
+
+  alert("Product loaded for editing. Make corrections and press Continue.");
+}
+
     initApp();
+  
 </script>
 
 </body>
