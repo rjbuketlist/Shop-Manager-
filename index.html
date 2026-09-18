@@ -298,19 +298,27 @@ main{padding:15px}
       style="width:100%;padding:12px;margin:6px 0 12px;">
 
     <label>Current Stock</label>
-    <input id="purchaseStock"
-      type="number"
-      min="0"
-      placeholder="Current Stock"
-      style="width:100%;padding:12px;margin:6px 0 12px;">
-
-    <label>Minimum Stock</label>
-    <input id="purchaseMinStock"
-      type="number"
-      min="0"
-      placeholder="Minimum Stock"
-      style="width:100%;padding:12px;margin:6px 0 12px;">
-
+<div id="purchaseStock"
+     style="
+       width:100%;
+       padding:12px;
+       margin:6px 0 12px;
+       background:#f1f3f5;
+       border:1px solid #ddd;
+       border-radius:6px;
+       color:#555;">
+  0
+</div>
+    
+    <label>Minimum Stock Alert (%)</label>
+<input id="purchaseMinStock"
+  type="number"
+  min="0"
+  max="100"
+  value="20"
+  placeholder="Example: 20"
+  style="width:100%;padding:12px;margin:6px 0 12px;">
+    
     <button onclick="continuePurchase()"
       style="padding:12px 22px;
              background:#1f6f43;
