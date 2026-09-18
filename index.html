@@ -122,20 +122,32 @@ main{padding:15px}
     Sales
   </button>
 
-  <button onclick="showSection('customers',this)">
-    Customers
-  </button>
-
-  <button onclick="showSection('suppliers',this)">
-    Suppliers
-  </button>
-
-  <button onclick="showSection('payments',this)">
-    Payments
+  <button onclick="toggleMore()">
+    ☰ More
   </button>
 
 </nav>
 
+<div id="moreMenu" style="
+  display:none;
+  background:white;
+  border-bottom:1px solid #ddd;
+  padding:8px;
+">
+
+  <button onclick="showSection('customers',this);toggleMore();">
+    Customers
+  </button>
+
+  <button onclick="showSection('suppliers',this);toggleMore();">
+    Suppliers
+  </button>
+
+  <button onclick="showSection('payments',this);toggleMore();">
+    Payments
+  </button>
+
+</div>
 <main>
   <section id="home" class="section active">
 
@@ -404,6 +416,17 @@ function showSection(id,button){
     button.classList.add('active');
   }
 }
+  
+  function toggleMore() {
+
+  const menu = document.getElementById("moreMenu");
+
+  if (menu.style.display === "none" || menu.style.display === "") {
+    menu.style.display = "block";
+  } else {
+    menu.style.display = "none";
+  }
+  }
 
 function openCreateShop() {
   showSection("createShop", null);
