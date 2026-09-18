@@ -874,33 +874,54 @@ let billNo=document.getElementById("paymentBillNo");
 
 if(!billNo)return;
 
-if(sales.length===0){
+let type=document.getElementById("paymentType").value;
+
+let currentBill=null;
+
+if(type==="supplier"){
+
+if(purchases.length>0){
+currentBill=purchases[purchases.length-1];
+}
+
+}else{
+
+if(sales.length>0){
+currentBill=sales[sales.length-1];
+}
+
+}
+
+if(!currentBill){
 
 billNo.value="";
+
+document.getElementById("paymentBillAmount").textContent="₹0";
+document.getElementById("paymentPreviousBalance").textContent="₹0";
+document.getElementById("paymentTotalDue").textContent="₹0";
+document.getElementById("paymentReceived").textContent="₹0";
+document.getElementById("paymentBalance").textContent="₹0";
 
 return;
 
 }
 
-let latestSale=sales[sales.length-1];
-
-billNo.value=latestSale.billNo||"";
+billNo.value=currentBill.billNo||"";
 
 document.getElementById("paymentBillAmount").textContent=
-"₹"+(latestSale.total||0);
+"₹"+(currentBill.total||0);
 
 document.getElementById("paymentPreviousBalance").textContent="₹0";
 
 document.getElementById("paymentTotalDue").textContent=
-"₹"+(latestSale.remaining||latestSale.total||0);
+"₹"+(currentBill.remaining ?? currentBill.total ?? 0);
 
 document.getElementById("paymentReceived").textContent="₹0";
 
 document.getElementById("paymentBalance").textContent=
-"₹"+(latestSale.remaining||latestSale.total||0);
+"₹"+(currentBill.remaining ?? currentBill.total ?? 0);
 
 }
-
 function updatePaymentParty(){
 
 let type=document.getElementById("paymentType").value;
