@@ -182,7 +182,7 @@ main{padding:15px}
 
   </section>
 
-<section id="dashboard" class="section active">
+<section id="dashboard" class="section">
   <h2>Dashboard</h2>
   
   <div class="cards">
@@ -306,6 +306,24 @@ function getSupplier(id) {
 
 saveDB();
 
+
+function initApp() {
+
+  if (db.shop.created) {
+
+    document.getElementById("mainNav").style.display = "block";
+
+    showSection("dashboard", null);
+
+  } else {
+
+    document.getElementById("mainNav").style.display = "none";
+
+    showSection("home", null);
+
+  }
+}
+  
 console.log("Shop Manager Offline Database Ready");
 
   function saveShopSetup() {
@@ -362,8 +380,9 @@ console.log("Shop Manager Offline Database Ready");
 
   alert("Shop created successfully!");
 
-  showSection("dashboard", null);
-  }
+document.getElementById("mainNav").style.display = "block";
+
+showSection("dashboard", null);
 
 function openCreateShop() {
   showSection("createShop", null);
@@ -387,6 +406,8 @@ function showSection(id,button){
 function openCreateShop() {
   showSection("createShop", null);
 }
+
+    initApp();
 </script>
 
 </body>
