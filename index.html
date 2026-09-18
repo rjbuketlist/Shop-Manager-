@@ -549,7 +549,12 @@ function openCreateShop() {
   }
   }
 
-  function continuePurchase() {
+let currentPurchase = {
+  supplier: "",
+  products: []
+};
+
+function continuePurchase() {
 
   const supplier = document.getElementById("purchaseSupplier").value.trim();
   const category = document.getElementById("purchaseCategory").value;
@@ -583,6 +588,31 @@ function openCreateShop() {
     return;
   }
 
+  // Set supplier for current purchase
+  if (!currentPurchase.supplier) {
+    currentPurchase.supplier = supplier;
+  }
+
+  // Prevent changing supplier during same purchase
+  if (currentPurchase.supplier !== supplier) {
+    alert(
+      "Current purchase is for " +
+      currentPurchase.supplier +
+      ". Click Done first to start a new supplier."
+    );
+    return;
+  }
+
+  // Add product to current purchase
+  currentPurchase.products.push({
+    productName: productName,
+    category: category,
+    quantity: quantity,
+    purchasePrice: purchasePrice,
+    minStockPercent: minStock
+  });
+
+  // Find existing product
   let product = db.products.find(
     p => p.name.toLowerCase() === productName.toLowerCase()
   );
@@ -591,6 +621,7 @@ function openCreateShop() {
 
     product.stock = Number(product.stock || 0) + quantity;
     product.purchasePrice = purchasePrice;
+    product.category = category;
     product.minStockPercent = minStock;
 
   } else {
@@ -609,31 +640,35 @@ function openCreateShop() {
     db.products.push(product);
   }
 
+  // Save purchase history
   product.purchases.push({
     date: new Date().toISOString(),
     supplier: supplier,
     quantity: quantity,
     purchasePrice: purchasePrice,
     discount: 0,
-    purId: generatePurId(),
     paymentStatus: "Pending"
   });
 
+  // Keep last 3 purchase entries
   if (product.purchases.length > 3) {
     product.purchases = product.purchases.slice(-3);
   }
 
   saveDB();
 
-  document.getElementById("purchaseStock").textContent = product.stock;
-
-  alert("Product added successfully!");
-
+  // Prepare for next product
+  document.getElementById("purchaseCategory").value = "";
   document.getElementById("purchaseProduct").value = "";
   document.getElementById("purchaseQty").value = "";
   document.getElementById("purchasePrice").value = "";
   document.getElementById("purchaseMinStock").value = "20";
-  }
+
+  // Current Stock box resets for next product
+  document.getElementById("purchaseStock").textContent = "0";
+
+  alert("Product added successfully!");
+}
     initApp();
 </script>
 
