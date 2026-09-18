@@ -14,10 +14,32 @@ body{
   color:#222;
 }
 header{
-  background:#1f6f43;
-  color:white;
-  padding:18px;
-  text-align:center;
+  <div style="position:relative;overflow:hidden;padding:18px 15px;text-align:center;">
+
+  <div id="shopHeaderName"
+       style="font-size:22px;font-weight:bold;">
+    Shop Manager
+  </div>
+
+  <div id="shopHeaderAddress"
+       style="font-size:13px;margin-top:4px;">
+    Simple Telly Style Stock & Accounts
+  </div>
+
+  <div style="
+       position:absolute;
+       left:50%;
+       top:50%;
+       transform:translate(-50%,-50%);
+       font-size:42px;
+       font-weight:bold;
+       opacity:0.04;
+       white-space:nowrap;
+       pointer-events:none;">
+    SHOP MANAGER
+  </div>
+
+</div>
 }
 header h1{margin:0;font-size:24px}
 header p{margin:5px 0 0;font-size:13px}
@@ -310,6 +332,12 @@ saveDB();
 function initApp() {
 
   if (db.shop.created) {
+
+    document.getElementById("shopHeaderName").textContent =
+      db.shop.name;
+
+    document.getElementById("shopHeaderAddress").textContent =
+      db.shop.address || "";
 
     document.getElementById("mainNav").style.display = "block";
 
