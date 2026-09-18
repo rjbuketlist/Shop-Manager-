@@ -322,30 +322,6 @@ function getSupplier(id) {
 }
 
 saveDB();
-
-
-function initApp() {
-
-  if (db.shop.created) {
-
-    document.getElementById("shopHeaderName").textContent =
-      db.shop.name;
-
-    document.getElementById("shopHeaderAddress").textContent =
-      db.shop.address || "";
-
-    document.getElementById("mainNav").style.display = "block";
-
-    showSection("dashboard", null);
-
-  } else {
-
-    document.getElementById("mainNav").style.display = "none";
-
-    showSection("home", null);
-
-  }
-}
   
 console.log("Shop Manager Offline Database Ready");
 
