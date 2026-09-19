@@ -2153,6 +2153,265 @@ function saveCustomerEdit(customerId) {
 
   }
 
+function viewSuppliers() {
+
+  const box =
+    document.getElementById("supplierList");
+
+  box.innerHTML = `
+
+    <div class="card">
+
+      <h2>Supplier List</h2>
+
+      <input
+        id="supplierSearch"
+        placeholder="Search by Supplier ID, Name, Mobile or Balance Amount"
+        oninput="filterSuppliers()"
+        style="
+          width:100%;
+          padding:12px;
+          margin:6px 0 10px;">
+
+      <select
+        id="supplierStatusFilter"
+        onchange="filterSuppliers()"
+        style="
+          width:100%;
+          padding:12px;
+          margin:6px 0 10px;">
+
+        <option value="all">
+          All Suppliers
+        </option>
+
+        <option value="active">
+          Active
+        </option>
+
+        <option value="blocked">
+          Blocked
+        </option>
+
+      </select>
+
+      <select
+        id="supplierBalanceFilter"
+        onchange="filterSuppliers()"
+        style="
+          width:100%;
+          padding:12px;
+          margin:6px 0 10px;">
+
+        <option value="all">
+          All Balance
+        </option>
+
+        <option value="payable">
+          Payable
+        </option>
+
+        <option value="zero">
+          Zero Balance
+        </option>
+
+        <option value="advance">
+          Advance
+        </option>
+
+      </select>
+
+      <div id="supplierTableBox"
+           style="margin-top:12px;">
+      </div>
+
+    </div>
+
+  `;
+
+  renderSupplierTable(db.suppliers);
+
+}
+
+function renderSupplierTable(list = db.suppliers) {
+
+  const box =
+    document.getElementById("supplierTableBox");
+
+  if (!list || list.length === 0) {
+
+    box.innerHTML = `
+      <div class="empty">
+        No matching suppliers found.
+      </div>
+    `;
+
+    return;
+  }
+
+  let html = `
+
+    <div style="overflow-x:auto;">
+
+      <table style="
+        width:100%;
+        border-collapse:collapse;
+        font-size:13px;">
+
+        <tr style="background:#e9ecef;">
+
+          <th style="padding:8px;border:1px solid #ddd;">
+            ID
+          </th>
+
+          <th style="padding:8px;border:1px solid #ddd;">
+            Supplier
+          </th>
+
+          <th style="padding:8px;border:1px solid #ddd;">
+            Mobile
+          </th>
+
+          <th style="padding:8px;border:1px solid #ddd;">
+            Balance
+          </th>
+
+          <th style="padding:8px;border:1px solid #ddd;">
+            Status
+          </th>
+
+          <th style="padding:8px;border:1px solid #ddd;">
+            Action
+          </th>
+
+        </tr>
+  `;
+
+  list.forEach(supplier => {
+
+    const isBlocked =
+      supplier.status === "blocked";
+
+    const balance =
+      Number(supplier.balance || 0);
+
+    let balanceText = "₹0.00";
+    let balanceColor = "#555";
+
+    if (balance > 0) {
+
+      balanceText =
+        "+₹" + balance.toFixed(2);
+
+      balanceColor = "red";
+
+    }
+
+    if (balance < 0) {
+
+      balanceText =
+        "-₹" + Math.abs(balance).toFixed(2);
+
+      balanceColor = "#1f6f43";
+
+    }
+
+    html += `
+
+      <tr>
+
+        <td style="padding:8px;border:1px solid #ddd;">
+          ${supplier.id}
+        </td>
+
+        <td style="padding:8px;border:1px solid #ddd;">
+          ${supplier.name}
+        </td>
+
+        <td style="padding:8px;border:1px solid #ddd;">
+          ${supplier.mobile}
+        </td>
+
+        <td style="
+          padding:8px;
+          border:1px solid #ddd;
+          color:${balanceColor};
+          font-weight:bold;">
+
+          ${balanceText}
+
+        </td>
+
+        <td style="
+          padding:8px;
+          border:1px solid #ddd;
+          color:${isBlocked ? "red" : "green"};
+          font-weight:bold;">
+
+          ${isBlocked ? "🔴 Blocked" : "🟢 Active"}
+
+        </td>
+
+        <td style="
+          padding:8px;
+          border:1px solid #ddd;
+          white-space:nowrap;">
+
+          <button
+            onclick="viewSupplier('${supplier.id}')"
+            style="
+              padding:6px 9px;
+              border:0;
+              border-radius:5px;
+              background:#1976d2;
+              color:white;">
+            View
+          </button>
+
+          <button
+            onclick="editSupplier('${supplier.id}')"
+            style="
+              padding:6px 9px;
+              border:0;
+              border-radius:5px;
+              background:#f39c12;
+              color:white;">
+            Edit
+          </button>
+
+          <button
+            onclick="toggleSupplierStatus('${supplier.id}')"
+            style="
+              padding:6px 9px;
+              border:0;
+              border-radius:5px;
+              background:${isBlocked ? "#1f6f43" : "#c62828"};
+              color:white;">
+
+            ${isBlocked ? "Unblock" : "Block"}
+
+          </button>
+
+        </td>
+
+      </tr>
+
+    `;
+
+  });
+
+  html += `
+
+      </table>
+
+    </div>
+
+  `;
+
+  box.innerHTML = html;
+
+}
+
   function toggleCustomerStatus(customerId) {
 
   const customer =
