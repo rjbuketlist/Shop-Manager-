@@ -364,6 +364,144 @@ main{padding:15px}
 
   </div>
 
+  <div id="purchaseSummary"
+     style="
+       display:none;
+       margin-top:15px;
+       background:white;
+       border:1px solid #ddd;
+       border-radius:8px;
+       padding:15px;">
+
+  <h3 style="margin-top:0;">Purchase Summary</h3>
+
+  <div style="background:#f8f9fa;padding:12px;border-radius:6px;">
+
+    <p>
+      <strong>Supplier:</strong>
+      <span id="summarySupplier">-</span>
+    </p>
+
+    <p>
+      <strong>PUR ID:</strong>
+      <span id="summaryPurId">-</span>
+    </p>
+
+    <p>
+      <strong>Product Count:</strong>
+      <span id="summaryProductCount">0</span>
+    </p>
+
+    <p>
+      <strong>Total Purchase:</strong>
+      ₹<span id="summaryTotal">0.00</span>
+    </p>
+
+  </div>
+
+  <label>Discount (%)</label>
+  <input id="purchaseDiscountPercent"
+    type="number"
+    min="0"
+    value="0"
+    placeholder="0"
+    style="width:100%;padding:12px;margin:6px 0 12px;">
+
+  <label>Discount (₹)</label>
+  <input id="purchaseDiscountAmount"
+    type="number"
+    min="0"
+    value="0"
+    placeholder="0"
+    style="width:100%;padding:12px;margin:6px 0 12px;">
+
+  <div style="
+       background:#f1f3f5;
+       padding:12px;
+       border-radius:6px;
+       margin-bottom:12px;">
+
+    <p>
+      <strong>Current Bill Amount:</strong>
+      ₹<span id="summaryBillAmount">0.00</span>
+    </p>
+
+    <p>
+      <strong>Previous Payable:</strong>
+      ₹<span id="summaryPreviousPayable">0.00</span>
+    </p>
+
+    <p>
+      <strong>Total Payable:</strong>
+      ₹<span id="summaryTotalPayable">0.00</span>
+    </p>
+
+  </div>
+
+  <label>Enter Payment</label>
+  <input id="purchasePayment"
+    type="number"
+    min="0"
+    value="0"
+    placeholder="Enter Payment"
+    style="width:100%;padding:12px;margin:6px 0 12px;">
+
+  <label>Payment Method</label>
+  <select id="purchasePaymentMethod"
+    style="width:100%;padding:12px;margin:6px 0 12px;">
+
+    <option value="Cash">Cash</option>
+    <option value="UPI">UPI</option>
+    <option value="Bank">Bank</option>
+    <option value="Other">Other</option>
+
+  </select>
+
+  <div style="
+       padding:12px;
+       background:#f8f9fa;
+       border-radius:6px;
+       margin-bottom:12px;">
+
+    <p>
+      <strong>Balance / Advance:</strong>
+      <span id="summaryBalance">₹0.00</span>
+    </p>
+
+  </div>
+
+  <label>Note</label>
+  <textarea id="purchasePaymentNote"
+    placeholder="Optional note"
+    style="
+      width:100%;
+      min-height:80px;
+      padding:12px;
+      margin:6px 0 12px;"></textarea>
+
+  <button onclick="confirmPurchasePayment()"
+    style="
+      padding:12px 22px;
+      background:#1f6f43;
+      color:white;
+      border:0;
+      border-radius:6px;
+      margin-right:6px;">
+    OK
+  </button>
+
+  <button onclick="printPurchase()"
+    style="
+      padding:12px 22px;
+      background:#555;
+      color:white;
+      border:0;
+      border-radius:6px;">
+    Print
+  </button>
+
+</div>
+
 </section>
 
 <section id="products" class="section">
@@ -773,6 +911,71 @@ function editPurchaseItem(index) {
   renderPurchaseList();
 
   alert("Product loaded for editing. Make corrections and press Continue.");
+}
+  
+  function finishPurchase() {
+
+  if (currentPurchase.products.length === 0) {
+    alert("Please add at least one product first.");
+    return;
+  }
+
+  const supplier = currentPurchase.supplier;
+
+  let total = 0;
+
+  currentPurchase.products.forEach(item => {
+    total += item.amount;
+  });
+
+  const purId = generatePurId();
+
+  document.getElementById("summarySupplier").textContent = supplier;
+  document.getElementById("summaryPurId").textContent = purId;
+  document.getElementById("summaryProductCount").textContent =
+    currentPurchase.products.length;
+
+  document.getElementById("summaryTotal").textContent =
+    total.toFixed(2);
+
+  document.getElementById("summaryBillAmount").textContent =
+    total.toFixed(2);
+
+  document.getElementById("summaryPreviousPayable").textContent =
+    "0.00";
+
+  document.getElementById("summaryTotalPayable").textContent =
+    total.toFixed(2);
+
+  document.getElementById("purchaseDiscountPercent").value = 0;
+  document.getElementById("purchaseDiscountAmount").value = 0;
+  document.getElementById("purchasePayment").value = 0;
+  document.getElementById("purchasePaymentMethod").value = "Cash";
+  document.getElementById("purchasePaymentNote").value = "";
+
+  document.getElementById("summaryBalance").textContent =
+    "₹0.00";
+
+  document.getElementById("purchaseSummary").style.display =
+    "block";
+
+  document.getElementById("purchaseSummary").scrollIntoView({
+    behavior: "smooth"
+  });
+  }
+
+function confirmPurchasePayment() {
+
+  alert(
+    "Purchase billing is ready.\n\n" +
+    "Stock and supplier khata will be finalized in the next step."
+  );
+}
+
+
+function printPurchase() {
+
+  alert("Print feature will be connected after billing finalization.");
 }
 
     initApp();
