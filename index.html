@@ -2467,6 +2467,51 @@ function filterSuppliers() {
   renderSupplierTable(filtered);
 
 }
+
+function toggleSupplierStatus(supplierId) {
+
+  const supplier =
+    db.suppliers.find(s => s.id === supplierId);
+
+  if (!supplier) {
+    alert("Supplier not found.");
+    return;
+  }
+
+  if (supplier.status === "active") {
+
+    const reason = prompt(
+      "Enter reason for blocking this supplier:"
+    );
+
+    if (!reason || !reason.trim()) {
+      return;
+    }
+
+    supplier.status = "blocked";
+
+    supplier.blockReason =
+      reason.trim();
+
+    supplier.blockedAt =
+      new Date().toISOString();
+
+  } else {
+
+    supplier.status = "active";
+
+    supplier.blockReason = "";
+
+    supplier.blockedAt = "";
+
+  }
+
+  saveDB();
+
+  viewSuppliers();
+
+}
+
   
 
   function toggleCustomerStatus(customerId) {
