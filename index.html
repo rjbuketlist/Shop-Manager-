@@ -513,8 +513,66 @@ main{padding:15px}
 </section>
 
 <section id="customers" class="section">
+
   <h2>Customers</h2>
-  <div class="empty">Customer module will be added here.</div>
+
+  <div class="card">
+
+    <h3>Add Customer</h3>
+
+    <input id="customerName"
+      placeholder="Customer Name"
+      style="width:100%;padding:12px;margin:6px 0;">
+
+    <input id="customerMobile"
+      type="tel"
+      placeholder="Mobile Number"
+      style="width:100%;padding:12px;margin:6px 0;">
+
+    <input id="customerAddress"
+      placeholder="Address"
+      style="width:100%;padding:12px;margin:6px 0;">
+
+    <input id="customerOpeningBalance"
+      type="number"
+      min="0"
+      value="0"
+      placeholder="Opening Balance"
+      style="width:100%;padding:12px;margin:6px 0;">
+
+    <label style="display:block;margin-top:10px;">
+      Status
+    </label>
+
+    <select id="customerStatus"
+      style="width:100%;padding:12px;margin:6px 0;">
+
+      <option value="active">🟢 Active</option>
+      <option value="blocked">🔴 Red Flag / Blocked</option>
+
+    </select>
+
+    <input id="customerBlockReason"
+      placeholder="Block Reason (if blocked)"
+      style="width:100%;padding:12px;margin:6px 0;">
+
+    <button onclick="addCustomer()"
+      style="
+        padding:12px 22px;
+        background:#1f6f43;
+        color:white;
+        border:0;
+        border-radius:6px;
+        margin-top:8px;">
+      Add Customer
+    </button>
+
+  </div>
+
+  <div id="customerList"
+       style="margin-top:15px;">
+  </div>
+
 </section>
 
 <section id="suppliers" class="section">
