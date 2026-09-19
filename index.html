@@ -399,28 +399,26 @@ main{padding:15px}
 
   </div>
 
-  <label>Discount (%)</label>
-  <input id="purchaseDiscountPercent"
+  <label>Discount</label>
+
+<div style="display:flex;gap:8px;margin:6px 0 12px;">
+
+  <select id="purchaseDiscountType"
+    style="width:120px;padding:12px;">
+
+    <option value="percent">%</option>
+    <option value="amount">₹</option>
+
+  </select>
+
+  <input id="purchaseDiscountValue"
     type="number"
     min="0"
     value="0"
-    placeholder="0"
-    style="width:100%;padding:12px;margin:6px 0 12px;">
+    placeholder="Discount"
+    style="flex:1;padding:12px;">
 
-  <label>Discount (₹)</label>
-  <input id="purchaseDiscountAmount"
-    type="number"
-    min="0"
-    value="0"
-    placeholder="0"
-    style="width:100%;padding:12px;margin:6px 0 12px;">
-
-  <div style="
-       background:#f1f3f5;
-       padding:12px;
-       border-radius:6px;
-       margin-bottom:12px;">
-
+</div>
     <p>
       <strong>Current Bill Amount:</strong>
       ₹<span id="summaryBillAmount">0.00</span>
@@ -947,9 +945,13 @@ function editPurchaseItem(index) {
   document.getElementById("summaryTotalPayable").textContent =
     total.toFixed(2);
 
-  document.getElementById("purchaseDiscountPercent").value = 0;
-  document.getElementById("purchaseDiscountAmount").value = 0;
+  document.getElementById("purchaseDiscountType").value = "percent";
+document.getElementById("purchaseDiscountValue").value = 0;
+  document.getElementById("purchaseDiscountType").onchange = updatePurchaseDiscount;
+document.getElementById("purchaseDiscountValue").oninput = updatePurchaseDiscount;
   document.getElementById("purchasePayment").value = 0;
+  document.getElementById("purchasePayment").oninput =
+  updatePurchaseBalance;
   document.getElementById("purchasePaymentMethod").value = "Cash";
   document.getElementById("purchasePaymentNote").value = "";
 
@@ -962,6 +964,78 @@ function editPurchaseItem(index) {
   document.getElementById("purchaseSummary").scrollIntoView({
     behavior: "smooth"
   });
+  }
+
+  function updatePurchaseDiscount() {
+
+  const total = Number(
+    document.getElementById("summaryTotal").textContent
+  ) || 0;
+
+  const type = document.getElementById("purchaseDiscountType").value;
+
+  const value = Number(
+    document.getElementById("purchaseDiscountValue").value
+  ) || 0;
+
+  let discount = 0;
+
+  if (type === "percent") {
+    discount = total * value / 100;
+  } else {
+    discount = value;
+  }
+
+  if (discount > total) {
+    discount = total;
+  }
+
+  const billAmount = total - discount;
+
+  document.getElementById("summaryBillAmount").textContent =
+    billAmount.toFixed(2);
+
+  document.getElementById("summaryTotalPayable").textContent =
+    billAmount.toFixed(2);
+
+  updatePurchaseBalance();
+  }
+
+  function updatePurchaseBalance() {
+
+  const totalPayable = Number(
+    document.getElementById("summaryTotalPayable").textContent
+  ) || 0;
+
+  const payment = Number(
+    document.getElementById("purchasePayment").value
+  ) || 0;
+
+  const difference = payment - totalPayable;
+
+  const balanceBox =
+    document.getElementById("summaryBalance");
+
+  if (difference < 0) {
+
+    balanceBox.textContent =
+      "-₹" + Math.abs(difference).toFixed(2);
+
+    balanceBox.style.color = "red";
+
+  } else if (difference > 0) {
+
+    balanceBox.textContent =
+      "+₹" + difference.toFixed(2);
+
+    balanceBox.style.color = "green";
+
+  } else {
+
+    balanceBox.textContent = "₹0.00";
+    balanceBox.style.color = "green";
+
+  }
   }
 
 function confirmPurchasePayment() {
