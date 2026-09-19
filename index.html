@@ -533,13 +533,6 @@ main{padding:15px}
       placeholder="Enter Customer Address"
       style="width:100%;padding:12px;margin:6px 0;">
 
-    <input id="customerPincode"
-      type="text"
-      inputmode="numeric"
-      maxlength="6"
-      placeholder="Enter PIN Code (6 digits)"
-      style="width:100%;padding:12px;margin:6px 0;">
-
     <label style="display:block;margin-top:10px;">
       Opening Balance
     </label>
@@ -1129,9 +1122,6 @@ function addCustomer() {
   const address =
     document.getElementById("customerAddress").value.trim();
 
-  const pincode =
-    document.getElementById("customerPincode").value.trim();
-
   const openingBalance =
     Number(document.getElementById("customerOpeningBalance").value) || 0;
 
@@ -1142,11 +1132,6 @@ function addCustomer() {
 
   if (!mobile) {
     alert("Please enter Mobile Number");
-    return;
-  }
-
-  if (!pincode || pincode.length !== 6) {
-    alert("Please enter valid 6 digit PIN Code");
     return;
   }
 
@@ -1163,8 +1148,6 @@ function addCustomer() {
     mobile: mobile,
 
     address: address,
-
-    pincode: pincode,
 
     openingBalance: openingBalance,
 
@@ -1190,7 +1173,6 @@ function addCustomer() {
   document.getElementById("customerName").value = "";
   document.getElementById("customerMobile").value = "";
   document.getElementById("customerAddress").value = "";
-  document.getElementById("customerPincode").value = "";
   document.getElementById("customerOpeningBalance").value = "0";
 
 }
@@ -1635,20 +1617,6 @@ function viewCustomer(customerId) {
 
         </div>
 
-
-        <div style="
-          background:#f8f9fa;
-          padding:12px;
-          border-radius:8px;">
-
-          <div style="font-size:12px;color:#777;">
-            PIN Code
-          </div>
-
-          <strong>
-            ${customer.pincode || "-"}
-          </strong>
-
         </div>
 
       </div>
@@ -1843,9 +1811,6 @@ function viewCustomer(customerId) {
   document.getElementById("customerAddress").value =
     customer.address || "";
 
-  document.getElementById("customerPincode").value =
-    customer.pincode || "";
-
   document.getElementById("customerOpeningBalance").value =
     customer.openingBalance || 0;
 
@@ -1942,9 +1907,6 @@ function saveCustomerEdit(customerId) {
   const address =
     document.getElementById("customerAddress").value.trim();
 
-  const pincode =
-    document.getElementById("customerPincode").value.trim();
-
   if (!name) {
     alert("Please enter Customer Name");
     return;
@@ -1955,17 +1917,11 @@ function saveCustomerEdit(customerId) {
     return;
   }
 
-  if (!pincode || pincode.length !== 6) {
-    alert("Please enter valid 6 digit PIN Code");
-    return;
-  }
-
   /* Only profile details are updated */
 
   customer.name = name;
   customer.mobile = mobile;
   customer.address = address;
-  customer.pincode = pincode;
 
   /* Save existing customer data safely */
 
@@ -2008,7 +1964,6 @@ function saveCustomerEdit(customerId) {
   document.getElementById("customerName").value = "";
   document.getElementById("customerMobile").value = "";
   document.getElementById("customerAddress").value = "";
-  document.getElementById("customerPincode").value = "";
   document.getElementById("customerOpeningBalance").value = "0";
 
   /* Refresh customer list */
