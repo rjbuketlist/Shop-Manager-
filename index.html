@@ -639,10 +639,374 @@ main{padding:15px}
 
 
   
-
 <section id="payments" class="section">
+
   <h2>Payments</h2>
-  <div class="empty">Payment module will be added here.</div>
+
+  <div class="card">
+
+    <h3>Payment Entry</h3>
+
+    <!-- PAYMENT TYPE -->
+
+    <label>Payment Type</label>
+
+    <select id="paymentType"
+      onchange="changePaymentType()"
+      style="
+        width:100%;
+        padding:12px;
+        margin:6px 0 12px;">
+
+      <option value="cashCustomer">
+        Cash Customer
+      </option>
+
+      <option value="customerPayment">
+        Customer Payment
+      </option>
+
+      <option value="supplierPayment">
+        Supplier Payment
+      </option>
+
+    </select>
+
+
+    <!-- CUSTOMER -->
+
+    <div id="paymentCustomerBox"
+         style="display:none;">
+
+      <label>Select Customer</label>
+
+      <select id="paymentCustomer"
+        onchange="loadCustomerPayment()"
+        style="
+          width:100%;
+          padding:12px;
+          margin:6px 0 12px;">
+
+        <option value="">
+          Select Customer
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <!-- SUPPLIER -->
+
+    <div id="paymentSupplierBox"
+         style="display:none;">
+
+      <label>Select Supplier</label>
+
+      <select id="paymentSupplier"
+        onchange="loadSupplierPayment()"
+        style="
+          width:100%;
+          padding:12px;
+          margin:6px 0 12px;">
+
+        <option value="">
+          Select Supplier
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <!-- BILL / REFERENCE -->
+
+    <label>Bill / Reference No.</label>
+
+    <input id="paymentReference"
+      placeholder="Auto / Enter Reference"
+      readonly
+      style="
+        width:100%;
+        padding:12px;
+        margin:6px 0 12px;
+        background:#f1f3f5;">
+
+
+    <!-- PREVIOUS BALANCE -->
+
+    <label>Previous Balance</label>
+
+    <div id="paymentPreviousBalance"
+      style="
+        width:100%;
+        padding:12px;
+        margin:6px 0 12px;
+        background:#f1f3f5;
+        border:1px solid #ddd;
+        border-radius:6px;
+        font-weight:bold;">
+
+      ₹0.00
+
+    </div>
+
+
+    <!-- CURRENT BILL -->
+
+    <label>Current Bill Amount</label>
+
+    <div id="paymentCurrentBill"
+      style="
+        width:100%;
+        padding:12px;
+        margin:6px 0 12px;
+        background:#f1f3f5;
+        border:1px solid #ddd;
+        border-radius:6px;
+        font-weight:bold;">
+
+      ₹0.00
+
+    </div>
+
+
+    <!-- TOTAL DUE -->
+
+    <label>Total Payable / Due</label>
+
+    <div id="paymentTotalDue"
+      style="
+        width:100%;
+        padding:12px;
+        margin:6px 0 12px;
+        background:#f1f3f5;
+        border:1px solid #ddd;
+        border-radius:6px;
+        font-weight:bold;">
+
+      ₹0.00
+
+    </div>
+
+
+    <!-- PAYMENT AMOUNT -->
+
+    <label>Payment Amount</label>
+
+    <input id="paymentAmount"
+      type="number"
+      min="0"
+      step="0.01"
+      placeholder="Enter Payment Amount"
+      oninput="calculatePaymentBalance()"
+      style="
+        width:100%;
+        padding:12px;
+        margin:6px 0 12px;">
+
+
+    <!-- REMAINING BALANCE -->
+
+    <label>Remaining Balance</label>
+
+    <div id="paymentRemainingBalance"
+      style="
+        width:100%;
+        padding:12px;
+        margin:6px 0 12px;
+        background:#f1f3f5;
+        border:1px solid #ddd;
+        border-radius:6px;
+        font-weight:bold;">
+
+      ₹0.00
+
+    </div>
+
+
+    <!-- PAYMENT MODE -->
+
+    <label>Payment Mode</label>
+
+    <select id="paymentMode"
+      style="
+        width:100%;
+        padding:12px;
+        margin:6px 0 12px;">
+
+      <option value="Cash">
+        Cash
+      </option>
+
+      <option value="UPI">
+        UPI
+      </option>
+
+      <option value="Bank">
+        Bank
+      </option>
+
+      <option value="Other">
+        Other
+      </option>
+
+    </select>
+
+
+    <!-- NOTE -->
+
+    <label>Note</label>
+
+    <textarea id="paymentNote"
+      placeholder="Optional note"
+      style="
+        width:100%;
+        min-height:80px;
+        padding:12px;
+        margin:6px 0 12px;
+        resize:vertical;">
+    </textarea>
+
+
+    <!-- ACTIONS -->
+
+    <div style="
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:10px;">
+
+      <button onclick="savePayment()"
+        style="
+          padding:12px 22px;
+          background:#1f6f43;
+          color:white;
+          border:0;
+          border-radius:6px;
+          font-weight:bold;">
+        OK
+      </button>
+
+      <button onclick="printPayment()"
+        style="
+          padding:12px 22px;
+          background:#555;
+          color:white;
+          border:0;
+          border-radius:6px;
+          font-weight:bold;">
+        🖨️ Print
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- PAYMENT HISTORY -->
+
+  <div class="card"
+       style="margin-top:15px;">
+
+    <h3>Payment History</h3>
+
+    <div style="
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;">
+
+      <input id="paymentHistorySearch"
+        placeholder="Search Transaction / Bill / Name"
+        style="
+          flex:1;
+          min-width:200px;
+          padding:12px;">
+
+      <select id="paymentHistoryFilter"
+        style="
+          padding:12px;">
+
+        <option value="all">
+          All Payments
+        </option>
+
+        <option value="cashCustomer">
+          Cash Customer
+        </option>
+
+        <option value="customerPayment">
+          Customer Payment
+        </option>
+
+        <option value="supplierPayment">
+          Supplier Payment
+        </option>
+
+      </select>
+
+    </div>
+
+    <div id="paymentHistoryBox"
+         style="margin-top:15px;">
+
+      <div class="empty">
+        No payment transactions yet.
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- PAYMENT SUMMARY -->
+
+  <div class="card"
+       style="margin-top:15px;">
+
+    <h3>Payment Summary</h3>
+
+    <div class="cards">
+
+      <div class="card">
+        <h3>Total Payment</h3>
+        <strong id="summaryTotalPayment">
+          ₹0.00
+        </strong>
+      </div>
+
+      <div class="card">
+        <h3>Cash</h3>
+        <strong id="summaryCash">
+          ₹0.00
+        </strong>
+      </div>
+
+      <div class="card">
+        <h3>UPI</h3>
+        <strong id="summaryUPI">
+          ₹0.00
+        </strong>
+      </div>
+
+      <div class="card">
+        <h3>Bank</h3>
+        <strong id="summaryBank">
+          ₹0.00
+        </strong>
+      </div>
+
+      <div class="card">
+        <h3>Other</h3>
+        <strong id="summaryOther">
+          ₹0.00
+        </strong>
+      </div>
+
+    </div>
+
+  </div>
+
 </section>
 
 </main>
