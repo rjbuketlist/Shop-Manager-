@@ -2343,7 +2343,107 @@ function editSupplier(supplierId) {
 
 }
 
-  
+  function saveSupplierEdit(supplierId) {
+
+  const supplier =
+    db.suppliers.find(s => s.id === supplierId);
+
+  if (!supplier) {
+    alert("Supplier not found.");
+    return;
+  }
+
+  const name =
+    document.getElementById("supplierName").value.trim();
+
+  const mobile =
+    document.getElementById("supplierMobile").value.trim();
+
+  const address =
+    document.getElementById("supplierAddress").value.trim();
+
+  if (!name) {
+    alert("Please enter Supplier Name");
+    return;
+  }
+
+  if (!mobile) {
+    alert("Please enter Mobile Number");
+    return;
+  }
+
+  /* Only profile details are updated */
+
+  supplier.name =
+    name;
+
+  supplier.mobile =
+    mobile;
+
+  supplier.address =
+    address;
+
+  /* Save existing accounting data safely */
+
+  saveDB();
+
+  alert(
+    "Supplier details updated successfully!\n\n" +
+    "Supplier ID: " +
+    supplier.id
+  );
+
+  /* Reset edit mode */
+
+  document
+    .getElementById("supplierOpeningPayable")
+    .disabled = false;
+
+  const buttons =
+    document.querySelectorAll("#suppliers button");
+
+  buttons.forEach(button => {
+
+    if (
+      button.textContent.trim() ===
+      "Add Supplier"
+    ) {
+
+      button.disabled = false;
+
+      button.style.opacity = "1";
+
+      button.style.cursor = "pointer";
+
+    }
+
+  });
+
+  const okButton =
+    document.getElementById("supplierEditOK");
+
+  if (okButton) {
+    okButton.remove();
+  }
+
+  window.editingSupplierId =
+    null;
+
+  /* Clear form */
+
+  document.getElementById("supplierName").value = "";
+
+  document.getElementById("supplierMobile").value = "";
+
+  document.getElementById("supplierAddress").value = "";
+
+  document.getElementById("supplierOpeningPayable").value = "0";
+
+  /* Refresh supplier list */
+
+  viewSuppliers();
+
+  }
 
 function renderSupplierTable(list = db.suppliers) {
 
