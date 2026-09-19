@@ -1824,6 +1824,104 @@ function viewCustomer(customerId) {
   });
 }
 
+  function editCustomer(customerId) {
+
+  const customer =
+    db.customers.find(c => c.id === customerId);
+
+  if (!customer) {
+    alert("Customer not found.");
+    return;
+  }
+
+  document.getElementById("customerName").value =
+    customer.name || "";
+
+  document.getElementById("customerMobile").value =
+    customer.mobile || "";
+
+  document.getElementById("customerAddress").value =
+    customer.address || "";
+
+  document.getElementById("customerPincode").value =
+    customer.pincode || "";
+
+  document.getElementById("customerOpeningBalance").value =
+    customer.openingBalance || 0;
+
+  /* Opening Balance inactive */
+  document.getElementById("customerOpeningBalance").disabled =
+    true;
+
+  /* Add Customer button inactive */
+  const buttons =
+    document.querySelectorAll("#customers button");
+
+  buttons.forEach(button => {
+
+    if (button.textContent.trim() === "Add Customer") {
+      button.disabled = true;
+      button.style.opacity = "0.5";
+      button.style.cursor = "not-allowed";
+    }
+
+  });
+
+  /* Create / show OK button */
+
+  let okButton =
+    document.getElementById("customerEditOK");
+
+  if (!okButton) {
+
+    okButton = document.createElement("button");
+
+    okButton.id = "customerEditOK";
+
+    okButton.textContent = "OK";
+
+    okButton.style.cssText = `
+      padding:12px 22px;
+      background:#1f6f43;
+      color:white;
+      border:0;
+      border-radius:6px;
+      margin-top:8px;
+      margin-left:5px;
+      font-weight:bold;
+    `;
+
+    okButton.onclick = function() {
+      saveCustomerEdit(customerId);
+    };
+
+    document
+      .getElementById("customerOpeningBalance")
+      .parentNode
+      .appendChild(okButton);
+
+  } else {
+
+    okButton.style.display = "inline-block";
+
+  }
+
+  /* Store edit customer ID */
+
+  window.editingCustomerId = customerId;
+
+  document
+    .getElementById("customerName")
+    .scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
+
+  alert(
+    "Customer data loaded for editing.\n\n" +
+    "Edit Name, Mobile, Address or PIN Code and press OK."
+  );
+  }
 
   function toggleCustomerStatus(customerId) {
 
