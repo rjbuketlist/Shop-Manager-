@@ -2412,6 +2412,63 @@ function renderSupplierTable(list = db.suppliers) {
 
 }
 
+function filterSuppliers() {
+
+  const search =
+    (document.getElementById("supplierSearch")?.value || "")
+      .trim()
+      .toLowerCase();
+
+  const statusFilter =
+    document.getElementById("supplierStatusFilter")?.value || "all";
+
+  const balanceFilter =
+    document.getElementById("supplierBalanceFilter")?.value || "all";
+
+  const filtered =
+    db.suppliers.filter(supplier => {
+
+      const balance =
+        Number(supplier.balance || 0);
+
+      const searchMatch =
+        !search ||
+        supplier.id.toLowerCase().includes(search) ||
+        supplier.name.toLowerCase().includes(search) ||
+        supplier.mobile.toLowerCase().includes(search) ||
+        String(balance).includes(search);
+
+      const statusMatch =
+        statusFilter === "all" ||
+        supplier.status === statusFilter;
+
+      let balanceMatch = true;
+
+      if (balanceFilter === "payable") {
+        balanceMatch = balance > 0;
+      }
+
+      if (balanceFilter === "zero") {
+        balanceMatch = balance === 0;
+      }
+
+      if (balanceFilter === "advance") {
+        balanceMatch = balance < 0;
+      }
+
+      return (
+        searchMatch &&
+        statusMatch &&
+        balanceMatch
+      );
+
+    });
+
+  renderSupplierTable(filtered);
+
+}
+  
+
   function toggleCustomerStatus(customerId) {
 
   const customer =
