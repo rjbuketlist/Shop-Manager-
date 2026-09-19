@@ -1195,6 +1195,182 @@ function addCustomer() {
 
 }
 
+  function viewCustomers() {
+
+  const box = document.getElementById("customerList");
+
+  if (db.customers.length === 0) {
+
+    box.innerHTML = `
+      <div class="empty">
+        No customers added yet.
+      </div>
+    `;
+
+    return;
+  }
+
+  let html = `
+    <div class="card">
+
+      <h3>Customer List</h3>
+
+      <div style="overflow-x:auto;">
+
+        <table style="
+          width:100%;
+          border-collapse:collapse;
+          font-size:13px;">
+
+          <tr style="background:#e9ecef;">
+
+            <th style="padding:8px;border:1px solid #ddd;">
+              ID
+            </th>
+
+            <th style="padding:8px;border:1px solid #ddd;">
+              Customer
+            </th>
+
+            <th style="padding:8px;border:1px solid #ddd;">
+              Mobile
+            </th>
+
+            <th style="padding:8px;border:1px solid #ddd;">
+              Address
+            </th>
+
+            <th style="padding:8px;border:1px solid #ddd;">
+              PIN
+            </th>
+
+            <th style="padding:8px;border:1px solid #ddd;">
+              Opening Balance
+            </th>
+
+            <th style="padding:8px;border:1px solid #ddd;">
+              Status
+            </th>
+
+            <th style="padding:8px;border:1px solid #ddd;">
+              Action
+            </th>
+
+          </tr>
+  `;
+
+  db.customers.forEach(customer => {
+
+    const isBlocked =
+      customer.status === "blocked";
+
+    html += `
+      <tr>
+
+        <td style="padding:8px;border:1px solid #ddd;">
+          ${customer.id}
+        </td>
+
+        <td style="padding:8px;border:1px solid #ddd;">
+          ${customer.name}
+        </td>
+
+        <td style="padding:8px;border:1px solid #ddd;">
+          ${customer.mobile}
+        </td>
+
+        <td style="padding:8px;border:1px solid #ddd;">
+          ${customer.address}
+        </td>
+
+        <td style="padding:8px;border:1px solid #ddd;">
+          ${customer.pincode}
+        </td>
+
+        <td style="padding:8px;border:1px solid #ddd;">
+          ₹${Number(customer.openingBalance).toFixed(2)}
+        </td>
+
+        <td style="
+          padding:8px;
+          border:1px solid #ddd;
+          font-weight:bold;
+          color:${isBlocked ? "red" : "green"};">
+
+          ${isBlocked ? "🔴 Blocked" : "🟢 Active"}
+
+        </td>
+
+        <td style="padding:8px;border:1px solid #ddd;">
+
+          <button
+            onclick="toggleCustomerStatus('${customer.id}')"
+            style="
+              padding:6px 10px;
+              border:0;
+              border-radius:5px;
+              background:${isBlocked ? "#1f6f43" : "#c62828"};
+              color:white;">
+
+            ${isBlocked ? "Unblock" : "Block"}
+
+          </button>
+
+        </td>
+
+      </tr>
+    `;
+  });
+
+  html += `
+        </table>
+
+      </div>
+
+    </div>
+  `;
+
+  box.innerHTML = html;
+  }
+
+  function toggleCustomerStatus(customerId) {
+
+  const customer =
+    db.customers.find(c => c.id === customerId);
+
+  if (!customer) {
+    alert("Customer not found.");
+    return;
+  }
+
+  if (customer.status === "active") {
+
+    const reason = prompt(
+      "Enter reason for blocking this customer:"
+    );
+
+    if (!reason || !reason.trim()) {
+      return;
+    }
+
+    customer.status = "blocked";
+    customer.blockReason = reason.trim();
+    customer.blockedAt =
+      new Date().toISOString();
+
+  } else {
+
+    customer.status = "active";
+    customer.blockReason = "";
+    customer.blockedAt = "";
+
+  }
+
+  saveDB();
+
+  viewCustomers();
+  }
+
   
  initApp();
   
