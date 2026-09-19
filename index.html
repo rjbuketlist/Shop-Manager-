@@ -1526,124 +1526,293 @@ function viewCustomer(customerId) {
 
   box.style.display = "block";
 
+  const balance =
+    Number(customer.balance || 0);
+
+  let balanceText = "₹0.00";
+  let balanceColor = "#555";
+
+  if (balance > 0) {
+    balanceText = "-₹" + balance.toFixed(2);
+    balanceColor = "red";
+  }
+
+  if (balance < 0) {
+    balanceText = "+₹" + Math.abs(balance).toFixed(2);
+    balanceColor = "#1f6f43";
+  }
+
   box.innerHTML = `
 
-    <div class="card">
+    <div class="card"
+      style="
+        padding:18px;
+        border-radius:12px;">
 
-      <h3>Customer Summary</h3>
-
-      <p>
-        <strong>Customer ID:</strong>
-        ${customer.id}
-      </p>
-
-      <p>
-        <strong>Name:</strong>
-        ${customer.name}
-      </p>
-
-      <p>
-        <strong>Mobile:</strong>
-        ${customer.mobile}
-      </p>
-
-      <p>
-        <strong>Address:</strong>
-        ${customer.address || "-"}
-      </p>
-
-      <p>
-        <strong>PIN Code:</strong>
-        ${customer.pincode || "-"}
-      </p>
-
-      <p>
-        <strong>Opening Balance:</strong>
-        ₹${Number(customer.openingBalance || 0).toFixed(2)}
-      </p>
-
-      <p>
-        <strong>Status:</strong>
-        ${
-          customer.status === "blocked"
-          ? "🔴 Blocked"
-          : "🟢 Active"
-        }
-      </p>
-
-      ${
-        customer.status === "blocked"
-        ? `
-          <p style="color:red;">
-            <strong>Block Reason:</strong>
-            ${customer.blockReason || "-"}
-          </p>
-        `
-        : ""
-      }
-
-      <hr>
-
-      <h3>Transaction History</h3>
+      <!-- HEADER -->
 
       <div style="
-        overflow-x:auto;">
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:10px;
+        flex-wrap:wrap;
+        margin-bottom:15px;">
 
-        <table style="
-          width:100%;
-          border-collapse:collapse;
-          font-size:13px;">
+        <div>
 
-          <tr style="background:#e9ecef;">
+          <h2 style="margin:0;">
+            Customer Details
+          </h2>
 
-            <th style="padding:8px;border:1px solid #ddd;">
-              Date
-            </th>
+          <div style="
+            color:#777;
+            font-size:13px;
+            margin-top:4px;">
 
-            <th style="padding:8px;border:1px solid #ddd;">
-              Type
-            </th>
+            Customer ID: ${customer.id}
 
-            <th style="padding:8px;border:1px solid #ddd;">
-              Bill ID
-            </th>
+          </div>
 
-            <th style="padding:8px;border:1px solid #ddd;">
-              Amount
-            </th>
-
-            <th style="padding:8px;border:1px solid #ddd;">
-              Balance
-            </th>
-
-          </tr>
-
-          <tr>
-            <td colspan="5"
-              style="
-                padding:15px;
-                text-align:center;
-                color:#777;
-                border:1px solid #ddd;">
-              Transaction history will appear here.
-            </td>
-          </tr>
-
-        </table>
+        </div>
 
       </div>
 
-      <div style="margin-top:12px;">
 
-        <select id="customerHistoryFilter"
-          style="padding:10px;">
+      <!-- CUSTOMER INFORMATION -->
 
-          <option value="all">All Transactions</option>
-          <option value="date">Date Wise</option>
-          <option value="month">Month Wise</option>
+      <div style="
+        display:grid;
+        grid-template-columns:
+        repeat(auto-fit,minmax(180px,1fr));
+        gap:10px;
+        margin-bottom:15px;">
 
-        </select>
+        <div style="
+          background:#f8f9fa;
+          padding:12px;
+          border-radius:8px;">
 
+          <div style="font-size:12px;color:#777;">
+            Customer Name
+          </div>
+
+          <strong>
+            ${customer.name}
+          </strong>
+
+        </div>
+
+
+        <div style="
+          background:#f8f9fa;
+          padding:12px;
+          border-radius:8px;">
+
+          <div style="font-size:12px;color:#777;">
+            Mobile
+          </div>
+
+          <strong>
+            ${customer.mobile || "-"}
+          </strong>
+
+        </div>
+
+
+        <div style="
+          background:#f8f9fa;
+          padding:12px;
+          border-radius:8px;">
+
+          <div style="font-size:12px;color:#777;">
+            Address
+          </div>
+
+          <strong>
+            ${customer.address || "-"}
+          </strong>
+
+        </div>
+
+
+        <div style="
+          background:#f8f9fa;
+          padding:12px;
+          border-radius:8px;">
+
+          <div style="font-size:12px;color:#777;">
+            PIN Code
+          </div>
+
+          <strong>
+            ${customer.pincode || "-"}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <!-- CURRENT BALANCE -->
+
+      <div style="
+        background:#f8f9fa;
+        border:1px solid #e1e1e1;
+        border-radius:10px;
+        padding:15px;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:12px;
+        flex-wrap:wrap;
+        margin-bottom:20px;">
+
+        <div>
+
+          <div style="
+            font-size:13px;
+            color:#777;
+            margin-bottom:4px;">
+
+            Current Total Balance / Advance
+
+          </div>
+
+          <div style="
+            font-size:24px;
+            font-weight:bold;
+            color:${balanceColor};">
+
+            ${balanceText}
+
+          </div>
+
+        </div>
+
+
+        <button
+          onclick="openCustomerPayment('${customer.id}')"
+          style="
+            padding:11px 20px;
+            background:#1f6f43;
+            color:white;
+            border:0;
+            border-radius:6px;
+            font-weight:bold;
+            cursor:pointer;">
+
+          Pay / Receive
+
+        </button>
+
+      </div>
+
+
+      <!-- TRANSACTION HISTORY -->
+
+      <div>
+
+        <div style="
+          display:flex;
+          justify-content:space-between;
+          align-items:center;
+          gap:8px;
+          flex-wrap:wrap;
+          margin-bottom:10px;">
+
+          <h3 style="margin:0;">
+            Transaction History
+          </h3>
+
+          <select
+            id="customerHistoryFilter"
+            style="
+              padding:9px;
+              border:1px solid #ddd;
+              border-radius:6px;">
+
+            <option value="all">
+              All Transactions
+            </option>
+
+            <option value="date">
+              Date Wise
+            </option>
+
+            <option value="month">
+              Month Wise
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div style="
+          overflow-x:auto;
+          border:1px solid #ddd;
+          border-radius:8px;">
+
+          <table style="
+            width:100%;
+            border-collapse:collapse;
+            font-size:13px;">
+
+            <tr style="background:#e9ecef;">
+
+              <th style="padding:10px;border:1px solid #ddd;">
+                Date
+              </th>
+
+              <th style="padding:10px;border:1px solid #ddd;">
+                Bill ID
+              </th>
+
+              <th style="padding:10px;border:1px solid #ddd;">
+                Bill Amount
+              </th>
+
+              <th style="padding:10px;border:1px solid #ddd;">
+                Paid
+              </th>
+
+              <th style="padding:10px;border:1px solid #ddd;">
+                Balance
+              </th>
+
+            </tr>
+
+
+            <tr>
+
+              <td colspan="5"
+                style="
+                  padding:20px;
+                  text-align:center;
+                  color:#777;
+                  border:1px solid #ddd;">
+
+                No transaction history yet.
+
+              </td>
+
+            </tr>
+
+          </table>
+
+        </div>
+
+      </div>
+
+
+      <!-- PAYMENT PANEL -->
+
+      <div
+        id="customerPaymentBox"
+        style="
+          display:none;
+          margin-top:15px;">
       </div>
 
     </div>
@@ -1654,7 +1823,6 @@ function viewCustomer(customerId) {
     behavior:"smooth"
   });
 }
-
 
 
   function toggleCustomerStatus(customerId) {
