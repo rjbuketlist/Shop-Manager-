@@ -2512,6 +2512,303 @@ function toggleSupplierStatus(supplierId) {
 
 }
 
+function viewSupplier(supplierId) {
+
+  const supplier =
+    db.suppliers.find(s => s.id === supplierId);
+
+  if (!supplier) {
+    alert("Supplier not found.");
+    return;
+  }
+
+  const box =
+    document.getElementById("supplierList");
+
+  const balance =
+    Number(supplier.balance || 0);
+
+  let balanceText = "₹0.00";
+  let balanceColor = "#555";
+
+  if (balance > 0) {
+    balanceText =
+      "+₹" + balance.toFixed(2);
+    balanceColor = "red";
+  }
+
+  if (balance < 0) {
+    balanceText =
+      "-₹" + Math.abs(balance).toFixed(2);
+    balanceColor = "#1f6f43";
+  }
+
+  box.innerHTML = `
+
+    <div class="card"
+      style="
+        padding:18px;
+        border-radius:12px;">
+
+      <!-- HEADER -->
+
+      <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:10px;
+        flex-wrap:wrap;
+        margin-bottom:15px;">
+
+        <div>
+
+          <h2 style="margin:0;">
+            Supplier Details
+          </h2>
+
+          <div style="
+            color:#777;
+            font-size:13px;
+            margin-top:4px;">
+
+            Supplier ID: ${supplier.id}
+
+          </div>
+
+        </div>
+
+        <button
+          onclick="openSupplierPayment('${supplier.id}')"
+          style="
+            padding:10px 15px;
+            background:#1f6f43;
+            color:white;
+            border:0;
+            border-radius:6px;
+            font-weight:bold;">
+
+          💰 Pay / Receive
+
+        </button>
+
+      </div>
+
+
+      <!-- SUPPLIER INFORMATION -->
+
+      <div style="
+        display:grid;
+        grid-template-columns:
+        repeat(auto-fit,minmax(180px,1fr));
+        gap:10px;
+        margin-bottom:15px;">
+
+        <div style="
+          background:#f8f9fa;
+          padding:12px;
+          border-radius:8px;">
+
+          <div style="
+            font-size:12px;
+            color:#777;">
+
+            Supplier Name
+
+          </div>
+
+          <strong>
+            ${supplier.name}
+          </strong>
+
+        </div>
+
+
+        <div style="
+          background:#f8f9fa;
+          padding:12px;
+          border-radius:8px;">
+
+          <div style="
+            font-size:12px;
+            color:#777;">
+
+            Mobile
+
+          </div>
+
+          <strong>
+            ${supplier.mobile}
+          </strong>
+
+        </div>
+
+
+        <div style="
+          background:#f8f9fa;
+          padding:12px;
+          border-radius:8px;">
+
+          <div style="
+            font-size:12px;
+            color:#777;">
+
+            Address
+
+          </div>
+
+          <strong>
+            ${supplier.address || "-"}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <!-- BALANCE SUMMARY -->
+
+      <div style="
+        background:#f8f9fa;
+        padding:15px;
+        border-radius:10px;
+        margin-bottom:15px;
+        text-align:center;">
+
+        <div style="
+          font-size:13px;
+          color:#777;">
+
+          Current Payable / Advance
+
+        </div>
+
+        <div style="
+          font-size:28px;
+          font-weight:bold;
+          color:${balanceColor};
+          margin-top:5px;">
+
+          ${balanceText}
+
+        </div>
+
+        <div style="
+          font-size:12px;
+          color:#777;
+          margin-top:5px;">
+
+          +₹ = Payable &nbsp; | &nbsp;
+          -₹ = Advance
+
+        </div>
+
+      </div>
+
+
+      <!-- SUPPLIER KHATA -->
+
+      <h3>
+        Supplier Transaction History
+      </h3>
+
+      <div style="
+        overflow-x:auto;
+        margin-top:10px;">
+
+        <table style="
+          width:100%;
+          border-collapse:collapse;
+          font-size:13px;">
+
+          <tr style="background:#e9ecef;">
+
+            <th style="padding:8px;border:1px solid #ddd;">
+              Date
+            </th>
+
+            <th style="padding:8px;border:1px solid #ddd;">
+              Bill ID
+            </th>
+
+            <th style="padding:8px;border:1px solid #ddd;">
+              Bill Amount
+            </th>
+
+            <th style="padding:8px;border:1px solid #ddd;">
+              Paid
+            </th>
+
+            <th style="padding:8px;border:1px solid #ddd;">
+              Balance
+            </th>
+
+          </tr>
+
+          <tr>
+
+            <td colspan="5"
+              style="
+                padding:20px;
+                text-align:center;
+                border:1px solid #ddd;
+                color:#777;">
+
+              No transactions yet.
+
+            </td>
+
+          </tr>
+
+        </table>
+
+      </div>
+
+
+      <!-- ACTIONS -->
+
+      <div style="
+        display:flex;
+        gap:8px;
+        flex-wrap:wrap;
+        margin-top:18px;
+        padding-top:15px;
+        border-top:1px solid #ddd;">
+
+        <button
+          onclick="printSupplierDetails('${supplier.id}')"
+          style="
+            padding:11px 20px;
+            background:#555;
+            color:white;
+            border:0;
+            border-radius:6px;
+            font-weight:bold;">
+
+          🖨️ Print
+
+        </button>
+
+        <button
+          onclick="viewSuppliers()"
+          style="
+            padding:11px 20px;
+            background:#1f6f43;
+            color:white;
+            border:0;
+            border-radius:6px;
+            font-weight:bold;">
+
+          OK
+
+        </button>
+
+      </div>
+
+    </div>
+
+  `;
+
+}
   
 
   function toggleCustomerStatus(customerId) {
