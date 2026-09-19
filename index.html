@@ -1773,6 +1773,41 @@ function viewCustomer(customerId) {
 
       </div>
 
+<!-- CUSTOMER DETAILS ACTIONS -->
+
+<div style="
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:18px;
+  padding-top:15px;
+  border-top:1px solid #ddd;">
+
+  <button
+    onclick="printCustomerDetails('${customer.id}')"
+    style="
+      padding:11px 20px;
+      background:#555;
+      color:white;
+      border:0;
+      border-radius:6px;
+      font-weight:bold;">
+    🖨️ Print
+  </button>
+
+  <button
+    onclick="closeCustomerDetails()"
+    style="
+      padding:11px 20px;
+      background:#1f6f43;
+      color:white;
+      border:0;
+      border-radius:6px;
+      font-weight:bold;">
+    OK
+  </button>
+
+</div>
 
       <!-- PAYMENT PANEL -->
 
@@ -1791,6 +1826,25 @@ function viewCustomer(customerId) {
     behavior:"smooth"
   });
 }
+
+
+function closeCustomerDetails() {
+
+  const box =
+    document.getElementById("customerDetailsBox");
+
+  box.style.display = "none";
+
+}
+
+function printCustomerDetails(customerId) {
+
+  alert(
+    "Customer Details Print feature will be connected next."
+  );
+
+}
+
 
   function editCustomer(customerId) {
 
