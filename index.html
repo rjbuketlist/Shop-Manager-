@@ -1199,11 +1199,105 @@ function addCustomer() {
 
   const box = document.getElementById("customerList");
 
-  if (db.customers.length === 0) {
+  let html = `
+
+    <div class="card">
+
+      <h3>Customer List</h3>
+
+      <!-- Search -->
+
+      <input
+        id="customerSearch"
+        type="text"
+        placeholder="Find by Customer ID, Name, Mobile or Balance Amount"
+        oninput="filterCustomers()"
+        style="
+          width:100%;
+          padding:12px;
+          margin:6px 0 10px;
+          border:1px solid #ddd;
+          border-radius:6px;">
+
+      <!-- Filter -->
+
+      <div style="
+        display:flex;
+        gap:8px;
+        overflow-x:auto;
+        margin-bottom:12px;">
+
+        <select
+          id="customerStatusFilter"
+          onchange="filterCustomers()"
+          style="
+            padding:10px;
+            border:1px solid #ddd;
+            border-radius:6px;">
+
+          <option value="all">All Customers</option>
+          <option value="active">🟢 Active</option>
+          <option value="blocked">🔴 Blocked</option>
+
+        </select>
+
+        <select
+          id="customerBalanceFilter"
+          onchange="filterCustomers()"
+          style="
+            padding:10px;
+            border:1px solid #ddd;
+            border-radius:6px;">
+
+          <option value="all">All Balance</option>
+          <option value="due">Balance Due</option>
+          <option value="zero">Zero Balance</option>
+          <option value="advance">Advance</option>
+
+        </select>
+
+      </div>
+
+      <div id="customerTableBox">
+      </div>
+
+    </div>
+
+    <!-- Customer Details -->
+
+    <div
+      id="customerDetailsBox"
+      style="
+        display:none;
+        margin-top:15px;">
+    </div>
+
+    <!-- Edit Customer -->
+
+    <div
+      id="customerEditBox"
+      style="
+        display:none;
+        margin-top:15px;">
+    </div>
+
+  `;
+
+  box.innerHTML = html;
+
+  renderCustomerTable();
+  }
+
+function renderCustomerTable(list = db.customers) {
+
+  const box =
+    document.getElementById("customerTableBox");
+
+  if (!list || list.length === 0) {
 
     box.innerHTML = `
       <div class="empty">
-        No customers added yet.
+        No matching customers found.
       </div>
     `;
 
@@ -1211,60 +1305,68 @@ function addCustomer() {
   }
 
   let html = `
-    <div class="card">
 
-      <h3>Customer List</h3>
+    <div style="overflow-x:auto;">
 
-      <div style="overflow-x:auto;">
+      <table style="
+        width:100%;
+        border-collapse:collapse;
+        font-size:13px;">
 
-        <table style="
-          width:100%;
-          border-collapse:collapse;
-          font-size:13px;">
+        <tr style="background:#e9ecef;">
 
-          <tr style="background:#e9ecef;">
+          <th style="padding:8px;border:1px solid #ddd;">
+            ID
+          </th>
 
-            <th style="padding:8px;border:1px solid #ddd;">
-              ID
-            </th>
+          <th style="padding:8px;border:1px solid #ddd;">
+            Customer
+          </th>
 
-            <th style="padding:8px;border:1px solid #ddd;">
-              Customer
-            </th>
+          <th style="padding:8px;border:1px solid #ddd;">
+            Mobile
+          </th>
 
-            <th style="padding:8px;border:1px solid #ddd;">
-              Mobile
-            </th>
+          <th style="padding:8px;border:1px solid #ddd;">
+            Balance
+          </th>
 
-            <th style="padding:8px;border:1px solid #ddd;">
-              Address
-            </th>
+          <th style="padding:8px;border:1px solid #ddd;">
+            Status
+          </th>
 
-            <th style="padding:8px;border:1px solid #ddd;">
-              PIN
-            </th>
+          <th style="padding:8px;border:1px solid #ddd;">
+            Action
+          </th>
 
-            <th style="padding:8px;border:1px solid #ddd;">
-              Opening Balance
-            </th>
-
-            <th style="padding:8px;border:1px solid #ddd;">
-              Status
-            </th>
-
-            <th style="padding:8px;border:1px solid #ddd;">
-              Action
-            </th>
-
-          </tr>
+        </tr>
   `;
 
-  db.customers.forEach(customer => {
+  list.forEach(customer => {
 
     const isBlocked =
       customer.status === "blocked";
 
+    const balance =
+      Number(customer.balance || 0);
+
+    let balanceText = "₹0.00";
+    let balanceColor = "green";
+
+    if (balance > 0) {
+      balanceText =
+        "-₹" + balance.toFixed(2);
+      balanceColor = "red";
+    }
+
+    if (balance < 0) {
+      balanceText =
+        "+₹" + Math.abs(balance).toFixed(2);
+      balanceColor = "green";
+    }
+
     html += `
+
       <tr>
 
         <td style="padding:8px;border:1px solid #ddd;">
@@ -1279,34 +1381,57 @@ function addCustomer() {
           ${customer.mobile}
         </td>
 
-        <td style="padding:8px;border:1px solid #ddd;">
-          ${customer.address}
-        </td>
+        <td style="
+          padding:8px;
+          border:1px solid #ddd;
+          color:${balanceColor};
+          font-weight:bold;">
 
-        <td style="padding:8px;border:1px solid #ddd;">
-          ${customer.pincode}
-        </td>
+          ${balanceText}
 
-        <td style="padding:8px;border:1px solid #ddd;">
-          ₹${Number(customer.openingBalance).toFixed(2)}
         </td>
 
         <td style="
           padding:8px;
           border:1px solid #ddd;
-          font-weight:bold;
-          color:${isBlocked ? "red" : "green"};">
+          color:${isBlocked ? "red" : "green"};
+          font-weight:bold;">
 
           ${isBlocked ? "🔴 Blocked" : "🟢 Active"}
 
         </td>
 
-        <td style="padding:8px;border:1px solid #ddd;">
+        <td style="
+          padding:8px;
+          border:1px solid #ddd;
+          white-space:nowrap;">
+
+          <button
+            onclick="viewCustomer('${customer.id}')"
+            style="
+              padding:6px 9px;
+              border:0;
+              border-radius:5px;
+              background:#1976d2;
+              color:white;">
+            View
+          </button>
+
+          <button
+            onclick="editCustomer('${customer.id}')"
+            style="
+              padding:6px 9px;
+              border:0;
+              border-radius:5px;
+              background:#f39c12;
+              color:white;">
+            Edit
+          </button>
 
           <button
             onclick="toggleCustomerStatus('${customer.id}')"
             style="
-              padding:6px 10px;
+              padding:6px 9px;
               border:0;
               border-radius:5px;
               background:${isBlocked ? "#1f6f43" : "#c62828"};
@@ -1323,15 +1448,214 @@ function addCustomer() {
   });
 
   html += `
-        </table>
-
-      </div>
+      </table>
 
     </div>
   `;
 
   box.innerHTML = html;
+}
+
+function filterCustomers() {
+
+  const search =
+    (document.getElementById("customerSearch")?.value || "")
+    .trim()
+    .toLowerCase();
+
+  const statusFilter =
+    document.getElementById("customerStatusFilter")?.value || "all";
+
+  const balanceFilter =
+    document.getElementById("customerBalanceFilter")?.value || "all";
+
+  const filtered =
+    db.customers.filter(customer => {
+
+      const balance =
+        Number(customer.balance || 0);
+
+      const searchMatch =
+        !search ||
+        customer.id.toLowerCase().includes(search) ||
+        customer.name.toLowerCase().includes(search) ||
+        customer.mobile.toLowerCase().includes(search) ||
+        String(balance).includes(search);
+
+      const statusMatch =
+        statusFilter === "all" ||
+        customer.status === statusFilter;
+
+      let balanceMatch = true;
+
+      if (balanceFilter === "due") {
+        balanceMatch = balance > 0;
+      }
+
+      if (balanceFilter === "zero") {
+        balanceMatch = balance === 0;
+      }
+
+      if (balanceFilter === "advance") {
+        balanceMatch = balance < 0;
+      }
+
+      return (
+        searchMatch &&
+        statusMatch &&
+        balanceMatch
+      );
+
+    });
+
+  renderCustomerTable(filtered);
+}
+
+function viewCustomer(customerId) {
+
+  const customer =
+    db.customers.find(c => c.id === customerId);
+
+  if (!customer) {
+    alert("Customer not found.");
+    return;
   }
+
+  const box =
+    document.getElementById("customerDetailsBox");
+
+  box.style.display = "block";
+
+  box.innerHTML = `
+
+    <div class="card">
+
+      <h3>Customer Summary</h3>
+
+      <p>
+        <strong>Customer ID:</strong>
+        ${customer.id}
+      </p>
+
+      <p>
+        <strong>Name:</strong>
+        ${customer.name}
+      </p>
+
+      <p>
+        <strong>Mobile:</strong>
+        ${customer.mobile}
+      </p>
+
+      <p>
+        <strong>Address:</strong>
+        ${customer.address || "-"}
+      </p>
+
+      <p>
+        <strong>PIN Code:</strong>
+        ${customer.pincode || "-"}
+      </p>
+
+      <p>
+        <strong>Opening Balance:</strong>
+        ₹${Number(customer.openingBalance || 0).toFixed(2)}
+      </p>
+
+      <p>
+        <strong>Status:</strong>
+        ${
+          customer.status === "blocked"
+          ? "🔴 Blocked"
+          : "🟢 Active"
+        }
+      </p>
+
+      ${
+        customer.status === "blocked"
+        ? `
+          <p style="color:red;">
+            <strong>Block Reason:</strong>
+            ${customer.blockReason || "-"}
+          </p>
+        `
+        : ""
+      }
+
+      <hr>
+
+      <h3>Transaction History</h3>
+
+      <div style="
+        overflow-x:auto;">
+
+        <table style="
+          width:100%;
+          border-collapse:collapse;
+          font-size:13px;">
+
+          <tr style="background:#e9ecef;">
+
+            <th style="padding:8px;border:1px solid #ddd;">
+              Date
+            </th>
+
+            <th style="padding:8px;border:1px solid #ddd;">
+              Type
+            </th>
+
+            <th style="padding:8px;border:1px solid #ddd;">
+              Bill ID
+            </th>
+
+            <th style="padding:8px;border:1px solid #ddd;">
+              Amount
+            </th>
+
+            <th style="padding:8px;border:1px solid #ddd;">
+              Balance
+            </th>
+
+          </tr>
+
+          <tr>
+            <td colspan="5"
+              style="
+                padding:15px;
+                text-align:center;
+                color:#777;
+                border:1px solid #ddd;">
+              Transaction history will appear here.
+            </td>
+          </tr>
+
+        </table>
+
+      </div>
+
+      <div style="margin-top:12px;">
+
+        <select id="customerHistoryFilter"
+          style="padding:10px;">
+
+          <option value="all">All Transactions</option>
+          <option value="date">Date Wise</option>
+          <option value="month">Month Wise</option>
+
+        </select>
+
+      </div>
+
+    </div>
+
+  `;
+
+  box.scrollIntoView({
+    behavior:"smooth"
+  });
+}
+
+
 
   function toggleCustomerStatus(customerId) {
 
