@@ -1923,6 +1923,101 @@ function viewCustomer(customerId) {
   );
   }
 
+function saveCustomerEdit(customerId) {
+
+  const customer =
+    db.customers.find(c => c.id === customerId);
+
+  if (!customer) {
+    alert("Customer not found.");
+    return;
+  }
+
+  const name =
+    document.getElementById("customerName").value.trim();
+
+  const mobile =
+    document.getElementById("customerMobile").value.trim();
+
+  const address =
+    document.getElementById("customerAddress").value.trim();
+
+  const pincode =
+    document.getElementById("customerPincode").value.trim();
+
+  if (!name) {
+    alert("Please enter Customer Name");
+    return;
+  }
+
+  if (!mobile) {
+    alert("Please enter Mobile Number");
+    return;
+  }
+
+  if (!pincode || pincode.length !== 6) {
+    alert("Please enter valid 6 digit PIN Code");
+    return;
+  }
+
+  /* Only profile details are updated */
+
+  customer.name = name;
+  customer.mobile = mobile;
+  customer.address = address;
+  customer.pincode = pincode;
+
+  /* Save existing customer data safely */
+
+  saveDB();
+
+  alert(
+    "Customer details updated successfully!\n\n" +
+    "Customer ID: " + customer.id
+  );
+
+  /* Reset edit mode */
+
+  document.getElementById("customerOpeningBalance").disabled =
+    false;
+
+  const buttons =
+    document.querySelectorAll("#customers button");
+
+  buttons.forEach(button => {
+
+    if (button.textContent.trim() === "Add Customer") {
+      button.disabled = false;
+      button.style.opacity = "1";
+      button.style.cursor = "pointer";
+    }
+
+  });
+
+  const okButton =
+    document.getElementById("customerEditOK");
+
+  if (okButton) {
+    okButton.remove();
+  }
+
+  window.editingCustomerId = null;
+
+  /* Clear form */
+
+  document.getElementById("customerName").value = "";
+  document.getElementById("customerMobile").value = "";
+  document.getElementById("customerAddress").value = "";
+  document.getElementById("customerPincode").value = "";
+  document.getElementById("customerOpeningBalance").value = "0";
+
+  /* Refresh customer list */
+
+  viewCustomers();
+}
+
+  
+
   function toggleCustomerStatus(customerId) {
 
   const customer =
