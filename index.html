@@ -2233,6 +2233,118 @@ function viewSuppliers() {
 
 }
 
+function editSupplier(supplierId) {
+
+  const supplier =
+    db.suppliers.find(s => s.id === supplierId);
+
+  if (!supplier) {
+    alert("Supplier not found.");
+    return;
+  }
+
+  document.getElementById("supplierName").value =
+    supplier.name || "";
+
+  document.getElementById("supplierMobile").value =
+    supplier.mobile || "";
+
+  document.getElementById("supplierAddress").value =
+    supplier.address || "";
+
+  document.getElementById("supplierOpeningPayable").value =
+    supplier.openingPayable || 0;
+
+  /* Opening Payable inactive */
+
+  document.getElementById("supplierOpeningPayable").disabled =
+    true;
+
+  /* Add Supplier button inactive */
+
+  const buttons =
+    document.querySelectorAll("#suppliers button");
+
+  buttons.forEach(button => {
+
+    if (button.textContent.trim() === "Add Supplier") {
+
+      button.disabled = true;
+
+      button.style.opacity = "0.5";
+
+      button.style.cursor = "not-allowed";
+
+    }
+
+  });
+
+  /* Create / show OK button */
+
+  let okButton =
+    document.getElementById("supplierEditOK");
+
+  if (!okButton) {
+
+    okButton =
+      document.createElement("button");
+
+    okButton.id =
+      "supplierEditOK";
+
+    okButton.textContent =
+      "OK";
+
+    okButton.style.cssText = `
+      padding:12px 22px;
+      background:#1f6f43;
+      color:white;
+      border:0;
+      border-radius:6px;
+      margin-top:8px;
+      margin-left:5px;
+      font-weight:bold;
+    `;
+
+    okButton.onclick = function() {
+
+      saveSupplierEdit(supplierId);
+
+    };
+
+    document
+      .getElementById("supplierOpeningPayable")
+      .parentNode
+      .appendChild(okButton);
+
+  } else {
+
+    okButton.style.display =
+      "inline-block";
+
+  }
+
+  /* Store editing supplier */
+
+  window.editingSupplierId =
+    supplierId;
+
+  document
+    .getElementById("supplierName")
+    .scrollIntoView({
+      behavior:"smooth",
+      block:"center"
+    });
+
+  alert(
+    "Supplier data loaded for editing.\n\n" +
+    "Edit Name, Mobile, Address and press OK."
+  );
+
+}
+
+  
+
 function renderSupplierTable(list = db.suppliers) {
 
   const box =
