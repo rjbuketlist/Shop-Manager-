@@ -521,39 +521,34 @@ main{padding:15px}
     <h3>Add Customer</h3>
 
     <input id="customerName"
-      placeholder="Customer Name"
+      placeholder="Enter Customer Name"
       style="width:100%;padding:12px;margin:6px 0;">
 
     <input id="customerMobile"
       type="tel"
-      placeholder="Mobile Number"
+      placeholder="Enter Mobile Number"
       style="width:100%;padding:12px;margin:6px 0;">
 
     <input id="customerAddress"
-      placeholder="Address"
+      placeholder="Enter Customer Address"
       style="width:100%;padding:12px;margin:6px 0;">
+
+    <input id="customerPincode"
+      type="text"
+      inputmode="numeric"
+      maxlength="6"
+      placeholder="Enter PIN Code (6 digits)"
+      style="width:100%;padding:12px;margin:6px 0;">
+
+    <label style="display:block;margin-top:10px;">
+      Opening Balance
+    </label>
 
     <input id="customerOpeningBalance"
       type="number"
       min="0"
       value="0"
-      placeholder="Opening Balance"
-      style="width:100%;padding:12px;margin:6px 0;">
-
-    <label style="display:block;margin-top:10px;">
-      Status
-    </label>
-
-    <select id="customerStatus"
-      style="width:100%;padding:12px;margin:6px 0;">
-
-      <option value="active">🟢 Active</option>
-      <option value="blocked">🔴 Red Flag / Blocked</option>
-
-    </select>
-
-    <input id="customerBlockReason"
-      placeholder="Block Reason (if blocked)"
+      placeholder="Enter previous balance amount (₹)"
       style="width:100%;padding:12px;margin:6px 0;">
 
     <button onclick="addCustomer()"
@@ -565,6 +560,18 @@ main{padding:15px}
         border-radius:6px;
         margin-top:8px;">
       Add Customer
+    </button>
+
+    <button onclick="viewCustomers()"
+      style="
+        padding:12px 22px;
+        background:#555;
+        color:white;
+        border:0;
+        border-radius:6px;
+        margin-top:8px;
+        margin-left:5px;">
+      View Customers
     </button>
 
   </div>
@@ -1110,7 +1117,86 @@ function printPurchase() {
   alert("Print feature will be connected after billing finalization.");
 }
 
-    initApp();
+
+function addCustomer() {
+
+  const name =
+    document.getElementById("customerName").value.trim();
+
+  const mobile =
+    document.getElementById("customerMobile").value.trim();
+
+  const address =
+    document.getElementById("customerAddress").value.trim();
+
+  const pincode =
+    document.getElementById("customerPincode").value.trim();
+
+  const openingBalance =
+    Number(document.getElementById("customerOpeningBalance").value) || 0;
+
+  if (!name) {
+    alert("Please enter Customer Name");
+    return;
+  }
+
+  if (!mobile) {
+    alert("Please enter Mobile Number");
+    return;
+  }
+
+  if (!pincode || pincode.length !== 6) {
+    alert("Please enter valid 6 digit PIN Code");
+    return;
+  }
+
+  const customerId =
+    "CUS-" +
+    String(db.customers.length + 1).padStart(5, "0");
+
+  const customer = {
+
+    id: customerId,
+
+    name: name,
+
+    mobile: mobile,
+
+    address: address,
+
+    pincode: pincode,
+
+    openingBalance: openingBalance,
+
+    balance: openingBalance,
+
+    status: "active",
+
+    blockReason: "",
+
+    createdAt: new Date().toISOString()
+
+  };
+
+  db.customers.push(customer);
+
+  saveDB();
+
+  alert(
+    "Customer added successfully!\n\nCustomer ID: " +
+    customerId
+  );
+
+  document.getElementById("customerName").value = "";
+  document.getElementById("customerMobile").value = "";
+  document.getElementById("customerAddress").value = "";
+  document.getElementById("customerPincode").value = "";
+  document.getElementById("customerOpeningBalance").value = "0";
+
+}
+
+  
+ initApp();
   
 </script>
 
