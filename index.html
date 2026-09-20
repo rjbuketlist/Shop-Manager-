@@ -516,9 +516,9 @@ main{padding:15px}
 
   <h2>Customers</h2>
 
-  <div class="card">
+<div id="customerAddForm" class="card">
 
-    <h3>Add Customer</h3>
+  <h3>Add Customer</h3>
 
     <input id="customerName"
       placeholder="Enter Customer Name"
@@ -1382,96 +1382,148 @@ function addCustomer() {
 
   function viewCustomers() {
 
-  const box = document.getElementById("customerList");
+  const addForm =
+    document.getElementById("customerAddForm");
 
-  let html = `
+  const listBox =
+    document.getElementById("customerList");
+
+  /* Hide Add Customer Form */
+
+  if (addForm) {
+    addForm.style.display = "none";
+  }
+
+  /* Show Customer List */
+
+  if (listBox) {
+    listBox.style.display = "block";
+  }
+
+  /* Create List */
+
+  listBox.innerHTML = `
 
     <div class="card">
 
-      <h3>Customer List</h3>
+      <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:10px;
+        flex-wrap:wrap;
+        margin-bottom:12px;">
 
-      <!-- Search -->
+        <h2 style="margin:0;">
+          Customer List
+        </h2>
+
+        <button
+          onclick="closeCustomerList()"
+          style="
+            padding:10px 16px;
+            background:#555;
+            color:white;
+            border:0;
+            border-radius:6px;
+            font-weight:bold;">
+          ← Back
+        </button>
+
+      </div>
+
 
       <input
         id="customerSearch"
-        type="text"
-        placeholder="Find by Customer ID, Name, Mobile or Balance Amount"
+        placeholder="Search by Customer ID, Name, Mobile or Balance Amount"
         oninput="filterCustomers()"
         style="
           width:100%;
           padding:12px;
-          margin:6px 0 10px;
-          border:1px solid #ddd;
-          border-radius:6px;">
+          margin:6px 0 10px;">
 
-      <!-- Filter -->
 
-      <div style="
-        display:flex;
-        gap:8px;
-        overflow-x:auto;
-        margin-bottom:12px;">
+      <select
+        id="customerStatusFilter"
+        onchange="filterCustomers()"
+        style="
+          width:100%;
+          padding:12px;
+          margin:6px 0 10px;">
 
-        <select
-          id="customerStatusFilter"
-          onchange="filterCustomers()"
-          style="
-            padding:10px;
-            border:1px solid #ddd;
-            border-radius:6px;">
+        <option value="all">
+          All Customers
+        </option>
 
-          <option value="all">All Customers</option>
-          <option value="active">🟢 Active</option>
-          <option value="blocked">🔴 Blocked</option>
+        <option value="active">
+          Active
+        </option>
 
-        </select>
+        <option value="blocked">
+          Blocked
+        </option>
 
-        <select
-          id="customerBalanceFilter"
-          onchange="filterCustomers()"
-          style="
-            padding:10px;
-            border:1px solid #ddd;
-            border-radius:6px;">
+      </select>
 
-          <option value="all">All Balance</option>
-          <option value="due">Balance Due</option>
-          <option value="zero">Zero Balance</option>
-          <option value="advance">Advance</option>
 
-        </select>
+      <select
+        id="customerBalanceFilter"
+        onchange="filterCustomers()"
+        style="
+          width:100%;
+          padding:12px;
+          margin:6px 0 10px;">
 
+        <option value="all">
+          All Balance
+        </option>
+
+        <option value="due">
+          Balance Due
+        </option>
+
+        <option value="zero">
+          Zero Balance
+        </option>
+
+        <option value="advance">
+          Advance
+        </option>
+
+      </select>
+
+
+      <div id="customerTableBox"
+           style="margin-top:12px;">
       </div>
 
-      <div id="customerTableBox">
-      </div>
-
-    </div>
-
-    <!-- Customer Details -->
-
-    <div
-      id="customerDetailsBox"
-      style="
-        display:none;
-        margin-top:15px;">
-    </div>
-
-    <!-- Edit Customer -->
-
-    <div
-      id="customerEditBox"
-      style="
-        display:none;
-        margin-top:15px;">
     </div>
 
   `;
 
-  box.innerHTML = html;
+  renderCustomerTable(db.customers);
 
-  renderCustomerTable();
   }
+
+function closeCustomerList() {
+
+  const addForm =
+    document.getElementById("customerAddForm");
+
+  const listBox =
+    document.getElementById("customerList");
+
+  if (listBox) {
+    listBox.style.display = "none";
+  }
+
+  if (addForm) {
+    addForm.style.display = "block";
+  }
+
+}
+
+
 
 function renderCustomerTable(list = db.customers) {
 
