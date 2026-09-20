@@ -789,6 +789,7 @@ main{padding:15px}
 </main>
 
 <script>
+  
 /* ================================
    SHOP MANAGER - OFFLINE DATABASE
    ================================ */
@@ -814,7 +815,8 @@ let db = JSON.parse(localStorage.getItem(DB_KEY)) || {
     settings: {
         currency: "₹",
         nextPurNo: 1,
-        nextBillNo: 1
+        nextBillNo: 1,
+        nextPayNo: 1
     }
 };
 
@@ -3202,6 +3204,951 @@ function viewSupplier(supplierId) {
   viewCustomers();
   }
 
+  
+/* ================================
+   PAYMENT / SETTLEMENT SYSTEM
+================================ */
+
+let paymentContext = {
+  partyType: "",
+  partyId: "",
+  returnScreen: ""
+};
+
+
+/* Generate Payment Bill Number */
+
+function generatePayId() {
+
+  if (!db.settings.nextPayNo) {
+    db.settings.nextPayNo = 1;
+  }
+
+  const id =
+    "PAY-" +
+    String(db.settings.nextPayNo).padStart(5, "0");
+
+  db.settings.nextPayNo++;
+
+  saveDB();
+
+  return id;
+}
+
+
+/* Open Payment from Customer */
+
+function openCustomerPayment(customerId) {
+
+  const customer =
+    db.customers.find(c => c.id === customerId);
+
+  if (!customer) {
+    alert("Customer not found.");
+    return;
+  }
+
+  if (customer.status === "blocked") {
+
+    alert(
+      "This customer is blocked.\n\n" +
+      "Reason: " +
+      (customer.blockReason || "No reason provided.")
+    );
+
+    return;
+  }
+
+  paymentContext = {
+    partyType: "customer",
+    partyId: customer.id,
+    returnScreen: "customer"
+  };
+
+  openPaymentPage(customer);
+}
+
+
+/* Open Payment from Supplier */
+
+function openSupplierPayment(supplierId) {
+
+  const supplier =
+    db.suppliers.find(s => s.id === supplierId);
+
+  if (!supplier) {
+    alert("Supplier not found.");
+    return;
+  }
+
+  if (supplier.status === "blocked") {
+
+    alert(
+      "This supplier is blocked.\n\n" +
+      "Reason: " +
+      (supplier.blockReason || "No reason provided.")
+    );
+
+    return;
+  }
+
+  paymentContext = {
+    partyType: "supplier",
+    partyId: supplier.id,
+    returnScreen: "supplier"
+  };
+
+  openPaymentPage(supplier);
+}
+
+
+/* Open Payment Page */
+
+function openPaymentPage(party) {
+
+  document.getElementById("paymentPartyId").value =
+    party.id;
+
+  document.getElementById("paymentPartyName").value =
+    party.name;
+
+  document.getElementById("paymentBillNo").value =
+    generatePayId();
+
+  updatePaymentBalanceDisplay(
+    Number(party.balance || 0)
+  );
+
+  document.getElementById("paymentAmount").value = "";
+
+  document.getElementById("paymentMethod").value = "Cash";
+
+  document.getElementById("paymentNote").value = "";
+
+  document.getElementById("settlementSummaryBox").style.display =
+    "none";
+
+  document.getElementById("settlementSummaryBox").innerHTML =
+    "";
+
+  showSection("payments", null);
+
+}
+
+
+/* Balance Display */
+
+function updatePaymentBalanceDisplay(balance) {
+
+  let text = "₹0.00";
+  let color = "#555";
+
+  if (balance > 0) {
+
+    text =
+      "+₹" +
+      balance.toFixed(2);
+
+    color = "red";
+
+  } else if (balance < 0) {
+
+    text =
+      "-₹" +
+      Math.abs(balance).toFixed(2);
+
+    color = "#1f6f43";
+  }
+
+  const box =
+    document.getElementById("paymentTotalAmount");
+
+  box.textContent = text;
+
+  box.style.color = color;
+
+}
+
+
+/* Open Final Settlement Summary */
+
+function openSettlementSummary() {
+
+  const partyId =
+    document.getElementById("paymentPartyId").value;
+
+  const amount =
+    Number(
+      document.getElementById("paymentAmount").value
+    );
+
+  const method =
+    document.getElementById("paymentMethod").value;
+
+  const note =
+    document.getElementById("paymentNote").value.trim();
+
+  if (!partyId) {
+
+    alert("Payment party not selected.");
+
+    return;
+  }
+
+  if (!amount || amount <= 0) {
+
+    alert("Please enter valid settlement amount.");
+
+    return;
+  }
+
+
+  let party = null;
+
+  if (paymentContext.partyType === "customer") {
+
+    party =
+      db.customers.find(
+        c => c.id === paymentContext.partyId
+      );
+
+  } else if (paymentContext.partyType === "supplier") {
+
+    party =
+      db.suppliers.find(
+        s => s.id === paymentContext.partyId
+      );
+
+  }
+
+
+  if (!party) {
+
+    alert("Customer / Supplier not found.");
+
+    return;
+  }
+
+
+  if (party.status === "blocked") {
+
+    alert(
+      "This party is blocked.\n\n" +
+      "New payment transaction is not allowed."
+    );
+
+    return;
+  }
+
+
+  const previousBalance =
+    Number(party.balance || 0);
+
+
+  /*
+    Positive balance = Due / Payable
+    Negative balance = Advance
+
+    Settlement reduces the outstanding position.
+    Therefore:
+
+    New Balance = Previous Balance - Amount
+
+    Example:
+    ₹2000 due - ₹1500 payment = ₹500 due
+
+    ₹2000 due - ₹2500 payment = -₹500 advance
+
+    -₹500 advance + ₹300 settlement = -₹200 advance
+  */
+
+  const newBalance =
+    previousBalance - amount;
+
+
+  let previousText = "₹0.00";
+  let remainingText = "₹0.00";
+
+
+  if (previousBalance > 0) {
+
+    previousText =
+      "+₹" +
+      previousBalance.toFixed(2);
+
+  } else if (previousBalance < 0) {
+
+    previousText =
+      "-₹" +
+      Math.abs(previousBalance).toFixed(2);
+
+  }
+
+
+  if (newBalance > 0) {
+
+    remainingText =
+      "+₹" +
+      newBalance.toFixed(2);
+
+  } else if (newBalance < 0) {
+
+    remainingText =
+      "-₹" +
+      Math.abs(newBalance).toFixed(2);
+
+  }
+
+
+  const billNo =
+    document.getElementById("paymentBillNo").value;
+
+
+  const box =
+    document.getElementById("settlementSummaryBox");
+
+
+  box.style.display = "block";
+
+
+  box.innerHTML = `
+
+    <div class="card"
+      style="
+        border:2px solid #1f6f43;
+        padding:18px;
+        border-radius:12px;">
+
+      <h2 style="margin-top:0;">
+        Settlement Summary
+      </h2>
+
+      <div style="
+        display:grid;
+        grid-template-columns:
+        repeat(auto-fit,minmax(180px,1fr));
+        gap:10px;">
+
+        <div style="
+          background:#f8f9fa;
+          padding:12px;
+          border-radius:8px;">
+
+          <small>Party ID</small>
+
+          <div>
+            <strong>${party.id}</strong>
+          </div>
+
+        </div>
+
+
+        <div style="
+          background:#f8f9fa;
+          padding:12px;
+          border-radius:8px;">
+
+          <small>Name</small>
+
+          <div>
+            <strong>${party.name}</strong>
+          </div>
+
+        </div>
+
+
+        <div style="
+          background:#f8f9fa;
+          padding:12px;
+          border-radius:8px;">
+
+          <small>Settlement Bill No.</small>
+
+          <div>
+            <strong>${billNo}</strong>
+          </div>
+
+        </div>
+
+
+        <div style="
+          background:#f8f9fa;
+          padding:12px;
+          border-radius:8px;">
+
+          <small>Previous Balance</small>
+
+          <div>
+            <strong>${previousText}</strong>
+          </div>
+
+        </div>
+
+
+        <div style="
+          background:#f8f9fa;
+          padding:12px;
+          border-radius:8px;">
+
+          <small>Settlement Amount</small>
+
+          <div>
+            <strong>
+              ₹${amount.toFixed(2)}
+            </strong>
+          </div>
+
+        </div>
+
+
+        <div style="
+          background:#f8f9fa;
+          padding:12px;
+          border-radius:8px;">
+
+          <small>Payment Method</small>
+
+          <div>
+            <strong>${method}</strong>
+          </div>
+
+        </div>
+
+
+        <div style="
+          background:#f8f9fa;
+          padding:12px;
+          border-radius:8px;">
+
+          <small>Remaining Balance / Advance</small>
+
+          <div style="
+            font-size:20px;
+            font-weight:bold;
+            color:${newBalance > 0 ? "red" : "#1f6f43"};">
+
+            ${remainingText}
+
+          </div>
+
+        </div>
+
+
+        <div style="
+          background:#f8f9fa;
+          padding:12px;
+          border-radius:8px;">
+
+          <small>Date & Time</small>
+
+          <div>
+            <strong>
+              ${new Date().toLocaleString()}
+            </strong>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div style="
+        background:#f8f9fa;
+        padding:12px;
+        border-radius:8px;
+        margin-top:10px;">
+
+        <small>Note</small>
+
+        <div>
+          ${note || "-"}
+        </div>
+
+      </div>
+
+
+      <div style="
+        display:flex;
+        gap:8px;
+        flex-wrap:wrap;
+        margin-top:18px;">
+
+        <button
+          onclick="saveSettlement()"
+          style="
+            padding:12px 22px;
+            background:#1f6f43;
+            color:white;
+            border:0;
+            border-radius:6px;
+            font-weight:bold;">
+
+          Save
+
+        </button>
+
+
+        <button
+          onclick="printSettlement()"
+          style="
+            padding:12px 22px;
+            background:#555;
+            color:white;
+            border:0;
+            border-radius:6px;
+            font-weight:bold;">
+
+          🖨️ Print
+
+        </button>
+
+      </div>
+
+    </div>
+
+  `;
+
+
+  box.scrollIntoView({
+    behavior:"smooth",
+    block:"start"
+  });
+
+}
+
+
+/* Save Settlement */
+
+function saveSettlement() {
+
+  let party = null;
+
+  if (paymentContext.partyType === "customer") {
+
+    party =
+      db.customers.find(
+        c => c.id === paymentContext.partyId
+      );
+
+  } else if (paymentContext.partyType === "supplier") {
+
+    party =
+      db.suppliers.find(
+        s => s.id === paymentContext.partyId
+      );
+
+  }
+
+
+  if (!party) {
+
+    alert("Customer / Supplier not found.");
+
+    return;
+  }
+
+
+  if (party.status === "blocked") {
+
+    alert(
+      "This party is blocked.\n\n" +
+      "Settlement cannot be saved."
+    );
+
+    return;
+  }
+
+
+  const amount =
+    Number(
+      document.getElementById("paymentAmount").value
+    );
+
+  const method =
+    document.getElementById("paymentMethod").value;
+
+  const note =
+    document.getElementById("paymentNote").value.trim();
+
+  const billNo =
+    document.getElementById("paymentBillNo").value;
+
+
+  if (!amount || amount <= 0) {
+
+    alert("Invalid settlement amount.");
+
+    return;
+  }
+
+
+  const previousBalance =
+    Number(party.balance || 0);
+
+  const newBalance =
+    previousBalance - amount;
+
+  const transactionDate =
+    new Date().toISOString();
+
+
+  const transaction = {
+
+    id: billNo,
+
+    type: "payment",
+
+    date: transactionDate,
+
+    billId: billNo,
+
+    billAmount: 0,
+
+    paid: amount,
+
+    balance: newBalance,
+
+    paymentMethod: method,
+
+    note: note,
+
+    previousBalance: previousBalance,
+
+    partyId: party.id,
+
+    partyType: paymentContext.partyType
+
+  };
+
+
+  if (!party.transactions) {
+
+    party.transactions = [];
+
+  }
+
+
+  party.transactions.push(transaction);
+
+
+  /*
+    Keep global payment records also.
+  */
+
+  if (!db.payments) {
+
+    db.payments = [];
+
+  }
+
+
+  db.payments.push(transaction);
+
+
+  /*
+    Update live balance
+  */
+
+  party.balance =
+    newBalance;
+
+
+  saveDB();
+
+
+  alert(
+    "Settlement saved successfully!\n\n" +
+    "Settlement Bill No.: " +
+    billNo
+  );
+
+
+  returnToOrigin(party);
+
+}
+
+
+/* Print Settlement */
+
+function printSettlement() {
+
+  const summary =
+    document.getElementById("settlementSummaryBox");
+
+
+  if (!summary ||
+      summary.style.display === "none") {
+
+    alert("Settlement summary not available.");
+
+    return;
+  }
+
+
+  /*
+    Print only settlement summary.
+  */
+
+  const printWindow =
+    window.open(
+      "",
+      "_blank",
+      "width=800,height=600"
+    );
+
+
+  if (!printWindow) {
+
+    alert(
+      "Print window was blocked by the browser. " +
+      "Please allow pop-ups and try again."
+    );
+
+    return;
+  }
+
+
+  printWindow.document.write(`
+
+    <html>
+
+      <head>
+
+        <title>
+          Settlement
+        </title>
+
+        <style>
+
+          body{
+            font-family:Arial,sans-serif;
+            padding:25px;
+            color:#222;
+          }
+
+          button{
+            display:none;
+          }
+
+          .card{
+            border:1px solid #ddd;
+            padding:20px;
+            border-radius:10px;
+          }
+
+        </style>
+
+      </head>
+
+      <body>
+
+        ${summary.innerHTML}
+
+      </body>
+
+    </html>
+
+  `);
+
+
+  printWindow.document.close();
+
+
+  printWindow.onload = function() {
+
+    printWindow.focus();
+
+    printWindow.print();
+
+  };
+
+
+  /*
+    After print window closes,
+    return to exact originating details page.
+  */
+
+  printWindow.onafterprint = function() {
+
+    printWindow.close();
+
+    returnToOrigin();
+
+  };
+
+}
+
+
+/* Return to exact originating screen */
+
+function returnToOrigin(party) {
+
+  if (paymentContext.partyType === "customer") {
+
+    if (party) {
+
+      viewCustomer(party.id);
+
+    } else {
+
+      const customer =
+        db.customers.find(
+          c => c.id === paymentContext.partyId
+        );
+
+      if (customer) {
+        viewCustomer(customer.id);
+      }
+
+    }
+
+  }
+
+
+  if (paymentContext.partyType === "supplier") {
+
+    if (party) {
+
+      viewSupplier(party.id);
+
+    } else {
+
+      const supplier =
+        db.suppliers.find(
+          s => s.id === paymentContext.partyId
+        );
+
+      if (supplier) {
+        viewSupplier(supplier.id);
+      }
+
+    }
+
+  }
+
+
+  paymentContext = {
+    partyType: "",
+    partyId: "",
+    returnScreen: ""
+  };
+
+}
+
+
+/* Payment History */
+
+function renderPaymentHistory() {
+
+  const box =
+    document.getElementById("paymentHistoryBox");
+
+  if (!box) {
+    return;
+  }
+
+
+  if (!db.payments ||
+      db.payments.length === 0) {
+
+    box.innerHTML = `
+      <div class="empty">
+        No settlement transactions yet.
+      </div>
+    `;
+
+    return;
+  }
+
+
+  let html = `
+
+    <div style="overflow-x:auto;">
+
+      <table style="
+        width:100%;
+        border-collapse:collapse;
+        font-size:13px;">
+
+        <tr style="background:#e9ecef;">
+
+          <th style="padding:8px;border:1px solid #ddd;">
+            Date
+          </th>
+
+          <th style="padding:8px;border:1px solid #ddd;">
+            Bill ID
+          </th>
+
+          <th style="padding:8px;border:1px solid #ddd;">
+            Party
+          </th>
+
+          <th style="padding:8px;border:1px solid #ddd;">
+            Amount
+          </th>
+
+          <th style="padding:8px;border:1px solid #ddd;">
+            Method
+          </th>
+
+        </tr>
+
+  `;
+
+
+  db.payments.forEach(payment => {
+
+    const date =
+      new Date(payment.date)
+        .toLocaleString();
+
+
+    html += `
+
+      <tr>
+
+        <td style="padding:8px;border:1px solid #ddd;">
+          ${date}
+        </td>
+
+        <td style="padding:8px;border:1px solid #ddd;">
+          ${payment.billId}
+        </td>
+
+        <td style="padding:8px;border:1px solid #ddd;">
+          ${payment.partyId}
+        </td>
+
+        <td style="
+          padding:8px;
+          border:1px solid #ddd;
+          font-weight:bold;">
+
+          ₹${Number(payment.paid || 0).toFixed(2)}
+
+        </td>
+
+        <td style="padding:8px;border:1px solid #ddd;">
+          ${payment.paymentMethod}
+        </td>
+
+      </tr>
+
+    `;
+
+  });
+
+
+  html += `
+      </table>
+    </div>
+  `;
+
+
+  box.innerHTML = html;
+
+}
   
  initApp();
   
