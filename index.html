@@ -1331,8 +1331,10 @@ function addCustomer() {
   const address =
     document.getElementById("customerAddress").value.trim();
 
-  const openingBalance =
-    Number(document.getElementById("customerOpeningBalance").value) || 0;
+  const openingAdvance =
+    Number(
+      document.getElementById("customerOpeningBalance").value
+    ) || 0;
 
   if (!name) {
     alert("Please enter Customer Name");
@@ -1348,6 +1350,23 @@ function addCustomer() {
     "CUS-" +
     String(db.customers.length + 1).padStart(5, "0");
 
+  const createdAt =
+    new Date().toISOString();
+
+  /*
+    Customer opening amount is treated as
+    ADVANCE received from customer.
+
+    Internal balance rule:
+    Positive  = Due
+    Negative  = Advance
+  */
+
+  const initialBalance =
+    openingAdvance > 0
+      ? -openingAdvance
+      : 0;
+
   const customer = {
 
     id: customerId,
@@ -1358,30 +1377,75 @@ function addCustomer() {
 
     address: address,
 
-    openingBalance: openingBalance,
+    openingBalance: openingAdvance,
 
-    balance: openingBalance,
+    balance: initialBalance,
 
     status: "active",
 
     blockReason: "",
 
-    createdAt: new Date().toISOString()
+    createdAt: createdAt,
+
+    transactions: []
 
   };
+
+  /*
+    Save opening advance as the first
+    customer account transaction.
+  */
+
+  if (openingAdvance > 0) {
+
+    customer.transactions.push({
+
+      id: "OPEN-" + customerId,
+
+      type: "opening",
+
+      date: createdAt,
+
+      billId: "OPEN-" + customerId,
+
+      billAmount: 0,
+
+      paid: openingAdvance,
+
+      balance: initialBalance,
+
+      paymentMethod: "Opening Advance",
+
+      note: "Opening advance received at customer creation.",
+
+      previousBalance: 0,
+
+      partyId: customerId,
+
+      partyType: "customer"
+
+    });
+
+  }
 
   db.customers.push(customer);
 
   saveDB();
 
   alert(
-    "Customer added successfully!\n\nCustomer ID: " +
-    customerId
+    "Customer added successfully!\n\n" +
+    "Customer ID: " + customerId +
+    "\n" +
+    "Opening Advance: ₹" +
+    openingAdvance.toFixed(2)
   );
 
   document.getElementById("customerName").value = "";
+
   document.getElementById("customerMobile").value = "";
+
   document.getElementById("customerAddress").value = "";
+
   document.getElementById("customerOpeningBalance").value = "0";
 
 }
