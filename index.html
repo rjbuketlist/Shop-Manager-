@@ -647,7 +647,7 @@ main{padding:15px}
 
   <h2>Payment / Settlement</h2>
 
-  <div class="card">
+  <div id="directSettlementForm" class="card">
 
     <h3>Direct Settlement</h3>
 
@@ -3938,7 +3938,7 @@ function openSettlementSummary() {
   box.style.display = "block";
 
   const paymentForm =
-  document.querySelector("#payments > .card");
+  document.getElementById("directSettlementForm");
 
 if (paymentForm) {
   paymentForm.style.display = "none";
@@ -4167,11 +4167,9 @@ if (paymentForm) {
     document.getElementById("settlementSummaryBox");
 
   const paymentForm =
-    document.querySelector(
-      "#payments > .card"
-    );
+    document.getElementById("directSettlementForm");
 
-  // Summary clear + hide
+  // Clear summary
   if (summaryBox) {
 
     summaryBox.innerHTML = "";
@@ -4180,7 +4178,7 @@ if (paymentForm) {
 
   }
 
-  // Direct Settlement form show
+  // Show Direct Settlement form again
   if (paymentForm) {
 
     paymentForm.style.display = "block";
@@ -4197,7 +4195,7 @@ if (paymentForm) {
 
   }
 
-  }
+}
 
 
 /* Save Settlement */
