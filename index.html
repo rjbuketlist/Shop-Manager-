@@ -2740,6 +2740,75 @@ function printCustomerDetails(customerId) {
 
 }
 
+
+  function updateCustomer(customerId) {
+
+  const customer =
+    db.customers.find(c => c.id === customerId);
+
+  if (!customer) {
+    alert("Customer not found.");
+    return;
+  }
+
+  const name =
+    document.getElementById("customerName").value.trim();
+
+  const mobile =
+    document.getElementById("customerMobile").value.trim();
+
+  const address =
+    document.getElementById("customerAddress").value.trim();
+
+  if (!name) {
+    alert("Please enter Customer Name");
+    return;
+  }
+
+  if (!mobile) {
+    alert("Please enter Mobile Number");
+    return;
+  }
+
+  // Update only editable customer details
+  customer.name = name;
+  customer.mobile = mobile;
+  customer.address = address;
+
+  // Opening advance is NOT changed during edit
+  // Customer balance and transaction history remain unchanged.
+
+  saveDB();
+
+  alert("Customer updated successfully!");
+
+  // Restore normal Add Customer button
+  const addForm =
+    document.getElementById("customerAddForm");
+
+  const addButton =
+    addForm.querySelector("button");
+
+  if (addButton) {
+
+    addButton.textContent =
+      "Add Customer";
+
+    addButton.setAttribute(
+      "onclick",
+      "addCustomer()"
+    );
+
+  }
+
+  // Clear form
+  document.getElementById("customerName").value = "";
+  document.getElementById("customerMobile").value = "";
+  document.getElementById("customerAddress").value = "";
+  document.getElementById("customerOpeningBalance").value = "0";
+
+  }
+
 function saveCustomerEdit(customerId) {
 
   const customer =
