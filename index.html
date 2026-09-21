@@ -3937,6 +3937,13 @@ function openSettlementSummary() {
 
   box.style.display = "block";
 
+  const paymentForm =
+  document.querySelector("#payments > .card");
+
+if (paymentForm) {
+  paymentForm.style.display = "none";
+}
+
 
   box.innerHTML = `
 
@@ -4128,6 +4135,18 @@ function openSettlementSummary() {
 
         </button>
 
+        <button
+  onclick="cancelSettlementSummary()"
+  style="
+    padding:12px 22px;
+    background:#c62828;
+    color:white;
+    border:0;
+    border-radius:6px;
+    font-weight:bold;">
+  Cancel
+</button>
+
       </div>
 
     </div>
@@ -4142,6 +4161,44 @@ function openSettlementSummary() {
 
 }
 
+  function cancelSettlementSummary() {
+
+  const summaryBox =
+    document.getElementById("settlementSummaryBox");
+
+  const paymentForm =
+    document.querySelector(
+      "#payments > .card"
+    );
+
+  // Summary clear + hide
+  if (summaryBox) {
+
+    summaryBox.innerHTML = "";
+
+    summaryBox.style.display = "none";
+
+  }
+
+  // Direct Settlement form show
+  if (paymentForm) {
+
+    paymentForm.style.display = "block";
+
+  }
+
+  // Amount field par focus
+  const amountInput =
+    document.getElementById("paymentAmount");
+
+  if (amountInput) {
+
+    amountInput.focus();
+
+  }
+
+  }
+
 
 /* Save Settlement */
 
@@ -4151,28 +4208,22 @@ function saveSettlement() {
 
   if (paymentContext.partyType === "customer") {
 
-    party =
-      db.customers.find(
-        c => c.id === paymentContext.partyId
-      );
+    party = db.customers.find(
+      c => c.id === paymentContext.partyId
+    );
 
   } else if (paymentContext.partyType === "supplier") {
 
-    party =
-      db.suppliers.find(
-        s => s.id === paymentContext.partyId
-      );
+    party = db.suppliers.find(
+      s => s.id === paymentContext.partyId
+    );
 
   }
-
 
   if (!party) {
-
     alert("Customer / Supplier not found.");
-
     return;
   }
-
 
   if (party.status === "blocked") {
 
@@ -4183,7 +4234,6 @@ function saveSettlement() {
 
     return;
   }
-
 
   const amount =
     Number(
@@ -4199,14 +4249,12 @@ function saveSettlement() {
   const billNo =
     document.getElementById("paymentBillNo").value;
 
-
   if (!amount || amount <= 0) {
 
     alert("Invalid settlement amount.");
 
     return;
   }
-
 
   const previousBalance =
     Number(party.balance || 0);
@@ -4216,7 +4264,6 @@ function saveSettlement() {
 
   const transactionDate =
     new Date().toISOString();
-
 
   const transaction = {
 
@@ -4246,41 +4293,21 @@ function saveSettlement() {
 
   };
 
-
-  if (!party.transactions) {
-
+  if (!Array.isArray(party.transactions)) {
     party.transactions = [];
-
   }
-
 
   party.transactions.push(transaction);
 
-
-  /*
-    Keep global payment records also.
-  */
-
-  if (!db.payments) {
-
+  if (!Array.isArray(db.payments)) {
     db.payments = [];
-
   }
-
 
   db.payments.push(transaction);
 
-
-  /*
-    Update live balance
-  */
-
-  party.balance =
-    newBalance;
-
+  party.balance = newBalance;
 
   saveDB();
-
 
   alert(
     "Settlement saved successfully!\n\n" +
@@ -4288,11 +4315,9 @@ function saveSettlement() {
     billNo
   );
 
-
   returnToOrigin(party);
 
 }
-
 
 /* Print Settlement */
 
