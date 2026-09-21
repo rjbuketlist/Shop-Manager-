@@ -3914,38 +3914,17 @@ function openSettlementSummary() {
     previousBalance - amount;
 
 
-  let previousText = "₹0.00";
-  let remainingText = "₹0.00";
+  const previousBalanceDisplay =
+    formatPartyBalance(previousBalance);
 
+  const newBalanceDisplay =
+    formatPartyBalance(newBalance);
 
-  if (previousBalance > 0) {
+  const previousText =
+    previousBalanceDisplay.text;
 
-    previousText =
-      "+₹" +
-      previousBalance.toFixed(2);
-
-  } else if (previousBalance < 0) {
-
-    previousText =
-      "-₹" +
-      Math.abs(previousBalance).toFixed(2);
-
-  }
-
-
-  if (newBalance > 0) {
-
-    remainingText =
-      "+₹" +
-      newBalance.toFixed(2);
-
-  } else if (newBalance < 0) {
-
-    remainingText =
-      "-₹" +
-      Math.abs(newBalance).toFixed(2);
-
-  }
+  const remainingText =
+    newBalanceDisplay.text;
 
 
   const billNo =
@@ -4073,7 +4052,7 @@ function openSettlementSummary() {
           <div style="
             font-size:20px;
             font-weight:bold;
-            color:${newBalance > 0 ? "red" : "#1f6f43"};">
+            color:${newBalanceDisplay.color};
 
             ${remainingText}
 
