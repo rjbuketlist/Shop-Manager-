@@ -2151,6 +2151,14 @@ function viewCustomer(customerId) {
         Balance
       </th>
 
+      <th style="padding:10px;border:1px solid #ddd;">
+         Payment Method
+      </th>
+
+      <th style="padding:10px;border:1px solid #ddd;">
+         Note
+      </th>
+      
     </tr>
 
     ${
@@ -2161,7 +2169,7 @@ function viewCustomer(customerId) {
       `
         <tr>
 
-          <td colspan="6"
+          <td colspan="8"
             style="
               padding:20px;
               text-align:center;
@@ -2248,7 +2256,19 @@ function viewCustomer(customerId) {
                 ${balanceDisplay.text}
 
               </td>
+              
+              <td style="
+                 padding:10px;
+                 border:1px solid #ddd;">
+                 ${tx.paymentMethod || "-"}
+               </td>
 
+               <td style="
+              padding:10px;
+              border:1px solid #ddd;">
+              ${tx.note || "-"}
+               </td>
+               
             </tr>
 
           `;
