@@ -1876,7 +1876,7 @@ function viewCustomer(customerId) {
       : "—";
   
   box.innerHTML = `
-
+       <div data-customer-id="${customer.id}">
     <div class="card"
       style="
         padding:18px;
@@ -2093,6 +2093,7 @@ function viewCustomer(customerId) {
 
           <select
             id="customerHistoryFilter"
+            onchange="filterCustomerHistory()"
             style="
               padding:9px;
               border:1px solid #ddd;
@@ -2120,7 +2121,8 @@ function viewCustomer(customerId) {
   border:1px solid #ddd;
   border-radius:8px;">
 
-  <table style="
+  <table id="customerHistoryTable"
+    style="
     width:100%;
     border-collapse:collapse;
     font-size:13px;">
@@ -2160,6 +2162,7 @@ function viewCustomer(customerId) {
       </th>
       
     </tr>
+
 
     ${
       getCustomerTransactions(customer.id).length === 0
@@ -2214,7 +2217,7 @@ function viewCustomer(customerId) {
 
           return `
 
-            <tr>
+            <tr data-date="${tx.date || ""}">
 
               <td style="
                 padding:10px;
@@ -2336,6 +2339,54 @@ function viewCustomer(customerId) {
   });
 
 }
+
+
+  function filterCustomerHistory() {
+
+  const filter =
+    document.getElementById("customerHistoryFilter")?.value || "all";
+
+  const rows =
+    document.querySelectorAll("#customerHistoryTable tr[data-date]");
+
+  const now = new Date();
+
+  rows.forEach(row => {
+
+    const date =
+      new Date(row.getAttribute("data-date"));
+
+    if (filter === "all") {
+
+      row.style.display = "";
+
+      return;
+    }
+
+    if (filter === "date") {
+
+      row.style.display =
+        date.toDateString() === now.toDateString()
+          ? ""
+          : "none";
+
+      return;
+    }
+
+    if (filter === "month") {
+
+      row.style.display =
+        date.getFullYear() === now.getFullYear() &&
+        date.getMonth() === now.getMonth()
+          ? ""
+          : "none";
+    }
+
+  });
+
+  }
+
+  
 
   function getCustomerTransactions(customerId) {
 
