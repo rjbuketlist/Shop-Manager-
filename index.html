@@ -3648,6 +3648,35 @@ let paymentContext = {
   returnScreen: ""
 };
 
+  
+function formatPartyBalance(balance) {
+
+  balance = Number(balance || 0);
+
+  if (balance > 0) {
+
+    return {
+      text: "-₹" + balance.toFixed(2),
+      color: "red"
+    };
+
+  }
+
+  if (balance < 0) {
+
+    return {
+      text: "+₹" + Math.abs(balance).toFixed(2),
+      color: "#1f6f43"
+    };
+
+  }
+
+  return {
+    text: "₹0.00",
+    color: "#555"
+  };
+
+}
 
 /* Generate Payment Bill Number */
 
@@ -3773,32 +3802,18 @@ function openPaymentPage(party) {
 
 function updatePaymentBalanceDisplay(balance) {
 
-  let text = "₹0.00";
-  let color = "#555";
-
-  if (balance > 0) {
-
-    text =
-      "+₹" +
-      balance.toFixed(2);
-
-    color = "red";
-
-  } else if (balance < 0) {
-
-    text =
-      "-₹" +
-      Math.abs(balance).toFixed(2);
-
-    color = "#1f6f43";
-  }
+  const result =
+    formatPartyBalance(balance);
 
   const box =
     document.getElementById("paymentTotalAmount");
 
-  box.textContent = text;
+  if (!box) {
+    return;
+  }
 
-  box.style.color = color;
+  box.textContent = result.text;
+  box.style.color = result.color;
 
 }
 
