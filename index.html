@@ -4432,50 +4432,75 @@ function printSettlement() {
 
 function returnToOrigin(party) {
 
+  // Payment form hide
+  const paymentForm =
+    document.getElementById("directSettlementForm");
+
+  if (paymentForm) {
+    paymentForm.style.display = "block";
+  }
+
+  // Settlement summary clear
+  const summaryBox =
+    document.getElementById("settlementSummaryBox");
+
+  if (summaryBox) {
+
+    summaryBox.innerHTML = "";
+
+    summaryBox.style.display = "none";
+
+  }
+
+  // Return to Customer Details
   if (paymentContext.partyType === "customer") {
 
-    if (party) {
+    const customer =
+      party ||
+      db.customers.find(
+        c => c.id === paymentContext.partyId
+      );
 
-      viewCustomer(party.id);
+    if (customer) {
 
-    } else {
+      showSection("customers", null);
 
-      const customer =
-        db.customers.find(
-          c => c.id === paymentContext.partyId
-        );
+      // Customer Details open
+      setTimeout(function() {
 
-      if (customer) {
         viewCustomer(customer.id);
-      }
+
+      }, 50);
 
     }
 
   }
 
+  // Return to Supplier Details
+  else if (paymentContext.partyType === "supplier") {
 
-  if (paymentContext.partyType === "supplier") {
+    const supplier =
+      party ||
+      db.suppliers.find(
+        s => s.id === paymentContext.partyId
+      );
 
-    if (party) {
+    if (supplier) {
 
-      viewSupplier(party.id);
+      showSection("suppliers", null);
 
-    } else {
+      // Supplier Details open
+      setTimeout(function() {
 
-      const supplier =
-        db.suppliers.find(
-          s => s.id === paymentContext.partyId
-        );
-
-      if (supplier) {
         viewSupplier(supplier.id);
-      }
+
+      }, 50);
 
     }
 
   }
 
-
+  // Reset payment context
   paymentContext = {
     partyType: "",
     partyId: "",
