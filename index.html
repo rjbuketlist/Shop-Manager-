@@ -2683,6 +2683,23 @@ function printCustomerDetails(customerId) {
     return;
   }
 
+  // Hide Customer List
+  const listBox =
+    document.getElementById("customerList");
+
+  if (listBox) {
+    listBox.style.display = "none";
+  }
+
+  // Show Add Customer Form
+  const addForm =
+    document.getElementById("customerAddForm");
+
+  if (addForm) {
+    addForm.style.display = "block";
+  }
+
+  // Load existing customer data
   document.getElementById("customerName").value =
     customer.name || "";
 
@@ -2692,82 +2709,36 @@ function printCustomerDetails(customerId) {
   document.getElementById("customerAddress").value =
     customer.address || "";
 
+  /*
+    Opening Balance is original opening advance.
+    Do not change it during normal customer editing.
+  */
+
   document.getElementById("customerOpeningBalance").value =
-    customer.openingBalance || 0;
+    Number(customer.openingBalance || 0);
 
-  /* Opening Balance inactive */
-  document.getElementById("customerOpeningBalance").disabled =
-    true;
+  // Change Add button text to Update Customer
+  const addButton =
+    addForm.querySelector("button[onclick='addCustomer()']");
 
-  /* Add Customer button inactive */
-  const buttons =
-    document.querySelectorAll("#customers button");
+  if (addButton) {
 
-  buttons.forEach(button => {
+    addButton.textContent =
+      "Update Customer";
 
-    if (button.textContent.trim() === "Add Customer") {
-      button.disabled = true;
-      button.style.opacity = "0.5";
-      button.style.cursor = "not-allowed";
-    }
+    addButton.setAttribute(
+      "onclick",
+      "updateCustomer('" + customer.id + "')"
+    );
 
+  }
+
+  // Scroll to Customer form
+  addForm.scrollIntoView({
+    behavior: "smooth"
   });
 
-  /* Create / show OK button */
-
-  let okButton =
-    document.getElementById("customerEditOK");
-
-  if (!okButton) {
-
-    okButton = document.createElement("button");
-
-    okButton.id = "customerEditOK";
-
-    okButton.textContent = "OK";
-
-    okButton.style.cssText = `
-      padding:12px 22px;
-      background:#1f6f43;
-      color:white;
-      border:0;
-      border-radius:6px;
-      margin-top:8px;
-      margin-left:5px;
-      font-weight:bold;
-    `;
-
-    okButton.onclick = function() {
-      saveCustomerEdit(customerId);
-    };
-
-    document
-      .getElementById("customerOpeningBalance")
-      .parentNode
-      .appendChild(okButton);
-
-  } else {
-
-    okButton.style.display = "inline-block";
-
-  }
-
-  /* Store edit customer ID */
-
-  window.editingCustomerId = customerId;
-
-  document
-    .getElementById("customerName")
-    .scrollIntoView({
-      behavior: "smooth",
-      block: "center"
-    });
-
-  alert(
-    "Customer data loaded for editing.\n\n" +
-    "Edit Name, Mobile, Address or PIN Code and press OK."
-  );
-  }
+}
 
 function saveCustomerEdit(customerId) {
 
