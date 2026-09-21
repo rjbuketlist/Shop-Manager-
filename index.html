@@ -2169,9 +2169,315 @@ function closeCustomerDetails() {
 
 function printCustomerDetails(customerId) {
 
-  alert(
-    "Customer Details Print feature will be connected next."
-  );
+  const customer =
+    db.customers.find(c => c.id === customerId);
+
+  if (!customer) {
+    alert("Customer not found.");
+    return;
+  }
+
+  const balance =
+    Number(customer.balance || 0);
+
+  let balanceText = "₹0.00";
+
+  if (balance > 0) {
+    balanceText =
+      "-₹" + balance.toFixed(2);
+  }
+
+  if (balance < 0) {
+    balanceText =
+      "+₹" + Math.abs(balance).toFixed(2);
+  }
+
+  const isBlocked =
+    customer.status === "blocked";
+
+  const statusText =
+    isBlocked ? "Blocked" : "Active";
+
+  const blockReason =
+    isBlocked
+      ? (customer.blockReason || "No reason provided")
+      : "—";
+
+  const transactions =
+    Array.isArray(customer.transactions)
+      ? customer.transactions
+      : [];
+
+  let historyRows = "";
+
+  if (transactions.length === 0) {
+
+    historyRows = `
+      <tr>
+        <td colspan="5"
+            style="
+              padding:15px;
+              text-align:center;
+              border:1px solid #ddd;">
+          No transaction history
+        </td>
+      </tr>
+    `;
+
+  } else {
+
+    transactions.forEach(tx => {
+
+      historyRows += `
+        <tr>
+
+          <td style="padding:8px;border:1px solid #ddd;">
+            ${tx.date || "-"}
+          </td>
+
+          <td style="padding:8px;border:1px solid #ddd;">
+            ${tx.billId || tx.billNo || "-"}
+          </td>
+
+          <td style="padding:8px;border:1px solid #ddd;">
+            ₹${Number(tx.billAmount || 0).toFixed(2)}
+          </td>
+
+          <td style="padding:8px;border:1px solid #ddd;">
+            ₹${Number(tx.paid || 0).toFixed(2)}
+          </td>
+
+          <td style="
+            padding:8px;
+            border:1px solid #ddd;
+            font-weight:bold;">
+
+            ${tx.balanceText || tx.balance || "₹0.00"}
+
+          </td>
+
+        </tr>
+      `;
+
+    });
+
+  }
+
+  const printWindow =
+    window.open("", "_blank");
+
+  if (!printWindow) {
+
+    alert(
+      "Please allow pop-ups to print Customer Details."
+    );
+
+    return;
+  }
+
+  printWindow.document.write(`
+
+    <html>
+
+      <head>
+
+        <title>
+          Customer Details - ${customer.name}
+        </title>
+
+        <style>
+
+          body {
+            font-family: Arial, sans-serif;
+            padding: 25px;
+            color: #222;
+          }
+
+          h1 {
+            margin-bottom: 5px;
+          }
+
+          .shop {
+            color: #666;
+            margin-bottom: 20px;
+          }
+
+          .info {
+            display: grid;
+            grid-template-columns:
+              repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+          }
+
+          .box {
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 6px;
+          }
+
+          .label {
+            font-size: 12px;
+            color: #777;
+            margin-bottom: 4px;
+          }
+
+          .value {
+            font-weight: bold;
+          }
+
+          .balance {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 15px 0;
+          }
+
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+          }
+
+          th {
+            background: #eee;
+          }
+
+          th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+          }
+
+          @media print {
+
+            body {
+              padding: 10px;
+            }
+
+          }
+
+        </style>
+
+      </head>
+
+      <body>
+
+        <h1>
+          Customer Details
+        </h1>
+
+        <div class="shop">
+
+          ${db.shop.name || "Shop Manager"}
+
+          <br>
+
+          ${db.shop.address || ""}
+
+        </div>
+
+        <div class="info">
+
+          <div class="box">
+            <div class="label">
+              Customer ID
+            </div>
+            <div class="value">
+              ${customer.id}
+            </div>
+          </div>
+
+          <div class="box">
+            <div class="label">
+              Customer Name
+            </div>
+            <div class="value">
+              ${customer.name}
+            </div>
+          </div>
+
+          <div class="box">
+            <div class="label">
+              Mobile
+            </div>
+            <div class="value">
+              ${customer.mobile || "-"}
+            </div>
+          </div>
+
+          <div class="box">
+            <div class="label">
+              Address
+            </div>
+            <div class="value">
+              ${customer.address || "-"}
+            </div>
+          </div>
+
+          <div class="box">
+            <div class="label">
+              Status
+            </div>
+            <div class="value">
+              ${statusText}
+            </div>
+          </div>
+
+          <div class="box">
+            <div class="label">
+              Block Reason
+            </div>
+            <div class="value">
+              ${blockReason}
+            </div>
+          </div>
+
+        </div>
+
+        <div class="balance">
+
+          Current Balance / Advance:
+          ${balanceText}
+
+        </div>
+
+        <h2>
+          Transaction History
+        </h2>
+
+        <table>
+
+          <tr>
+
+            <th>Date</th>
+            <th>Bill ID</th>
+            <th>Bill Amount</th>
+            <th>Paid</th>
+            <th>Balance</th>
+
+          </tr>
+
+          ${historyRows}
+
+        </table>
+
+        <script>
+
+          window.onload = function() {
+
+            window.print();
+
+          };
+
+        <\/script>
+
+      </body>
+
+    </html>
+
+  `);
+
+  printWindow.document.close();
 
 }
 
