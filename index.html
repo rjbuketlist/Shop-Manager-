@@ -3017,6 +3017,8 @@ function saveCustomerEdit(customerId) {
 
     blockReason: "",
 
+    transactions: [],
+
     createdAt: new Date().toISOString()
 
   };
@@ -3693,6 +3695,18 @@ function viewSupplier(supplierId) {
     balanceColor = "red";
   }
 
+  if (!Array.isArray(supplier.transactions)) {
+  supplier.transactions = [];
+}
+
+const supplierTransactions =
+  supplier.transactions
+    .slice()
+    .sort(function(a, b) {
+      return new Date(b.date || 0) -
+             new Date(a.date || 0);
+    });
+
   box.innerHTML = `
 
     <div class="card"
@@ -3905,57 +3919,67 @@ function viewSupplier(supplierId) {
         Supplier Transaction History
       </h3>
 
-      <div style="
-        overflow-x:auto;
-        margin-top:10px;">
+      <div style="overflow-x:auto;margin-top:10px;">
+  <table style="width:100%;border-collapse:collapse;font-size:13px;">
+    <tr style="background:#e9ecef;">
+      <th style="padding:8px;border:1px solid #ddd;">Date</th>
+      <th style="padding:8px;border:1px solid #ddd;">Type</th>
+      <th style="padding:8px;border:1px solid #ddd;">Bill ID</th>
+      <th style="padding:8px;border:1px solid #ddd;">Bill Amount</th>
+      <th style="padding:8px;border:1px solid #ddd;">Paid</th>
+      <th style="padding:8px;border:1px solid #ddd;">Balance</th>
+      <th style="padding:8px;border:1px solid #ddd;">Payment Method</th>
+      <th style="padding:8px;border:1px solid #ddd;">Note</th>
+    </tr>
 
-        <table style="
-          width:100%;
-          border-collapse:collapse;
-          font-size:13px;">
-
-          <tr style="background:#e9ecef;">
-
-            <th style="padding:8px;border:1px solid #ddd;">
-              Date
-            </th>
-
-            <th style="padding:8px;border:1px solid #ddd;">
-              Bill ID
-            </th>
-
-            <th style="padding:8px;border:1px solid #ddd;">
-              Bill Amount
-            </th>
-
-            <th style="padding:8px;border:1px solid #ddd;">
-              Paid
-            </th>
-
-            <th style="padding:8px;border:1px solid #ddd;">
-              Balance
-            </th>
-
-          </tr>
-
+    ${
+      supplierTransactions.length === 0
+        ? `
           <tr>
-
-            <td colspan="5"
-              style="
-                padding:20px;
-                text-align:center;
-                border:1px solid #ddd;
-                color:#777;">
-
+            <td colspan="8"
+                style="padding:20px;text-align:center;border:1px solid #ddd;color:#777;">
               No transactions yet.
-
+            </td>
+          </tr>
+        `
+        : supplierTransactions.map(tx => `
+          <tr>
+            <td style="padding:8px;border:1px solid #ddd;">
+              ${new Date(tx.date).toLocaleString()}
             </td>
 
+            <td style="padding:8px;border:1px solid #ddd;">
+              ${tx.type || "-"}
+            </td>
+
+            <td style="padding:8px;border:1px solid #ddd;">
+              ${tx.billId || "-"}
+            </td>
+
+            <td style="padding:8px;border:1px solid #ddd;">
+              ₹${Number(tx.billAmount || 0).toFixed(2)}
+            </td>
+
+            <td style="padding:8px;border:1px solid #ddd;">
+              ₹${Number(tx.paid || 0).toFixed(2)}
+            </td>
+
+            <td style="padding:8px;border:1px solid #ddd;">
+              ${formatPartyBalance(Number(tx.balance || 0)).text}
+            </td>
+
+            <td style="padding:8px;border:1px solid #ddd;">
+              ${tx.paymentMethod || "-"}
+            </td>
+
+            <td style="padding:8px;border:1px solid #ddd;">
+              ${tx.note || "-"}
+            </td>
           </tr>
-
-        </table>
-
-      </div>
+        `).join("")
+    }
+  </table>
+</div>
 
 
       <!-- ACTIONS -->
