@@ -1458,6 +1458,14 @@ function addCustomer() {
 
   function viewCustomers() {
 
+    const detailsBox =
+  document.getElementById("customerDetailsBox");
+
+if (detailsBox) {
+  detailsBox.innerHTML = "";
+  detailsBox.style.display = "none";
+}
+    
   const addForm =
     document.getElementById("customerAddForm");
 
