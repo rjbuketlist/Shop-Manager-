@@ -585,7 +585,7 @@ main{padding:15px}
 
   <h2>Suppliers</h2>
 
-  <div class="card">
+  <div id="supplierAddForm" class="card">
 
     <h3>Add Supplier</h3>
 
@@ -3038,6 +3038,8 @@ function saveCustomerEdit(customerId) {
   }
 
 function viewSuppliers() {
+  const addForm = document.getElementById("supplierAddForm");
+if (addForm) addForm.style.display = "none";
 
   const box =
     document.getElementById("supplierList");
