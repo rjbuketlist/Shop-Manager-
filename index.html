@@ -1671,14 +1671,14 @@ function renderCustomerTable(list = db.customers) {
 
     if (balance > 0) {
       balanceText =
-        "-₹" + balance.toFixed(2);
-      balanceColor = "red";
+        "+₹" + balance.toFixed(2);
+      balanceColor = "#1f6f43";
     }
 
     if (balance < 0) {
       balanceText =
-        "+₹" + Math.abs(balance).toFixed(2);
-      balanceColor = "green";
+        "-₹" + Math.abs(balance).toFixed(2);
+      balanceColor = "red";
     }
 
     html += `
@@ -1864,14 +1864,14 @@ if (customerList) {
     balanceText =
       "+₹" + balance.toFixed(2);
 
-    balanceColor = "red";
+    balanceColor = "#1f6f43";
   }
 
   if (balance < 0) {
     balanceText =
       "-₹" + Math.abs(balance).toFixed(2);
 
-    balanceColor = "#1f6f43";
+    balanceColor = "#red";
   }
 
   const isBlocked =
