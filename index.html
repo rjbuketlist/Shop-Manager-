@@ -3156,6 +3156,9 @@ function editSupplier(supplierId) {
   const list = document.getElementById("supplierList");
 if (list) list.innerHTML = "";
 
+  const addForm = document.getElementById("supplierAddForm");
+if (addForm) addForm.style.display = "block";
+
   const supplier =
     db.suppliers.find(s => s.id === supplierId);
 
