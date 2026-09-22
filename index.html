@@ -3684,13 +3684,13 @@ function viewSupplier(supplierId) {
   if (balance > 0) {
     balanceText =
       "+₹" + balance.toFixed(2);
-    balanceColor = "red";
+    balanceColor = "#1f6f43";
   }
 
   if (balance < 0) {
     balanceText =
       "-₹" + Math.abs(balance).toFixed(2);
-    balanceColor = "#1f6f43";
+    balanceColor = "red";
   }
 
   box.innerHTML = `
@@ -3891,8 +3891,8 @@ function viewSupplier(supplierId) {
           color:#777;
           margin-top:5px;">
 
-          +₹ = Payable &nbsp; | &nbsp;
-          -₹ = Advance
+          -₹ = Payable &nbsp; | &nbsp;
+          +₹ = Advance
 
         </div>
 
@@ -4059,7 +4059,7 @@ function formatPartyBalance(balance) {
 
   balance = Number(balance || 0);
 
-  if (balance > 0) {
+  if (balance < 0) {
 
     return {
       text: "-₹" + balance.toFixed(2),
@@ -4068,7 +4068,7 @@ function formatPartyBalance(balance) {
 
   }
 
-  if (balance < 0) {
+  if (balance > 0) {
 
     return {
       text: "+₹" + Math.abs(balance).toFixed(2),
@@ -4317,7 +4317,7 @@ function openSettlementSummary() {
   */
 
   const newBalance =
-    previousBalance - amount;
+    previousBalance + amount;
 
 
   const previousBalanceDisplay =
@@ -4664,7 +4664,7 @@ function saveSettlement() {
     Number(party.balance || 0);
 
   const newBalance =
-    previousBalance - amount;
+    previousBalance + amount;
 
   const transactionDate =
     new Date().toISOString();
