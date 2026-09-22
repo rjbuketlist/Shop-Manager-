@@ -3153,6 +3153,9 @@ if (addForm) addForm.style.display = "none";
 
 function editSupplier(supplierId) {
 
+  const list = document.getElementById("supplierList");
+if (list) list.innerHTML = "";
+
   const supplier =
     db.suppliers.find(s => s.id === supplierId);
 
@@ -3433,7 +3436,7 @@ function renderSupplierTable(list = db.suppliers) {
       balanceText =
         "+₹" + balance.toFixed(2);
 
-      balanceColor = "red";
+      balanceColor = "#1f6f43";
 
     }
 
@@ -3442,7 +3445,7 @@ function renderSupplierTable(list = db.suppliers) {
       balanceText =
         "-₹" + Math.abs(balance).toFixed(2);
 
-      balanceColor = "#1f6f43";
+      balanceColor = "#red";
 
     }
 
