@@ -1862,14 +1862,14 @@ if (customerList) {
 
   if (balance > 0) {
     balanceText =
-      "-₹" + balance.toFixed(2);
+      "+₹" + balance.toFixed(2);
 
     balanceColor = "red";
   }
 
   if (balance < 0) {
     balanceText =
-      "+₹" + Math.abs(balance).toFixed(2);
+      "-₹" + Math.abs(balance).toFixed(2);
 
     balanceColor = "#1f6f43";
   }
