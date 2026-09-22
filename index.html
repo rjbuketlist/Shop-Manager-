@@ -3658,6 +3658,20 @@ function viewSupplier(supplierId) {
     return;
   }
 
+  const isBlocked =
+    supplier.status === "blocked";
+
+  const statusText =
+    isBlocked ? "🔴 Blocked" : "🟢 Active";
+
+  const statusColor =
+    isBlocked ? "red" : "#1f6f43";
+
+  const blockReason =
+    isBlocked
+      ? (supplier.blockReason || "No reason provided")
+      : "—";
+  
   const box =
     document.getElementById("supplierList");
 
@@ -3794,6 +3808,50 @@ function viewSupplier(supplierId) {
 
           <strong>
             ${supplier.address || "-"}
+          </strong>
+
+        </div>
+
+                <div style="
+          background:#f8f9fa;
+          padding:12px;
+          border-radius:8px;">
+
+          <div style="
+            font-size:12px;
+            color:#777;">
+
+            Status
+
+          </div>
+
+          <strong style="
+            color:${statusColor};">
+
+            ${statusText}
+
+          </strong>
+
+        </div>
+
+
+        <div style="
+          background:#f8f9fa;
+          padding:12px;
+          border-radius:8px;">
+
+          <div style="
+            font-size:12px;
+            color:#777;">
+
+            Block Reason
+
+          </div>
+
+          <strong>
+
+            ${blockReason}
+
           </strong>
 
         </div>
