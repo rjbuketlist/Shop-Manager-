@@ -3615,7 +3615,7 @@ function filterSuppliers() {
       let balanceMatch = true;
 
       if (balanceFilter === "payable") {
-        balanceMatch = balance > 0;
+        balanceMatch = balance < 0;
       }
 
       if (balanceFilter === "zero") {
@@ -3623,7 +3623,7 @@ function filterSuppliers() {
       }
 
       if (balanceFilter === "advance") {
-        balanceMatch = balance < 0;
+        balanceMatch = balance > 0;
       }
 
       return (
