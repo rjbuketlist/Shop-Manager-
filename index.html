@@ -3050,6 +3050,19 @@ if (addForm) addForm.style.display = "none";
 
       <h2>Supplier List</h2>
 
+      <button
+  onclick="backToSupplierAdd()"
+  style="
+    padding:10px 18px;
+    background:#555;
+    color:white;
+    border:0;
+    border-radius:6px;
+    margin-bottom:10px;
+    font-weight:bold;">
+  ← Back
+</button>
+
       <input
         id="supplierSearch"
         placeholder="Search by Supplier ID, Name, Mobile or Balance Amount"
@@ -3118,6 +3131,25 @@ if (addForm) addForm.style.display = "none";
   renderSupplierTable(db.suppliers);
 
 }
+
+  function backToSupplierAdd() {
+
+  const addForm =
+    document.getElementById("supplierAddForm");
+
+  if (addForm) {
+    addForm.style.display = "block";
+  }
+
+  const list =
+    document.getElementById("supplierList");
+
+  if (list) {
+    list.innerHTML = "";
+  }
+
+  }
+  
 
 function editSupplier(supplierId) {
 
