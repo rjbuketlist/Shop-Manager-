@@ -4027,6 +4027,196 @@ const supplierTransactions =
   `;
 
 }
+
+
+  function printSupplierDetails(supplierId) {
+
+  const supplier =
+    db.suppliers.find(s => s.id === supplierId);
+
+  if (!supplier) {
+    alert("Supplier not found.");
+    return;
+  }
+
+  const transactions =
+    Array.isArray(supplier.transactions)
+      ? supplier.transactions.slice().sort(function(a, b) {
+          return new Date(b.date || 0) -
+                 new Date(a.date || 0);
+        })
+      : [];
+
+  let historyRows = "";
+
+  if (transactions.length === 0) {
+
+    historyRows = `
+      <tr>
+        <td colspan="8" style="padding:15px;text-align:center;">
+          No transactions yet.
+        </td>
+      </tr>
+    `;
+
+  } else {
+
+    historyRows = transactions.map(tx => `
+      <tr>
+        <td>${new Date(tx.date || "").toLocaleString()}</td>
+        <td>${tx.type || "-"}</td>
+        <td>${tx.billId || "-"}</td>
+        <td>₹${Number(tx.billAmount || 0).toFixed(2)}</td>
+        <td>₹${Number(tx.paid || 0).toFixed(2)}</td>
+        <td>${formatPartyBalance(Number(tx.balance || 0)).text}</td>
+        <td>${tx.paymentMethod || "-"}</td>
+        <td>${tx.note || "-"}</td>
+      </tr>
+    `).join("");
+
+  }
+
+  const balance =
+    Number(supplier.balance || 0);
+
+  const balanceDisplay =
+    formatPartyBalance(balance);
+
+  const printWindow =
+    window.open("", "_blank", "width=1000,height=700");
+
+  if (!printWindow) {
+    alert("Please allow pop-ups to print.");
+    return;
+  }
+
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Supplier Details - ${supplier.name}</title>
+
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          padding: 25px;
+          color: #222;
+        }
+
+        h1, h2 {
+          margin-bottom: 5px;
+        }
+
+        .info {
+          margin-bottom: 20px;
+        }
+
+        .balance {
+          font-size: 24px;
+          font-weight: bold;
+          color: ${balanceDisplay.color};
+          margin: 10px 0 20px;
+        }
+
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          font-size: 12px;
+        }
+
+        th, td {
+          border: 1px solid #ccc;
+          padding: 7px;
+          text-align: left;
+        }
+
+        th {
+          background: #eee;
+        }
+
+        .print-buttons {
+          margin-top: 20px;
+        }
+
+        @media print {
+          .print-buttons {
+            display: none;
+          }
+        }
+      </style>
+    </head>
+
+    <body>
+
+      <h1>Supplier Details</h1>
+
+      <div class="info">
+        <strong>Supplier ID:</strong> ${supplier.id}<br>
+        <strong>Supplier Name:</strong> ${supplier.name}<br>
+        <strong>Mobile:</strong> ${supplier.mobile || "-"}<br>
+        <strong>Address:</strong> ${supplier.address || "-"}<br>
+        <strong>Status:</strong> ${supplier.status || "active"}
+      </div>
+
+      <div>
+        <strong>Current Payable / Advance</strong>
+        <div class="balance">
+          ${balanceDisplay.text}
+        </div>
+      </div>
+
+      <h2>Supplier Transaction History</h2>
+
+      <table>
+        <tr>
+          <th>Date</th>
+          <th>Type</th>
+          <th>Bill ID</th>
+          <th>Bill Amount</th>
+          <th>Paid</th>
+          <th>Balance</th>
+          <th>Payment Method</th>
+          <th>Note</th>
+        </tr>
+
+        ${historyRows}
+
+      </table>
+
+      <div class="print-buttons">
+        <button onclick="window.print()">
+          Print
+        </button>
+
+        <button onclick="window.close()">
+          Close
+        </button>
+      </div>
+
+      <script>
+        window.onafterprint = function() {
+          window.close();
+        };
+      <\/script>
+
+    </body>
+    </html>
+  `);
+
+  printWindow.document.close();
+
+  printWindow.focus();
+
+  setTimeout(function() {
+    printWindow.print();
+  }, 300);
+
+  // Main window remains on Supplier Details.
+  // After print window closes, explicitly refresh Supplier Details.
+  printWindow.onbeforeunload = function() {
+    viewSupplier(supplierId);
+  };
+  }
   
 
   function toggleCustomerStatus(customerId) {
