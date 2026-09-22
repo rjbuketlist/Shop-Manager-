@@ -3023,6 +3023,38 @@ function saveCustomerEdit(customerId) {
 
   };
 
+  if (openingPayable > 0) {
+
+  supplier.transactions.push({
+
+    id: "OPEN-" + supplierId,
+
+    type: "opening",
+
+    date: new Date().toISOString(),
+
+    billId: "OPEN-" + supplierId,
+
+    billAmount: 0,
+
+    paid: 0,
+
+    balance: supplier.balance,
+
+    paymentMethod: "Opening Payable",
+
+    note: "Opening payable at supplier creation.",
+
+    previousBalance: 0,
+
+    partyId: supplierId,
+
+    partyType: "supplier"
+
+  });
+
+  }
+
   db.suppliers.push(supplier);
 
   saveDB();
