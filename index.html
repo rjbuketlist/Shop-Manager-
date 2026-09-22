@@ -1829,6 +1829,13 @@ function filterCustomers() {
 
 function viewCustomer(customerId) {
 
+  const customerList =
+  document.getElementById("customerList");
+
+if (customerList) {
+  customerList.innerHTML = "";
+}
+
   const customer =
     db.customers.find(c => c.id === customerId);
 
