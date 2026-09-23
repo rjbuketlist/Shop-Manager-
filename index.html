@@ -2433,8 +2433,8 @@ if (customerList) {
     .slice()
     .sort(function(a, b) {
 
-      return new Date(a.date || 0) -
-             new Date(b.date || 0);
+      return new Date(b.date || 0) -
+             new Date(a.date || 0);
 
     });
 
