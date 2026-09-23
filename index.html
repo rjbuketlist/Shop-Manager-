@@ -2465,12 +2465,12 @@ function printCustomerDetails(customerId) {
 
   let balanceText = "₹0.00";
 
-  if (balance > 0) {
+  if (balance < 0) {
     balanceText =
       "-₹" + balance.toFixed(2);
   }
 
-  if (balance < 0) {
+  if (balance > 0) {
     balanceText =
       "+₹" + Math.abs(balance).toFixed(2);
   }
