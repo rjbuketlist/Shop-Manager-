@@ -2487,9 +2487,12 @@ function printCustomerDetails(customerId) {
       : "—";
 
   const transactions =
-    Array.isArray(customer.transactions)
-      ? customer.transactions
-      : [];
+  Array.isArray(customer.transactions)
+    ? customer.transactions.slice().sort(function(a, b) {
+        return new Date(b.date || 0) -
+               new Date(a.date || 0);
+      })
+    : [];
 
   let historyRows = "";
 
