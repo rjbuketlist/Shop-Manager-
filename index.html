@@ -623,7 +623,8 @@ main{padding:15px}
     <h3>Add Product</h3>
 
     <input id="saleProduct"
-      placeholder="Enter / Search Product"
+  placeholder="Enter / Search Product"
+  onchange="updateSaleProduct()"
       style="width:100%;padding:12px;margin:6px 0;">
 
     <div style="margin-top:10px;">
@@ -1497,11 +1498,11 @@ function printPurchase() {
   alert("Print feature will be connected after billing finalization.");
 }
 
-  function openNewSale() {
+function openNewSale() {
   showSection("newSale", null);
   }
 
-  function changeSaleCustomerType() {
+function changeSaleCustomerType() {
 
   const type =
     document.getElementById("saleCustomerType").value;
@@ -1592,7 +1593,40 @@ function printPurchase() {
     "block";
   }
 
-  
+function updateSaleProduct() {
+
+  const productName =
+    document.getElementById("saleProduct").value.trim();
+
+  const product =
+    db.products.find(function(p) {
+      return (
+        p.name &&
+        p.name.toLowerCase() ===
+        productName.toLowerCase()
+      );
+    });
+
+  const stockBox =
+    document.getElementById("saleCurrentStock");
+
+  const priceBox =
+    document.getElementById("saleSellingPrice");
+
+  if (!product) {
+
+    stockBox.textContent = "0";
+    priceBox.value = "";
+
+    return;
+  }
+
+  stockBox.textContent =
+    Number(product.stock || 0);
+
+  priceBox.value =
+    Number(product.sellingPrice || 0).toFixed(2);
+}
   
 
 function addCustomer() {
