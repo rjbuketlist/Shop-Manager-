@@ -265,6 +265,11 @@ main{padding:15px}
       placeholder="Enter Supplier Name"
       style="width:100%;padding:12px;margin:6px 0 12px;">
 
+    <label>Supplier Bill No.</label>
+<input id="purchaseSupplierBillNo"
+  placeholder="Enter Supplier Bill No."
+  style="width:100%;padding:12px;margin:6px 0 12px;">
+    
     <label>Select Category</label>
     <select id="purchaseCategory"
       style="width:100%;padding:12px;margin:6px 0 12px;">
@@ -1201,6 +1206,7 @@ let currentPurchase = {
   const quantity = Number(document.getElementById("purchaseQty").value);
   const unit = document.getElementById("purchaseUnit").value;
   const purchasePrice = Number(document.getElementById("purchasePrice").value);
+  const sellingPrice = Number(document.getElementById("purchaseSellingPrice").value);
   const minStock = Number(document.getElementById("purchaseMinStock").value) || 20;
 
   if (!supplier) {
@@ -1228,6 +1234,11 @@ let currentPurchase = {
     return;
   }
 
+  if (!sellingPrice || sellingPrice <= 0) {
+  alert("Please enter valid Selling Price");
+  return;
+  }
+
   if (!currentPurchase.supplier) {
     currentPurchase.supplier = supplier;
   }
@@ -1249,6 +1260,7 @@ let currentPurchase = {
   quantity: quantity,
   unit: unit,
   purchasePrice: purchasePrice,
+  sellingPrice: sellingPrice,
   amount: amount,
   minStockPercent: minStock
 };
@@ -1272,6 +1284,7 @@ if (editingPurchaseIndex !== null) {
   document.getElementById("purchaseQty").value = "";
   document.getElementById("purchaseUnit").value = "KG";
   document.getElementById("purchasePrice").value = "";
+  document.getElementById("purchaseSellingPrice").value = "";
   document.getElementById("purchaseMinStock").value = "20";
   document.getElementById("purchaseStock").textContent = "0";
 
