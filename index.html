@@ -396,6 +396,11 @@ main{padding:15px}
     </p>
 
     <p>
+  <strong>Supplier Bill No.:</strong>
+  <span id="summarySupplierBillNo">-</span>
+    </p>
+    
+    <p>
       <strong>PUR ID:</strong>
       <span id="summaryPurId">-</span>
     </p>
@@ -1193,6 +1198,7 @@ function openCreateShop() {
 
 let currentPurchase = {
   supplier: "",
+  supplierBillNo: "",
   products: []
 };
 
@@ -1243,6 +1249,13 @@ let currentPurchase = {
     currentPurchase.supplier = supplier;
   }
 
+  const supplierBillNo =
+  document.getElementById("purchaseSupplierBillNo").value.trim();
+
+if (!currentPurchase.supplierBillNo) {
+  currentPurchase.supplierBillNo = supplierBillNo;
+}
+    
   if (currentPurchase.supplier !== supplier) {
     alert(
       "Current purchase is for " +
@@ -1404,12 +1417,16 @@ function editPurchaseItem(index) {
   
   function finishPurchase() {
 
+    const supplierBillNo =
+  document.getElementById("purchaseSupplierBillNo").value.trim();
+
   if (currentPurchase.products.length === 0) {
     alert("Please add at least one product first.");
     return;
   }
 
   const supplier = currentPurchase.supplier;
+    
 
   let total = 0;
 
@@ -1420,7 +1437,9 @@ function editPurchaseItem(index) {
   const purId = generatePurId();
 
   document.getElementById("summarySupplier").textContent = supplier;
-  document.getElementById("summaryPurId").textContent = purId;
+  document.getElementById("summarySupplierBillNo").textContent =
+  supplierBillNo || "-";
+    document.getElementById("summaryPurId").textContent = purId;
   document.getElementById("summaryProductCount").textContent =
     currentPurchase.products.length;
 
@@ -1431,7 +1450,7 @@ function editPurchaseItem(index) {
     total.toFixed(2);
 
   document.getElementById("summaryPreviousPayable").textContent =
-    "0.00";
+  "0.00";
 
   document.getElementById("summaryTotalPayable").textContent =
     total.toFixed(2);
