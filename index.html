@@ -622,11 +622,35 @@ main{padding:15px}
 
     <h3>Add Product</h3>
 
-    <input id="saleProduct"
-  placeholder="Enter / Search Product"
-  onchange="updateSaleProduct()"
-      style="width:100%;padding:12px;margin:6px 0;">
+    <div style="position:relative;">
 
+  <input id="saleProduct"
+    placeholder="Search Product"
+    autocomplete="off"
+    oninput="searchSaleProducts()"
+    style="
+      width:100%;
+      padding:12px;
+      margin:6px 0;">
+
+  <div id="saleProductSuggestions"
+    style="
+      display:none;
+      position:absolute;
+      left:0;
+      right:0;
+      top:100%;
+      background:white;
+      border:1px solid #ddd;
+      border-radius:6px;
+      max-height:220px;
+      overflow-y:auto;
+      z-index:1000;">
+  </div>
+
+</div>
+
+      
     <div style="margin-top:10px;">
       Current Stock:
       <strong id="saleCurrentStock">0</strong>
@@ -1628,7 +1652,100 @@ function updateSaleProduct() {
     Number(product.sellingPrice || 0).toFixed(2);
 }
   
+function searchSaleProducts() {
 
+  const input =
+    document.getElementById("saleProduct");
+
+  const box =
+    document.getElementById("saleProductSuggestions");
+
+  const query =
+    input.value.trim().toLowerCase();
+
+  if (!query) {
+    box.innerHTML = "";
+    box.style.display = "none";
+    return;
+  }
+
+  const matches =
+    db.products.filter(function(product) {
+
+      return product.name &&
+        product.name.toLowerCase().includes(query);
+
+    });
+
+  if (matches.length === 0) {
+
+    box.innerHTML = `
+      <div style="padding:12px;color:#777;">
+        No product found
+      </div>
+    `;
+
+    box.style.display = "block";
+    return;
+  }
+
+  box.innerHTML =
+    matches.map(function(product) {
+
+      return `
+        <div
+          onclick="selectSaleProduct('${product.id}')"
+          style="
+            padding:12px;
+            border-bottom:1px solid #eee;
+            cursor:pointer;">
+
+          <strong>${product.name}</strong>
+
+          <div style="
+            font-size:12px;
+            color:#777;
+            margin-top:3px;">
+
+            Stock: ${Number(product.stock || 0)}
+            ${product.unit || ""}
+
+          </div>
+
+        </div>
+      `;
+
+    }).join("");
+
+  box.style.display = "block";
+}
+
+ function selectSaleProduct(productId) {
+
+  const product =
+    db.products.find(p => p.id === productId);
+
+  if (!product) {
+    return;
+  }
+
+  document.getElementById("saleProduct").value =
+    product.name;
+
+  document.getElementById("saleCurrentStock").textContent =
+    Number(product.stock || 0);
+
+  document.getElementById("saleSellingPrice").value =
+    Number(product.sellingPrice || 0).toFixed(2);
+
+  document.getElementById("saleProductSuggestions").innerHTML =
+    "";
+
+  document.getElementById("saleProductSuggestions").style.display =
+    "none";
+ }
+
+  
 function addCustomer() {
 
   const name =
