@@ -1530,6 +1530,69 @@ function printPurchase() {
   }
   }
 
+  function selectSaleCustomer() {
+
+  const customerId =
+    document.getElementById("saleCustomerId").value.trim();
+
+  if (!customerId) {
+    alert("Please enter Customer ID");
+    return;
+  }
+
+  const customer =
+    db.customers.find(c => c.id === customerId);
+
+  if (!customer) {
+    alert("Customer not found.");
+    return;
+  }
+
+  if (customer.status === "blocked") {
+    alert(
+      "This customer is blocked.\n\n" +
+      "Reason: " +
+      (customer.blockReason || "No reason provided.")
+    );
+    return;
+  }
+
+  const balance =
+    formatPartyBalance(Number(customer.balance || 0));
+
+  document.getElementById("saleCustomerDetails").innerHTML = `
+
+    <div style="
+      background:#f4f6f8;
+      padding:12px;
+      border-radius:6px;
+      border:1px solid #ddd;">
+
+      <strong>Customer Details</strong>
+
+      <div style="margin-top:8px;">
+        Customer ID: ${customer.id}
+      </div>
+
+      <div style="margin-top:4px;">
+        Name: ${customer.name}
+      </div>
+
+      <div style="
+        margin-top:4px;
+        font-weight:bold;
+        color:${balance.color};">
+        Balance / Advance: ${balance.text}
+      </div>
+
+    </div>
+  `;
+
+  document.getElementById("saleProductBox").style.display =
+    "block";
+  }
+
+  
   
 
 function addCustomer() {
