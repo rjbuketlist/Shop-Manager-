@@ -508,8 +508,65 @@ main{padding:15px}
 </section>
 
 <section id="sales" class="section">
+
   <h2>Sales</h2>
-  <div class="empty">Sales module will be added here.</div>
+
+  <div class="card" style="text-align:center;">
+
+    <button onclick="openNewSale()"
+      style="
+        width:100%;
+        padding:14px;
+        margin:6px 0;
+        background:#1f6f43;
+        color:white;
+        border:0;
+        border-radius:6px;
+        font-size:16px;">
+      + New Sale
+    </button>
+
+    <button onclick="viewSalesRecords()"
+      style="
+        width:100%;
+        padding:14px;
+        margin:6px 0;
+        background:#555;
+        color:white;
+        border:0;
+        border-radius:6px;
+        font-size:16px;">
+      View Sales Record
+    </button>
+
+    <button onclick="viewTodaySales()"
+      style="
+        width:100%;
+        padding:14px;
+        margin:6px 0;
+        background:#777;
+        color:white;
+        border:0;
+        border-radius:6px;
+        font-size:16px;">
+      Today's Sales
+    </button>
+
+    <button onclick="showSection('dashboard',null)"
+      style="
+        width:100%;
+        padding:14px;
+        margin:6px 0;
+        background:white;
+        color:#333;
+        border:1px solid #ccc;
+        border-radius:6px;
+        font-size:16px;">
+      Back
+    </button>
+
+  </div>
+
 </section>
 
 <section id="customers" class="section">
