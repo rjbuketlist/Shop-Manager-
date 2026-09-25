@@ -1501,6 +1501,37 @@ function printPurchase() {
   showSection("newSale", null);
   }
 
+  function changeSaleCustomerType() {
+
+  const type =
+    document.getElementById("saleCustomerType").value;
+
+  const existingBox =
+    document.getElementById("existingCustomerBox");
+
+  const productBox =
+    document.getElementById("saleProductBox");
+
+  if (type === "cash") {
+
+    existingBox.style.display = "none";
+    productBox.style.display = "block";
+
+  } else if (type === "existing") {
+
+    existingBox.style.display = "block";
+    productBox.style.display = "none";
+
+  } else {
+
+    existingBox.style.display = "none";
+    productBox.style.display = "none";
+
+  }
+  }
+
+  
+
 function addCustomer() {
 
   const name =
