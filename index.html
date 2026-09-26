@@ -1619,12 +1619,29 @@ function selectPurchaseProduct(productId) {
     return;
   }
 
+  // Product Name
   document.getElementById("purchaseProduct").value =
     product.name;
 
-  document.getElementById("purchaseStock").textContent =
-    Number(product.stock || 0) + " " + (product.unit || "");
+  // Category
+  document.getElementById("purchaseCategory").value =
+    product.category || "";
 
+  // Current Stock
+  document.getElementById("purchaseStock").textContent =
+    Number(product.stock || 0) +
+    " " +
+    (product.unit || "");
+
+  // Unit
+  document.getElementById("purchaseUnit").value =
+    product.unit || "KG";
+
+  // Selling Price
+  document.getElementById("purchaseSellingPrice").value =
+    Number(product.sellingPrice || 0).toFixed(2);
+
+  // Close Product Suggestions
   document.getElementById("purchaseProductSuggestions").innerHTML =
     "";
 
