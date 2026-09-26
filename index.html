@@ -663,8 +663,186 @@ main{padding:15px}
 </section>
 
 <section id="products" class="section">
+
   <h2>Product / Stock</h2>
-  <div class="empty">Product and stock module will be added here.</div>
+
+  <!-- Product Search -->
+  <div class="card">
+
+    <h3>Search Product</h3>
+
+    <div style="position:relative;">
+
+      <input
+        id="stockProductSearch"
+        placeholder="Search Product Name"
+        autocomplete="off"
+        oninput="searchStockProducts()"
+        style="
+          width:100%;
+          padding:12px;
+          margin:6px 0;
+          box-sizing:border-box;">
+
+      <div
+        id="stockProductSuggestions"
+        style="
+          display:none;
+          position:absolute;
+          left:0;
+          right:0;
+          top:100%;
+          background:white;
+          border:1px solid #ddd;
+          border-radius:6px;
+          max-height:220px;
+          overflow-y:auto;
+          z-index:1000;">
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- Product Details -->
+  <div
+    id="stockProductDetails"
+    class="card"
+    style="
+      display:none;
+      margin-top:15px;">
+
+    <h3>Product Details</h3>
+
+    <p>
+      <strong>Product ID:</strong>
+      <span id="stockDetailId">-</span>
+    </p>
+
+    <p>
+      <strong>Product Name:</strong>
+      <span id="stockDetailName">-</span>
+    </p>
+
+    <p>
+      <strong>Category:</strong>
+      <span id="stockDetailCategory">-</span>
+    </p>
+
+    <p>
+      <strong>Unit:</strong>
+      <span id="stockDetailUnit">-</span>
+    </p>
+
+    <p>
+      <strong>Current Stock:</strong>
+      <span id="stockDetailCurrentStock">0</span>
+    </p>
+
+    <p>
+      <strong>Minimum Stock:</strong>
+      <span id="stockDetailMinimumStock">-</span>
+    </p>
+
+    <p>
+      <strong>Current Selling Price:</strong>
+      ₹<span id="stockDetailSellingPrice">0.00</span>
+    </p>
+
+    <p>
+      <strong>Stock Status:</strong>
+      <span id="stockDetailStatus">-</span>
+    </p>
+
+
+    <!-- Edit -->
+    <button
+      onclick="editStockProduct()"
+      style="
+        padding:10px 18px;
+        background:#1f6f43;
+        color:white;
+        border:0;
+        border-radius:6px;
+        margin-top:8px;">
+      Edit Product
+    </button>
+
+  </div>
+
+
+  <!-- Last 3 Purchases -->
+  <div
+    id="stockPurchaseHistory"
+    class="card"
+    style="
+      display:none;
+      margin-top:15px;">
+
+    <h3>Last 3 Purchase Details</h3>
+
+    <div id="stockPurchaseHistoryList">
+    </div>
+
+  </div>
+
+
+  <!-- Future-ready sections -->
+  <div
+    id="stockProductHistory"
+    class="card"
+    style="
+      display:none;
+      margin-top:15px;">
+
+    <h3>Product History & Controls</h3>
+
+    <div style="
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:10px;">
+
+      <button
+        onclick="viewProductSalesHistory()"
+        style="padding:12px;">
+        Sales History
+      </button>
+
+      <button
+        onclick="viewProductStockIn()"
+        style="padding:12px;">
+        Stock In
+      </button>
+
+      <button
+        onclick="viewProductStockOut()"
+        style="padding:12px;">
+        Stock Out
+      </button>
+
+      <button
+        onclick="viewProductBarcode()"
+        style="padding:12px;">
+        Barcode
+      </button>
+
+      <button
+        onclick="viewProductGST()"
+        style="padding:12px;">
+        GST
+      </button>
+
+      <button
+        onclick="viewProductReports()"
+        style="padding:12px;">
+        Reports
+      </button>
+
+    </div>
+
+  </div>
+
 </section>
 
 <section id="sales" class="section">
