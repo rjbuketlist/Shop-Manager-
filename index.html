@@ -795,16 +795,6 @@ main{padding:15px}
 
   <h3>Edit Product Details</h3>
 
-  <label>Product Name</label>
-  <input
-    id="editStockProductName"
-    type="text"
-    style="
-      width:100%;
-      padding:12px;
-      margin:6px 0 12px;
-      box-sizing:border-box;">
-
   <label>Category</label>
   <select
     id="editStockProductCategory"
@@ -3211,9 +3201,6 @@ function selectStockProduct(productId) {
     return;
   }
 
-  document.getElementById("editStockProductName").value =
-    product.name || "";
-
   document.getElementById("editStockProductCategory").value =
     product.category || "";
 
@@ -3253,8 +3240,6 @@ function selectStockProduct(productId) {
     return;
   }
 
-  const newName =
-    document.getElementById("editStockProductName").value.trim();
 
   const newCategory =
     document.getElementById("editStockProductCategory").value;
@@ -3271,11 +3256,6 @@ function selectStockProduct(productId) {
     Number(
       document.getElementById("editStockProductMinStock").value
     );
-
-  if (!newName) {
-    alert("Please enter Product Name");
-    return;
-  }
 
   if (!newCategory) {
     alert("Please select Category");
@@ -3296,22 +3276,6 @@ function selectStockProduct(productId) {
     return;
   }
 
-  const duplicate =
-    db.products.find(function(p) {
-
-      return p.id !== product.id &&
-        p.name &&
-        p.name.trim().toLowerCase() ===
-        newName.toLowerCase();
-
-    });
-
-  if (duplicate) {
-    alert("A product with this name already exists.");
-    return;
-  }
-
-  product.name = newName;
   product.category = newCategory;
   product.unit = newUnit;
   product.sellingPrice = newSellingPrice;
