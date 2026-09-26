@@ -757,35 +757,53 @@ main{padding:15px}
 
 
     <!-- Edit -->
-    <button
-      onclick="editStockProduct()"
-      style="
-        padding:10px 18px;
-        background:#1f6f43;
-        color:white;
-        border:0;
-        border-radius:6px;
-        margin-top:8px;">
-      Edit Product
-    </button>
+    <div style="
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:10px;">
+
+  <button
+    onclick="editStockProduct()"
+    style="
+      padding:10px 18px;
+      background:#1f6f43;
+      color:white;
+      border:0;
+      border-radius:6px;">
+    Edit Product
+  </button>
+
+  <button
+    onclick="toggleStockPurchaseDetails()"
+    style="
+      padding:10px 18px;
+      background:#555;
+      color:white;
+      border:0;
+      border-radius:6px;">
+    Purchase Details
+  </button>
+
+    </div>
 
   </div>
 
 
   <!-- Last 3 Purchases -->
   <div
-    id="stockPurchaseHistory"
-    class="card"
-    style="
-      display:none;
-      margin-top:15px;">
+  id="stockPurchaseHistory"
+  class="card"
+  style="
+    display:none;
+    margin-top:15px;">
 
-    <h3>Last 3 Purchase Details</h3>
+  <h3>Last 10 Purchase Details</h3>
 
-    <div id="stockPurchaseHistoryList">
-    </div>
-
+  <div id="stockPurchaseHistoryList">
   </div>
+
+</div>
 
 
   <!-- Future-ready sections -->
@@ -2929,41 +2947,8 @@ function printPurchase() {
 
 }
 
-function openNewSale() {
-  showSection("newSale", null);
-  }
-
-function changeSaleCustomerType() {
-
-  const type =
-    document.getElementById("saleCustomerType").value;
-
-  const existingBox =
-    document.getElementById("existingCustomerBox");
-
-  const productBox =
-    document.getElementById("saleProductBox");
-
-  if (type === "cash") {
-
-    existingBox.style.display = "none";
-    productBox.style.display = "block";
-
-  } else if (type === "existing") {
-
-    existingBox.style.display = "block";
-    productBox.style.display = "none";
-
-  } else {
-
-    existingBox.style.display = "none";
-    productBox.style.display = "none";
-
-  }
-  }
-
   function searchStockProducts() {
-
+  
   const input =
     document.getElementById("stockProductSearch");
 
@@ -3056,6 +3041,58 @@ function selectStockProduct(productId) {
   document.getElementById("stockProductHistory").style.display =
     "block";
 }
+
+  
+function toggleStockPurchaseDetails() {
+
+  const box =
+    document.getElementById("stockPurchaseHistory");
+
+  if (box.style.display === "none" || box.style.display === "") {
+
+    box.style.display = "block";
+
+  } else {
+
+    box.style.display = "none";
+
+  }
+}
+
+  
+function openNewSale() {
+  showSection("newSale", null);
+  }
+
+function changeSaleCustomerType() {
+
+  const type =
+    document.getElementById("saleCustomerType").value;
+
+  const existingBox =
+    document.getElementById("existingCustomerBox");
+
+  const productBox =
+    document.getElementById("saleProductBox");
+
+  if (type === "cash") {
+
+    existingBox.style.display = "none";
+    productBox.style.display = "block";
+
+  } else if (type === "existing") {
+
+    existingBox.style.display = "block";
+    productBox.style.display = "none";
+
+  } else {
+
+    existingBox.style.display = "none";
+    productBox.style.display = "none";
+
+  }
+  }
+
   
   function selectSaleCustomer() {
 
