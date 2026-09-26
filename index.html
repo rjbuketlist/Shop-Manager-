@@ -306,10 +306,30 @@ main{padding:15px}
     </select>
 
     <label>Product Name</label>
-    <input id="purchaseProduct"
-      placeholder="Enter Product Name"
-      style="width:100%;padding:12px;margin:6px 0 12px;">
+    <div style="position:relative;">
 
+  <input id="purchaseProduct"
+    placeholder="Enter Product Name"
+    autocomplete="off"
+    oninput="searchPurchaseProducts()"
+    style="width:100%;padding:12px;margin:6px 0 12px;">
+
+  <div id="purchaseProductSuggestions"
+    style="
+      display:none;
+      position:absolute;
+      left:0;
+      right:0;
+      top:100%;
+      background:white;
+      border:1px solid #ddd;
+      border-radius:6px;
+      max-height:220px;
+      overflow-y:auto;
+      z-index:1000;">
+  </div>
+
+</div>
     <label>Quantity</label>
 
 <div style="display:flex;gap:8px;margin:6px 0 12px;">
@@ -1520,6 +1540,92 @@ function selectPurchaseSupplier(supplierId) {
     "";
 
   document.getElementById("purchaseSupplierSuggestions").style.display =
+    "none";
+}
+
+  function searchPurchaseProducts() {
+
+  const input =
+    document.getElementById("purchaseProduct");
+
+  const box =
+    document.getElementById("purchaseProductSuggestions");
+
+  const query =
+    input.value.trim().toLowerCase();
+
+  if (!query) {
+    box.innerHTML = "";
+    box.style.display = "none";
+    return;
+  }
+
+  const matches =
+    db.products.filter(function(product) {
+
+      return product.name &&
+        product.name.toLowerCase().includes(query);
+
+    });
+
+  if (matches.length === 0) {
+
+    box.innerHTML = `
+      <div style="padding:12px;color:#777;">
+        No product found
+      </div>
+    `;
+
+    box.style.display = "block";
+    return;
+  }
+
+  box.innerHTML =
+    matches.map(function(product) {
+
+      return `
+        <div
+          onclick="selectPurchaseProduct('${product.id}')"
+          style="
+            padding:12px;
+            border-bottom:1px solid #eee;
+            cursor:pointer;">
+
+          <strong>${product.name}</strong>
+
+          <div style="
+            font-size:12px;
+            color:#777;
+            margin-top:3px;">
+            Stock: ${Number(product.stock || 0)}
+            ${product.unit || ""}
+          </div>
+
+        </div>
+      `;
+
+    }).join("");
+
+  box.style.display = "block";
+}
+
+
+function selectPurchaseProduct(productId) {
+
+  const product =
+    db.products.find(p => p.id === productId);
+
+  if (!product) {
+    return;
+  }
+
+  document.getElementById("purchaseProduct").value =
+    product.name;
+
+  document.getElementById("purchaseProductSuggestions").innerHTML =
+    "";
+
+  document.getElementById("purchaseProductSuggestions").style.display =
     "none";
 }
   
