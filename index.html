@@ -1551,8 +1551,20 @@ function editPurchaseItem(index) {
   document.getElementById("summaryBillAmount").textContent =
     total.toFixed(2);
 
-  document.getElementById("summaryPreviousPayable").textContent =
-  "0.00";
+  const supplierRecord = db.suppliers.find(
+  s =>
+    s.name &&
+    s.name.trim().toLowerCase() ===
+    currentPurchase.supplier.trim().toLowerCase()
+);
+
+const previousSupplierBalance =
+  supplierRecord
+    ? Number(supplierRecord.balance || 0)
+    : 0;
+
+document.getElementById("summaryPreviousPayable").textContent =
+  Math.abs(previousSupplierBalance).toFixed(2);
 
   document.getElementById("summaryTotalPayable").textContent =
     total.toFixed(2);
