@@ -1679,6 +1679,20 @@ function confirmPurchasePayment() {
   const payment =
     Number(document.getElementById("purchasePayment").value) || 0;
 
+  const supplier =
+  db.suppliers.find(
+    s =>
+      s.name &&
+      s.name.trim().toLowerCase() ===
+      currentPurchase.supplier.trim().toLowerCase()
+  );
+
+const previousBalance =
+  supplier ? Number(supplier.balance || 0) : 0;
+
+const newBalance =
+  previousBalance - billAmount + payment;
+  
   const discountType =
     document.getElementById("purchaseDiscountType").value;
 
@@ -1719,10 +1733,18 @@ function confirmPurchasePayment() {
     billAmount.toFixed(2);
 
   document.getElementById("finalPreviousPayable").textContent =
-    previousPayable.toFixed(2);
-
+  previousBalance > 0
+    ? "+₹" + previousBalance.toFixed(2) + " Advance"
+    : previousBalance < 0
+      ? "-₹" + Math.abs(previousBalance).toFixed(2) + " Payable"
+      : "₹0.00";
+  
   document.getElementById("finalTotalPayable").textContent =
-    totalPayable.toFixed(2);
+  newBalance < 0
+    ? "₹" + Math.abs(newBalance).toFixed(2) + " Payable"
+    : newBalance > 0
+      ? "+₹" + newBalance.toFixed(2) + " Advance"
+      : "₹0.00";
 
   document.getElementById("finalPayment").textContent =
     payment.toFixed(2);
@@ -2058,12 +2080,18 @@ function saveFinalPurchase() {
   ----------------------------- */
 
   alert(
-    "Purchase saved successfully!\n\n" +
-    "PUR ID: " + purId + "\n" +
-    "Supplier: " + supplier.name + "\n" +
-    "Bill Amount: ₹" + billAmount.toFixed(2) + "\n" +
-    "Payment: ₹" + payment.toFixed(2)
-  );
+  "Purchase saved successfully!\n\n" +
+  "PUR ID: " + purId + "\n" +
+  "Supplier: " + supplier.name + "\n" +
+  "New Balance: " +
+  (
+    newBalance > 0
+      ? "+₹" + newBalance.toFixed(2) + " Advance"
+      : newBalance < 0
+        ? "-₹" + Math.abs(newBalance).toFixed(2) + " Payable"
+        : "₹0.00"
+  )
+);
 
 
   /* -----------------------------
