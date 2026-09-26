@@ -1797,10 +1797,10 @@ const newBalance =
       : "₹0.00";
   
   document.getElementById("finalTotalPayable").textContent =
-  newBalance < 0
-    ? "₹" + Math.abs(newBalance).toFixed(2) + " Payable"
-    : newBalance > 0
-      ? "+₹" + newBalance.toFixed(2) + " Advance"
+  totalPayable > 0
+    ? "₹" + totalPayable.toFixed(2)
+    : totalPayable < 0
+      ? "+₹" + Math.abs(totalPayable).toFixed(2) + " Advance"
       : "₹0.00";
 
   document.getElementById("finalPayment").textContent =
