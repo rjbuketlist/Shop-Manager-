@@ -123,9 +123,11 @@ main{padding:15px}
     Dashboard
   </button>
 
-  <button onclick="showSection('purchase',this)">
+  <button onclick="showSection('purchase',this); 
+  document.getElementById('purchaseSummary').style.display='none'; 
+  document.querySelector('#purchase > .card').style.display='block';">
     Purchase
-  </button>
+</button>
 
   <button onclick="showSection('products',this)">
     Product / Stock
