@@ -1596,11 +1596,13 @@ document.getElementById("purchaseDiscountValue").oninput = updatePurchaseDiscoun
     document.getElementById("summaryTotal").textContent
   ) || 0;
 
-  const type = document.getElementById("purchaseDiscountType").value;
+  const type =
+    document.getElementById("purchaseDiscountType").value;
 
-  const value = Number(
-    document.getElementById("purchaseDiscountValue").value
-  ) || 0;
+  const value =
+    Number(
+      document.getElementById("purchaseDiscountValue").value
+    ) || 0;
 
   let discount = 0;
 
@@ -1614,53 +1616,114 @@ document.getElementById("purchaseDiscountValue").oninput = updatePurchaseDiscoun
     discount = total;
   }
 
-  const billAmount = total - discount;
+  const billAmount =
+    total - discount;
 
   document.getElementById("summaryBillAmount").textContent =
     billAmount.toFixed(2);
 
-  document.getElementById("summaryTotalPayable").textContent =
-    billAmount.toFixed(2);
 
-  updatePurchaseBalance();
+  /* Previous Supplier Balance */
+
+  const supplier =
+    db.suppliers.find(
+      s =>
+        s.name &&
+        s.name.trim().toLowerCase() ===
+        currentPurchase.supplier.trim().toLowerCase()
+    );
+
+  const previousBalance =
+    supplier
+      ? Number(supplier.balance || 0)
+      : 0;
+
+
+  /* Previous Balance Display */
+
+  const previousBox =
+    document.getElementById("summaryPreviousPayable");
+
+  if (previousBalance > 0) {
+
+    previousBox.textContent =
+      "+₹" + previousBalance.toFixed(2) + " Advance";
+
+  } else if (previousBalance < 0) {
+
+    previousBox.textContent =
+      "-₹" + Math.abs(previousBalance).toFixed(2) + " Payable";
+
+  } else {
+
+    previousBox.textContent =
+      "₹0.00";
+
   }
 
-  function updatePurchaseBalance() {
 
-  const totalPayable = Number(
-    document.getElementById("summaryTotalPayable").textContent
-  ) || 0;
+  /* Total Payable
+     Previous Payable - Current Bill */
 
-  const payment = Number(
-    document.getElementById("purchasePayment").value
-  ) || 0;
+  const totalPayable =
+    previousBalance - billAmount;
 
-  const difference = payment - totalPayable;
+  document.getElementById("summaryTotalPayable").textContent =
+    Math.abs(totalPayable).toFixed(2);
+
+
+  updatePurchaseBalance();
+}
+
+
+function updatePurchaseBalance() {
+
+  const totalPayable =
+    Number(
+      document.getElementById("summaryTotalPayable").textContent
+    ) || 0;
+
+  const payment =
+    Number(
+      document.getElementById("purchasePayment").value
+    ) || 0;
+
+
+  /* Balance = Total Payable - Payment */
+
+  const difference =
+    totalPayable - payment;
 
   const balanceBox =
     document.getElementById("summaryBalance");
 
-  if (difference < 0) {
+
+  if (difference > 0) {
 
     balanceBox.textContent =
-      "-₹" + Math.abs(difference).toFixed(2);
+      "-₹" + difference.toFixed(2);
 
-    balanceBox.style.color = "red";
+    balanceBox.style.color =
+      "red";
 
-  } else if (difference > 0) {
+  } else if (difference < 0) {
 
     balanceBox.textContent =
-      "+₹" + difference.toFixed(2);
+      "+₹" + Math.abs(difference).toFixed(2);
 
-    balanceBox.style.color = "green";
+    balanceBox.style.color =
+      "green";
 
   } else {
 
-    balanceBox.textContent = "₹0.00";
-    balanceBox.style.color = "green";
+    balanceBox.textContent =
+      "₹0.00";
+
+    balanceBox.style.color =
+      "green";
 
   }
-  }
+}
 
 function confirmPurchasePayment() {
 
