@@ -1622,6 +1622,9 @@ function selectPurchaseProduct(productId) {
   document.getElementById("purchaseProduct").value =
     product.name;
 
+  document.getElementById("purchaseStock").textContent =
+    Number(product.stock || 0) + " " + (product.unit || "");
+
   document.getElementById("purchaseProductSuggestions").innerHTML =
     "";
 
