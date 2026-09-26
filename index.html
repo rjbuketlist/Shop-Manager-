@@ -1563,8 +1563,29 @@ const previousSupplierBalance =
     ? Number(supplierRecord.balance || 0)
     : 0;
 
-document.getElementById("summaryPreviousPayable").textContent =
-  Math.abs(previousSupplierBalance).toFixed(2);
+const previousPayableBox =
+  document.getElementById("summaryPreviousPayable");
+
+if (previousSupplierBalance > 0) {
+
+  previousPayableBox.textContent =
+    "+₹" +
+    previousSupplierBalance.toFixed(2) +
+    " Advance";
+
+} else if (previousSupplierBalance < 0) {
+
+  previousPayableBox.textContent =
+    "-₹" +
+    Math.abs(previousSupplierBalance).toFixed(2) +
+    " Payable";
+
+} else {
+
+  previousPayableBox.textContent =
+    "₹0.00";
+
+}
 
   document.getElementById("summaryTotalPayable").textContent =
     total.toFixed(2);
