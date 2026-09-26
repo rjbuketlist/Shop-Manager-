@@ -363,7 +363,7 @@ main{padding:15px}
        border-radius:8px;
        padding:12px;
        display:none;">
-
+</div>
   <button onclick="finishPurchase()"
   style="padding:12px 22px;
          background:#555;
@@ -373,7 +373,7 @@ main{padding:15px}
          margin-top:8px;">
   Done
 </button>
-</div>
+
   </div>
 
 
@@ -1426,7 +1426,7 @@ function editPurchaseItem(index) {
   }
 
   const supplier = currentPurchase.supplier;
-    
+  document.querySelector("#purchase > .card").style.display = "none";
 
   let total = 0;
 
