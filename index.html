@@ -1757,11 +1757,17 @@ function saveFinalPurchase() {
 
   const supplier =
     db.suppliers.find(
-      s => s.name === supplierName
+      s =>
+        s.name &&
+        s.name.trim().toLowerCase() ===
+        supplierName.trim().toLowerCase()
     );
 
   if (!supplier) {
-    alert("Supplier not found.");
+    alert(
+      "Supplier not found.\n\n" +
+      "Purchase Supplier: " + supplierName
+    );
     return;
   }
 
@@ -1769,55 +1775,354 @@ function saveFinalPurchase() {
     document.getElementById("summaryPurId").textContent;
 
   const total =
-    Number(
-      document.getElementById("summaryTotal").textContent
-    ) || 0;
+    Number(document.getElementById("summaryTotal").textContent) || 0;
 
   const billAmount =
-    Number(
-      document.getElementById("summaryBillAmount").textContent
-    ) || 0;
-
-  const previousPayable =
-    Number(
-      document.getElementById("summaryPreviousPayable").textContent
-    ) || 0;
-
-  const totalPayable =
-    Number(
-      document.getElementById("summaryTotalPayable").textContent
-    ) || 0;
+    Number(document.getElementById("summaryBillAmount").textContent) || 0;
 
   const payment =
-    Number(
-      document.getElementById("purchasePayment").value
-    ) || 0;
+    Number(document.getElementById("purchasePayment").value) || 0;
 
   const paymentMethod =
     document.getElementById("purchasePaymentMethod").value;
 
-  const balanceText =
-    document.getElementById("summaryBalance").textContent;
-
   const note =
     document.getElementById("purchasePaymentNote").value.trim();
 
-  console.log("Purchase Save Data Ready:", {
-    purId,
-    supplierName,
-    supplierBillNo,
-    total,
-    billAmount,
-    previousPayable,
-    totalPayable,
-    payment,
-    paymentMethod,
-    balanceText,
-    note,
-    products: currentPurchase.products
+  const discountType =
+    document.getElementById("purchaseDiscountType").value;
+
+  const discountValue =
+    Number(
+      document.getElementById("purchaseDiscountValue").value
+    ) || 0;
+
+  let discount = 0;
+
+  if (discountType === "percent") {
+    discount = total * discountValue / 100;
+  } else {
+    discount = discountValue;
+  }
+
+  if (discount > total) {
+    discount = total;
+  }
+
+  /* -----------------------------
+     1. SAVE / UPDATE PRODUCTS
+  ----------------------------- */
+
+  currentPurchase.products.forEach(item => {
+
+    let product =
+      db.products.find(
+        p =>
+          p.name &&
+          p.name.trim().toLowerCase() ===
+          item.productName.trim().toLowerCase()
+      );
+
+    if (product) {
+
+      product.stock =
+        Number(product.stock || 0) +
+        Number(item.quantity || 0);
+
+      product.sellingPrice =
+        Number(item.sellingPrice || 0);
+
+      product.category =
+        item.category;
+
+      product.unit =
+        item.unit;
+
+      product.minStockPercent =
+        Number(item.minStockPercent || 20);
+
+    } else {
+
+      const productId =
+        "PROD-" +
+        String(db.products.length + 1).padStart(5, "0");
+
+      product = {
+
+        id: productId,
+
+        name: item.productName,
+
+        category: item.category,
+
+        unit: item.unit,
+
+        stock: Number(item.quantity || 0),
+
+        sellingPrice:
+          Number(item.sellingPrice || 0),
+
+        minStockPercent:
+          Number(item.minStockPercent || 20),
+
+        createdAt:
+          new Date().toISOString()
+
+      };
+
+      db.products.push(product);
+
+    }
+
   });
 
-  alert("Purchase data collected successfully.");
+
+  /* -----------------------------
+     2. SUPPLIER BALANCE
+     Previous + Bill + Payment
+     Universal convention:
+     New Balance =
+     Previous Balance - Bill + Payment
+  ----------------------------- */
+
+  const previousBalance =
+    Number(supplier.balance || 0);
+
+  const newBalance =
+    previousBalance -
+    billAmount +
+    payment;
+
+  supplier.balance =
+    newBalance;
+
+
+  /* -----------------------------
+     3. PURCHASE RECORD
+  ----------------------------- */
+
+  const transactionDate =
+    new Date().toISOString();
+
+  const purchaseRecord = {
+
+    id: purId,
+
+    date: transactionDate,
+
+    supplierId:
+      supplier.id,
+
+    supplierName:
+      supplier.name,
+
+    supplierBillNo:
+      supplierBillNo,
+
+    products:
+      JSON.parse(
+        JSON.stringify(currentPurchase.products)
+      ),
+
+    totalPurchase:
+      total,
+
+    discount:
+      discount,
+
+    billAmount:
+      billAmount,
+
+    previousPayable:
+      previousBalance,
+
+    totalPayable:
+      previousBalance - billAmount,
+
+    payment:
+      payment,
+
+    paymentMethod:
+      paymentMethod,
+
+    balance:
+      newBalance,
+
+    note:
+      note
+
+  };
+
+  db.purchases.push(purchaseRecord);
+
+
+  /* -----------------------------
+     4. SUPPLIER TRANSACTION
+  ----------------------------- */
+
+  supplier.transactions =
+    supplier.transactions || [];
+
+  supplier.transactions.push({
+
+    id:
+      purId,
+
+    type:
+      "purchase",
+
+    date:
+      transactionDate,
+
+    billId:
+      purId,
+
+    billAmount:
+      billAmount,
+
+    paid:
+      payment,
+
+    balance:
+      newBalance,
+
+    paymentMethod:
+      paymentMethod,
+
+    note:
+      note,
+
+    previousBalance:
+      previousBalance,
+
+    partyId:
+      supplier.id,
+
+    partyType:
+      "supplier",
+
+    supplierBillNo:
+      supplierBillNo
+
+  });
+
+
+  /* -----------------------------
+     5. PAYMENT RECORD
+  ----------------------------- */
+
+  if (payment > 0) {
+
+    db.payments.push({
+
+      id:
+        "PAY-" +
+        String(db.settings.nextPayNo++)
+          .padStart(5, "0"),
+
+      date:
+        transactionDate,
+
+      billId:
+        purId,
+
+      partyId:
+        supplier.id,
+
+      partyType:
+        "supplier",
+
+      amount:
+        payment,
+
+      paymentMethod:
+        paymentMethod,
+
+      note:
+        note
+
+    });
+
+  }
+
+
+  /* -----------------------------
+     6. SAVE DATABASE
+  ----------------------------- */
+
+  saveDB();
+
+
+  /* -----------------------------
+     7. CONFIRMATION
+  ----------------------------- */
+
+  alert(
+    "Purchase saved successfully!\n\n" +
+    "PUR ID: " + purId + "\n" +
+    "Supplier: " + supplier.name + "\n" +
+    "Bill Amount: ₹" + billAmount.toFixed(2) + "\n" +
+    "Payment: ₹" + payment.toFixed(2)
+  );
+
+
+  /* -----------------------------
+     8. RESET PURCHASE SCREEN
+  ----------------------------- */
+
+  currentPurchase = {
+    supplier: "",
+    supplierBillNo: "",
+    products: []
+  };
+
+  editingPurchaseIndex = null;
+
+  document.querySelector("#purchase > .card").style.display =
+    "block";
+
+  document.getElementById("purchaseSummary").style.display =
+    "none";
+
+  document.getElementById("purchaseFinalConfirmation").style.display =
+    "none";
+
+  document.getElementById("purchaseProductList").style.display =
+    "none";
+
+  document.getElementById("purchaseProductList").innerHTML =
+    "";
+
+  document.getElementById("purchaseSupplier").value =
+    "";
+
+  document.getElementById("purchaseSupplierBillNo").value =
+    "";
+
+  document.getElementById("purchaseCategory").value =
+    "";
+
+  document.getElementById("purchaseProduct").value =
+    "";
+
+  document.getElementById("purchaseQty").value =
+    "";
+
+  document.getElementById("purchaseUnit").value =
+    "KG";
+
+  document.getElementById("purchasePrice").value =
+    "";
+
+  document.getElementById("purchaseSellingPrice").value =
+    "";
+
+  document.getElementById("purchaseMinStock").value =
+    "20";
+
+  document.getElementById("purchaseStock").textContent =
+    "0";
+
 }
 
   
