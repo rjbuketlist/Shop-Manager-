@@ -262,10 +262,30 @@ main{padding:15px}
 
   <div class="card">
 
-    <label>Supplier Name</label>
-    <input id="purchaseSupplier"
-      placeholder="Enter Supplier Name"
-      style="width:100%;padding:12px;margin:6px 0 12px;">
+    <div style="position:relative;">
+
+  <input id="purchaseSupplier"
+    placeholder="Enter Supplier Name"
+    autocomplete="off"
+    oninput="searchPurchaseSuppliers()"
+    style="width:100%;padding:12px;margin:6px 0 12px;">
+
+  <div id="purchaseSupplierSuggestions"
+    style="
+      display:none;
+      position:absolute;
+      left:0;
+      right:0;
+      top:100%;
+      background:white;
+      border:1px solid #ddd;
+      border-radius:6px;
+      max-height:220px;
+      overflow-y:auto;
+      z-index:1000;">
+  </div>
+
+</div>
 
     <label>Supplier Bill No.</label>
 <input id="purchaseSupplierBillNo"
@@ -1406,7 +1426,103 @@ if (editingPurchaseIndex !== null) {
   alert("Product added to current purchase!");
 }
 
+function searchPurchaseSuppliers() {
 
+  const input =
+    document.getElementById("purchaseSupplier");
+
+  const box =
+    document.getElementById("purchaseSupplierSuggestions");
+
+  const query =
+    input.value.trim().toLowerCase();
+
+  if (!query) {
+    box.innerHTML = "";
+    box.style.display = "none";
+    return;
+  }
+
+  const matches =
+    db.suppliers.filter(function(supplier) {
+
+      return supplier.name &&
+        supplier.name.toLowerCase().includes(query);
+
+    });
+
+  if (matches.length === 0) {
+
+    box.innerHTML = `
+      <div style="padding:12px;color:#777;">
+        No supplier found
+      </div>
+    `;
+
+    box.style.display = "block";
+    return;
+  }
+
+  box.innerHTML =
+    matches.map(function(supplier) {
+
+      return `
+        <div
+          onclick="selectPurchaseSupplier('${supplier.id}')"
+          style="
+            padding:12px;
+            border-bottom:1px solid #eee;
+            cursor:pointer;">
+
+          <strong>${supplier.name}</strong>
+
+          <div style="
+            font-size:12px;
+            color:#777;
+            margin-top:3px;">
+
+            ${supplier.mobile || ""}
+
+          </div>
+
+        </div>
+      `;
+
+    }).join("");
+
+  box.style.display = "block";
+}
+
+function selectPurchaseSupplier(supplierId) {
+
+  const supplier =
+    db.suppliers.find(s => s.id === supplierId);
+
+  if (!supplier) {
+    return;
+  }
+
+  if (supplier.status === "blocked") {
+
+    alert(
+      "This supplier is blocked.\n\n" +
+      "Reason: " +
+      (supplier.blockReason || "No reason provided.")
+    );
+
+    return;
+  }
+
+  document.getElementById("purchaseSupplier").value =
+    supplier.name;
+
+  document.getElementById("purchaseSupplierSuggestions").innerHTML =
+    "";
+
+  document.getElementById("purchaseSupplierSuggestions").style.display =
+    "none";
+}
+  
 function renderPurchaseList() {
 
   const box = document.getElementById("purchaseProductList");
