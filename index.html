@@ -1735,7 +1735,80 @@ function confirmPurchasePayment() {
   });
 }
 
+function saveFinalPurchase() {
 
+  const supplierName =
+    currentPurchase.supplier;
+
+  const supplierBillNo =
+    currentPurchase.supplierBillNo || "";
+
+  const supplier =
+    db.suppliers.find(
+      s => s.name === supplierName
+    );
+
+  if (!supplier) {
+    alert("Supplier not found.");
+    return;
+  }
+
+  const purId =
+    document.getElementById("summaryPurId").textContent;
+
+  const total =
+    Number(
+      document.getElementById("summaryTotal").textContent
+    ) || 0;
+
+  const billAmount =
+    Number(
+      document.getElementById("summaryBillAmount").textContent
+    ) || 0;
+
+  const previousPayable =
+    Number(
+      document.getElementById("summaryPreviousPayable").textContent
+    ) || 0;
+
+  const totalPayable =
+    Number(
+      document.getElementById("summaryTotalPayable").textContent
+    ) || 0;
+
+  const payment =
+    Number(
+      document.getElementById("purchasePayment").value
+    ) || 0;
+
+  const paymentMethod =
+    document.getElementById("purchasePaymentMethod").value;
+
+  const balanceText =
+    document.getElementById("summaryBalance").textContent;
+
+  const note =
+    document.getElementById("purchasePaymentNote").value.trim();
+
+  console.log("Purchase Save Data Ready:", {
+    purId,
+    supplierName,
+    supplierBillNo,
+    total,
+    billAmount,
+    previousPayable,
+    totalPayable,
+    payment,
+    paymentMethod,
+    balanceText,
+    note,
+    products: currentPurchase.products
+  });
+
+  alert("Purchase data collected successfully.");
+}
+
+  
 function printPurchase() {
 
   alert("Print feature will be connected after billing finalization.");
