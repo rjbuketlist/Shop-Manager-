@@ -2962,6 +2962,101 @@ function changeSaleCustomerType() {
   }
   }
 
+  function searchStockProducts() {
+
+  const input =
+    document.getElementById("stockProductSearch");
+
+  const box =
+    document.getElementById("stockProductSuggestions");
+
+  const query =
+    input.value.trim().toLowerCase();
+
+  if (!query) {
+    box.innerHTML = "";
+    box.style.display = "none";
+    return;
+  }
+
+  const matches =
+    db.products.filter(function(product) {
+
+      return product.name &&
+        product.name.toLowerCase().includes(query);
+
+    });
+
+  if (matches.length === 0) {
+
+    box.innerHTML = `
+      <div style="padding:12px;color:#777;">
+        No product found
+      </div>
+    `;
+
+    box.style.display = "block";
+    return;
+  }
+
+  box.innerHTML =
+    matches.map(function(product) {
+
+      return `
+        <div
+          onclick="selectStockProduct('${product.id}')"
+          style="
+            padding:12px;
+            border-bottom:1px solid #eee;
+            cursor:pointer;">
+
+          <strong>${product.name}</strong>
+
+          <div style="
+            font-size:12px;
+            color:#777;
+            margin-top:3px;">
+            Stock: ${Number(product.stock || 0)}
+            ${product.unit || ""}
+          </div>
+
+        </div>
+      `;
+
+    }).join("");
+
+  box.style.display = "block";
+}
+
+
+function selectStockProduct(productId) {
+
+  const product =
+    db.products.find(p => p.id === productId);
+
+  if (!product) {
+    return;
+  }
+
+  document.getElementById("stockProductSearch").value =
+    product.name;
+
+  document.getElementById("stockProductSuggestions").innerHTML =
+    "";
+
+  document.getElementById("stockProductSuggestions").style.display =
+    "none";
+
+  document.getElementById("stockProductDetails").style.display =
+    "block";
+
+  document.getElementById("stockPurchaseHistory").style.display =
+    "block";
+
+  document.getElementById("stockProductHistory").style.display =
+    "block";
+}
+  
   function selectSaleCustomer() {
 
   const customerId =
