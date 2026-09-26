@@ -1603,8 +1603,7 @@ document.getElementById("purchaseDiscountValue").oninput = updatePurchaseDiscoun
   document.getElementById("purchasePaymentMethod").value = "Cash";
   document.getElementById("purchasePaymentNote").value = "";
 
-  document.getElementById("summaryBalance").textContent =
-    "₹0.00";
+  updatePurchaseBalance();
 
   document.getElementById("purchaseSummary").style.display =
     "block";
