@@ -3101,6 +3101,18 @@ function toggleStockPurchaseDetails() {
   if (box.style.display === "none" || box.style.display === "") {
 
     box.style.display = "block";
+    
+    const product =
+  db.products.find(function(p) {
+    return p.name &&
+      p.name.trim().toLowerCase() ===
+      document.getElementById("stockProductSearch").value
+        .trim().toLowerCase();
+  });
+
+if (product) {
+  loadStockPurchaseHistory(product.id);
+}
 
   } else {
 
@@ -3109,6 +3121,189 @@ function toggleStockPurchaseDetails() {
   }
 }
 
+
+  function loadStockPurchaseHistory(productId) {
+
+  const box =
+    document.getElementById("stockPurchaseHistoryList");
+
+  const purchases =
+    db.purchases
+      .filter(function(purchase) {
+
+        return purchase.products &&
+          purchase.products.some(function(item) {
+
+            const product =
+              db.products.find(function(p) {
+                return p.name &&
+                  p.name.trim().toLowerCase() ===
+                  item.productName.trim().toLowerCase();
+              });
+
+            return product && product.id === productId;
+
+          });
+
+      })
+      .map(function(purchase) {
+
+        const product =
+          db.products.find(p => p.id === productId);
+
+        const item =
+          purchase.products.find(function(item) {
+
+            return item.productName &&
+              product &&
+              item.productName.trim().toLowerCase() ===
+              product.name.trim().toLowerCase();
+
+          });
+
+        if (!item) {
+          return null;
+        }
+
+        return {
+          purchase: purchase,
+          item: item
+        };
+
+      })
+      .filter(Boolean)
+      .sort(function(a, b) {
+
+        return new Date(b.purchase.date) -
+          new Date(a.purchase.date);
+
+      })
+      .slice(0, 10);
+
+  if (purchases.length === 0) {
+
+    box.innerHTML = `
+      <div style="
+        padding:12px;
+        color:#777;
+        text-align:center;">
+        No purchase history found.
+      </div>
+    `;
+
+    return;
+  }
+
+  let html = `
+    <div style="overflow-x:auto;">
+
+      <table style="
+        width:100%;
+        border-collapse:collapse;
+        font-size:13px;">
+
+        <tr style="background:#e9ecef;">
+
+          <th style="padding:8px;border:1px solid #ddd;">
+            Date
+          </th>
+
+          <th style="padding:8px;border:1px solid #ddd;">
+            Supplier
+          </th>
+
+          <th style="padding:8px;border:1px solid #ddd;">
+            Supplier Bill No.
+          </th>
+
+          <th style="padding:8px;border:1px solid #ddd;">
+            Qty
+          </th>
+
+          <th style="padding:8px;border:1px solid #ddd;">
+            Unit
+          </th>
+
+          <th style="padding:8px;border:1px solid #ddd;">
+            Purchase Rate
+          </th>
+
+          <th style="padding:8px;border:1px solid #ddd;">
+            Discount
+          </th>
+
+          <th style="padding:8px;border:1px solid #ddd;">
+            Product Amount
+          </th>
+
+          <th style="padding:8px;border:1px solid #ddd;">
+            PUR ID
+          </th>
+
+        </tr>
+  `;
+
+  purchases.forEach(function(record) {
+
+    const purchase = record.purchase;
+    const item = record.item;
+
+    const date =
+      purchase.date
+        ? new Date(purchase.date).toLocaleDateString("en-IN")
+        : "-";
+
+    html += `
+      <tr>
+
+        <td style="padding:8px;border:1px solid #ddd;">
+          ${date}
+        </td>
+
+        <td style="padding:8px;border:1px solid #ddd;">
+          ${purchase.supplierName || "-"}
+        </td>
+
+        <td style="padding:8px;border:1px solid #ddd;">
+          ${purchase.supplierBillNo || "-"}
+        </td>
+
+        <td style="padding:8px;border:1px solid #ddd;">
+          ${Number(item.quantity || 0)}
+        </td>
+
+        <td style="padding:8px;border:1px solid #ddd;">
+          ${item.unit || "-"}
+        </td>
+
+        <td style="padding:8px;border:1px solid #ddd;">
+          ₹${Number(item.purchasePrice || 0).toFixed(2)}
+        </td>
+
+        <td style="padding:8px;border:1px solid #ddd;">
+          ₹${Number(purchase.discount || 0).toFixed(2)}
+        </td>
+
+        <td style="padding:8px;border:1px solid #ddd;">
+          ₹${Number(item.amount || 0).toFixed(2)}
+        </td>
+
+        <td style="padding:8px;border:1px solid #ddd;">
+          ${purchase.id || "-"}
+        </td>
+
+      </tr>
+    `;
+
+  });
+
+  html += `
+      </table>
+    </div>
+  `;
+
+  box.innerHTML = html;
+  }
   
 function openNewSale() {
   showSection("newSale", null);
