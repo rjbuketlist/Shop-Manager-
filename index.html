@@ -1587,9 +1587,12 @@ if (previousSupplierBalance > 0) {
 
 }
 
-  document.getElementById("summaryTotalPayable").textContent =
-    total.toFixed(2);
+  const initialTotalPayable =
+  total - previousSupplierBalance;
 
+document.getElementById("summaryTotalPayable").textContent =
+  initialTotalPayable.toFixed(2);
+    
   document.getElementById("purchaseDiscountType").value = "percent";
 document.getElementById("purchaseDiscountValue").value = 0;
   document.getElementById("purchaseDiscountType").onchange = updatePurchaseDiscount;
