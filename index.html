@@ -786,6 +786,106 @@ main{padding:15px}
   </button>
 
     </div>
+    <div id="stockProductEditBox"
+  style="
+    display:none;
+    margin-top:15px;
+    padding-top:15px;
+    border-top:1px solid #ddd;">
+
+  <h3>Edit Product Details</h3>
+
+  <label>Product Name</label>
+  <input
+    id="editStockProductName"
+    type="text"
+    style="
+      width:100%;
+      padding:12px;
+      margin:6px 0 12px;
+      box-sizing:border-box;">
+
+  <label>Category</label>
+  <select
+    id="editStockProductCategory"
+    style="
+      width:100%;
+      padding:12px;
+      margin:6px 0 12px;">
+
+    <option value="">Select Category</option>
+    <option>General</option>
+    <option>Grocery</option>
+    <option>Food</option>
+    <option>Beverage</option>
+    <option>Electronics</option>
+    <option>Clothing</option>
+    <option>Other</option>
+
+  </select>
+
+  <label>Unit</label>
+  <select
+    id="editStockProductUnit"
+    style="
+      width:100%;
+      padding:12px;
+      margin:6px 0 12px;">
+
+    <option value="KG">KG</option>
+    <option value="Litre">Litre</option>
+    <option value="Nos">Nos</option>
+
+  </select>
+
+  <label>Selling Price</label>
+  <input
+    id="editStockProductSellingPrice"
+    type="number"
+    min="0"
+    step="0.01"
+    style="
+      width:100%;
+      padding:12px;
+      margin:6px 0 12px;
+      box-sizing:border-box;">
+
+  <label>Minimum Stock Alert (%)</label>
+  <input
+    id="editStockProductMinStock"
+    type="number"
+    min="0"
+    max="100"
+    style="
+      width:100%;
+      padding:12px;
+      margin:6px 0 12px;
+      box-sizing:border-box;">
+
+  <button
+    onclick="saveEditedStockProduct()"
+    style="
+      padding:10px 18px;
+      background:#1f6f43;
+      color:white;
+      border:0;
+      border-radius:6px;
+      margin-right:6px;">
+    Save Changes
+  </button>
+
+  <button
+    onclick="cancelEditStockProduct()"
+    style="
+      padding:10px 18px;
+      background:#555;
+      color:white;
+      border:0;
+      border-radius:6px;">
+    Cancel
+  </button>
+
+    </div>
 
   </div>
 
@@ -3092,6 +3192,195 @@ function selectStockProduct(productId) {
     "block";
 }
 
+  function editStockProduct() {
+
+  const productName =
+    document.getElementById("stockProductSearch").value.trim();
+
+  const product =
+    db.products.find(function(p) {
+
+      return p.name &&
+        p.name.trim().toLowerCase() ===
+        productName.toLowerCase();
+
+    });
+
+  if (!product) {
+    alert("Product not found.");
+    return;
+  }
+
+  document.getElementById("editStockProductName").value =
+    product.name || "";
+
+  document.getElementById("editStockProductCategory").value =
+    product.category || "";
+
+  document.getElementById("editStockProductUnit").value =
+    product.unit || "KG";
+
+  document.getElementById("editStockProductSellingPrice").value =
+    Number(product.sellingPrice || 0).toFixed(2);
+
+  document.getElementById("editStockProductMinStock").value =
+    Number(product.minStockPercent || 20);
+
+  document.getElementById("stockProductEditBox").style.display =
+    "block";
+
+  document.getElementById("stockProductEditBox").scrollIntoView({
+    behavior: "smooth"
+  });
+  }
+
+  function saveEditedStockProduct() {
+
+  const productName =
+    document.getElementById("stockProductSearch").value.trim();
+
+  const product =
+    db.products.find(function(p) {
+
+      return p.name &&
+        p.name.trim().toLowerCase() ===
+        productName.toLowerCase();
+
+    });
+
+  if (!product) {
+    alert("Product not found.");
+    return;
+  }
+
+  const newName =
+    document.getElementById("editStockProductName").value.trim();
+
+  const newCategory =
+    document.getElementById("editStockProductCategory").value;
+
+  const newUnit =
+    document.getElementById("editStockProductUnit").value;
+
+  const newSellingPrice =
+    Number(
+      document.getElementById("editStockProductSellingPrice").value
+    );
+
+  const newMinStock =
+    Number(
+      document.getElementById("editStockProductMinStock").value
+    );
+
+  if (!newName) {
+    alert("Please enter Product Name");
+    return;
+  }
+
+  if (!newCategory) {
+    alert("Please select Category");
+    return;
+  }
+
+  if (!newSellingPrice || newSellingPrice <= 0) {
+    alert("Please enter valid Selling Price");
+    return;
+  }
+
+  if (
+    isNaN(newMinStock) ||
+    newMinStock < 0 ||
+    newMinStock > 100
+  ) {
+    alert("Minimum Stock Alert must be between 0 and 100.");
+    return;
+  }
+
+  const duplicate =
+    db.products.find(function(p) {
+
+      return p.id !== product.id &&
+        p.name &&
+        p.name.trim().toLowerCase() ===
+        newName.toLowerCase();
+
+    });
+
+  if (duplicate) {
+    alert("A product with this name already exists.");
+    return;
+  }
+
+  product.name = newName;
+  product.category = newCategory;
+  product.unit = newUnit;
+  product.sellingPrice = newSellingPrice;
+  product.minStockPercent = newMinStock;
+
+  saveDB();
+
+  document.getElementById("stockProductSearch").value =
+    product.name;
+
+  document.getElementById("stockDetailName").textContent =
+    product.name;
+
+  document.getElementById("stockDetailCategory").textContent =
+    product.category;
+
+  document.getElementById("stockDetailUnit").textContent =
+    product.unit;
+
+  document.getElementById("stockDetailCurrentStock").textContent =
+    Number(product.stock || 0) + " " + product.unit;
+
+  document.getElementById("stockDetailMinimumStock").textContent =
+    product.minStockPercent + "%";
+
+  document.getElementById("stockDetailSellingPrice").textContent =
+    Number(product.sellingPrice || 0).toFixed(2);
+
+  const currentStock =
+    Number(product.stock || 0);
+
+  const minimumStock =
+    currentStock * product.minStockPercent / 100;
+
+  const stockStatus =
+    document.getElementById("stockDetailStatus");
+
+  if (currentStock <= 0) {
+
+    stockStatus.textContent = "Out of Stock";
+    stockStatus.style.color = "red";
+
+  } else if (currentStock <= minimumStock) {
+
+    stockStatus.textContent = "Low Stock";
+    stockStatus.style.color = "#d97706";
+
+  } else {
+
+    stockStatus.textContent = "In Stock";
+    stockStatus.style.color = "#1f6f43";
+
+  }
+
+  document.getElementById("stockProductEditBox").style.display =
+    "none";
+
+  alert("Product details updated successfully!");
+}
+
+
+function cancelEditStockProduct() {
+
+  document.getElementById("stockProductEditBox").style.display =
+    "none";
+
+}
+
+  
   
 function toggleStockPurchaseDetails() {
 
