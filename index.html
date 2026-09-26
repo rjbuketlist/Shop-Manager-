@@ -508,6 +508,118 @@ main{padding:15px}
 
 </div>
 
+  <div id="purchaseFinalConfirmation"
+     style="
+       display:none;
+       margin-top:15px;
+       background:white;
+       border:1px solid #ddd;
+       border-radius:8px;
+       padding:15px;">
+
+  <h3 style="margin-top:0;">
+    Final Purchase Confirmation
+  </h3>
+
+  <div style="
+       background:#f8f9fa;
+       padding:12px;
+       border-radius:6px;">
+
+    <p>
+      <strong>Supplier:</strong>
+      <span id="finalSupplier">-</span>
+    </p>
+
+    <p>
+      <strong>Supplier Bill No.:</strong>
+      <span id="finalSupplierBillNo">-</span>
+    </p>
+
+    <p>
+      <strong>PUR ID:</strong>
+      <span id="finalPurId">-</span>
+    </p>
+
+    <p>
+      <strong>Product Count:</strong>
+      <span id="finalProductCount">0</span>
+    </p>
+
+    <p>
+      <strong>Total Purchase:</strong>
+      ₹<span id="finalTotal">0.00</span>
+    </p>
+
+    <p>
+      <strong>Discount:</strong>
+      ₹<span id="finalDiscount">0.00</span>
+    </p>
+
+    <p>
+      <strong>Current Bill Amount:</strong>
+      ₹<span id="finalBillAmount">0.00</span>
+    </p>
+
+    <p>
+      <strong>Previous Payable:</strong>
+      ₹<span id="finalPreviousPayable">0.00</span>
+    </p>
+
+    <p>
+      <strong>Total Payable:</strong>
+      ₹<span id="finalTotalPayable">0.00</span>
+    </p>
+
+    <p>
+      <strong>Payment:</strong>
+      ₹<span id="finalPayment">0.00</span>
+    </p>
+
+    <p>
+      <strong>Payment Method:</strong>
+      <span id="finalPaymentMethod">-</span>
+    </p>
+
+    <p>
+      <strong>Balance / Advance:</strong>
+      <span id="finalBalance">₹0.00</span>
+    </p>
+
+    <p>
+      <strong>Note:</strong>
+      <span id="finalNote">-</span>
+    </p>
+
+  </div>
+
+  <div style="margin-top:15px;">
+
+    <button onclick="saveFinalPurchase()"
+      style="
+        padding:12px 22px;
+        background:#1f6f43;
+        color:white;
+        border:0;
+        border-radius:6px;
+        margin-right:6px;">
+      Save
+    </button>
+
+    <button onclick="printFinalPurchase()"
+      style="
+        padding:12px 22px;
+        background:#555;
+        color:white;
+        border:0;
+        border-radius:6px;">
+      Print
+    </button>
+
+  </div>
+
+  </div>
+
 </section>
 
 <section id="products" class="section">
@@ -1540,10 +1652,87 @@ document.getElementById("purchaseDiscountValue").oninput = updatePurchaseDiscoun
 
 function confirmPurchasePayment() {
 
-  alert(
-    "Purchase billing is ready.\n\n" +
-    "Stock and supplier khata will be finalized in the next step."
-  );
+  const total =
+    Number(document.getElementById("summaryTotal").textContent) || 0;
+
+  const billAmount =
+    Number(document.getElementById("summaryBillAmount").textContent) || 0;
+
+  const previousPayable =
+    Number(document.getElementById("summaryPreviousPayable").textContent) || 0;
+
+  const totalPayable =
+    Number(document.getElementById("summaryTotalPayable").textContent) || 0;
+
+  const payment =
+    Number(document.getElementById("purchasePayment").value) || 0;
+
+  const discountType =
+    document.getElementById("purchaseDiscountType").value;
+
+  const discountValue =
+    Number(document.getElementById("purchaseDiscountValue").value) || 0;
+
+  let discount = 0;
+
+  if (discountType === "percent") {
+    discount = total * discountValue / 100;
+  } else {
+    discount = discountValue;
+  }
+
+  if (discount > total) {
+    discount = total;
+  }
+
+  document.getElementById("finalSupplier").textContent =
+    currentPurchase.supplier || "-";
+
+  document.getElementById("finalSupplierBillNo").textContent =
+    currentPurchase.supplierBillNo || "-";
+
+  document.getElementById("finalPurId").textContent =
+    document.getElementById("summaryPurId").textContent;
+
+  document.getElementById("finalProductCount").textContent =
+    document.getElementById("summaryProductCount").textContent;
+
+  document.getElementById("finalTotal").textContent =
+    total.toFixed(2);
+
+  document.getElementById("finalDiscount").textContent =
+    discount.toFixed(2);
+
+  document.getElementById("finalBillAmount").textContent =
+    billAmount.toFixed(2);
+
+  document.getElementById("finalPreviousPayable").textContent =
+    previousPayable.toFixed(2);
+
+  document.getElementById("finalTotalPayable").textContent =
+    totalPayable.toFixed(2);
+
+  document.getElementById("finalPayment").textContent =
+    payment.toFixed(2);
+
+  document.getElementById("finalPaymentMethod").textContent =
+    document.getElementById("purchasePaymentMethod").value;
+
+  document.getElementById("finalBalance").textContent =
+    document.getElementById("summaryBalance").textContent;
+
+  document.getElementById("finalNote").textContent =
+    document.getElementById("purchasePaymentNote").value.trim() || "-";
+
+  document.getElementById("purchaseSummary").style.display =
+    "none";
+
+  document.getElementById("purchaseFinalConfirmation").style.display =
+    "block";
+
+  document.getElementById("purchaseFinalConfirmation").scrollIntoView({
+    behavior: "smooth"
+  });
 }
 
 
