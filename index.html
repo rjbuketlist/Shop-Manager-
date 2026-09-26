@@ -3023,6 +3023,56 @@ function selectStockProduct(productId) {
     return;
   }
 
+    document.getElementById("stockDetailId").textContent =
+    product.id;
+
+  document.getElementById("stockDetailName").textContent =
+    product.name;
+
+  document.getElementById("stockDetailCategory").textContent =
+    product.category || "-";
+
+  document.getElementById("stockDetailUnit").textContent =
+    product.unit || "-";
+
+  const currentStock =
+    Number(product.stock || 0);
+
+  document.getElementById("stockDetailCurrentStock").textContent =
+    currentStock + " " + (product.unit || "");
+
+  const minStockPercent =
+    Number(product.minStockPercent || 20);
+
+  document.getElementById("stockDetailMinimumStock").textContent =
+    minStockPercent + "%";
+
+  document.getElementById("stockDetailSellingPrice").textContent =
+    Number(product.sellingPrice || 0).toFixed(2);
+
+  const stockStatus =
+    document.getElementById("stockDetailStatus");
+
+  const minimumStock =
+    currentStock * minStockPercent / 100;
+
+  if (currentStock <= 0) {
+
+    stockStatus.textContent = "Out of Stock";
+    stockStatus.style.color = "red";
+
+  } else if (currentStock <= minimumStock) {
+
+    stockStatus.textContent = "Low Stock";
+    stockStatus.style.color = "#d97706";
+
+  } else {
+
+    stockStatus.textContent = "In Stock";
+    stockStatus.style.color = "#1f6f43";
+
+  }
+
   document.getElementById("stockProductSearch").value =
     product.name;
 
