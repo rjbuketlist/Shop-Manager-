@@ -1464,6 +1464,7 @@ let db = JSON.parse(localStorage.getItem(DB_KEY)) || {
     purchases: [],
     sales: [],
     customers: [],
+    stockMovements: [],
     suppliers: [],
     payments: [],
 
@@ -2431,10 +2432,59 @@ function saveFinalPurchase() {
       );
 
     if (product) {
-
+const previousStock =
+        Number(product.stock || 0);
+      
       product.stock =
         Number(product.stock || 0) +
         Number(item.quantity || 0);
+      
+  db.stockMovements.push({
+
+  id:
+    "STKIN-" +
+    String(db.stockMovements.length + 1).padStart(5, "0"),
+
+  date:
+    new Date().toISOString(),
+
+  type:
+    "stock_in",
+
+  source:
+    "purchase",
+
+  productId:
+    product.id,
+
+  productName:
+    product.name,
+
+  quantity:
+    Number(item.quantity || 0),
+
+  unit:
+    item.unit,
+
+  previousStock:
+    previousStock,
+
+  newStock:
+    Number(product.stock || 0),
+
+  referenceId:
+    purId,
+
+  supplierId:
+    supplier.id,
+
+  supplierName:
+    supplier.name,
+
+  note:
+    "Stock added through purchase."
+
+});
 
       product.sellingPrice =
         Number(item.sellingPrice || 0);
