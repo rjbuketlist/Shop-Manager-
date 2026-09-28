@@ -2792,6 +2792,180 @@ const previousStock =
 
 }
 
+  function viewProductStockIn() {
+
+  const productName =
+    document.getElementById("stockProductSearch").value.trim();
+
+  const product =
+    db.products.find(function(p) {
+
+      return p.name &&
+        p.name.trim().toLowerCase() ===
+        productName.toLowerCase();
+
+    });
+
+  if (!product) {
+    alert("Product not found.");
+    return;
+  }
+
+  const movements =
+    db.stockMovements
+      .filter(function(movement) {
+
+        return movement.productId === product.id &&
+          movement.type === "stock_in";
+
+      })
+      .sort(function(a, b) {
+
+        return new Date(b.date) -
+          new Date(a.date);
+
+      })
+      .slice(0, 10);
+
+  if (movements.length === 0) {
+
+    alert("No Stock In history found.");
+    return;
+
+  }
+
+  let html = `
+    <div class="card" style="margin-top:15px;">
+
+      <h3>
+        Stock In — ${product.name}
+      </h3>
+
+      <div style="overflow-x:auto;">
+
+        <table style="
+          width:100%;
+          border-collapse:collapse;
+          font-size:13px;">
+
+          <tr style="background:#e9ecef;">
+
+            <th style="padding:8px;border:1px solid #ddd;">
+              Date
+            </th>
+
+            <th style="padding:8px;border:1px solid #ddd;">
+              Source
+            </th>
+
+            <th style="padding:8px;border:1px solid #ddd;">
+              Quantity
+            </th>
+
+            <th style="padding:8px;border:1px solid #ddd;">
+              Unit
+            </th>
+
+            <th style="padding:8px;border:1px solid #ddd;">
+              Previous Stock
+            </th>
+
+            <th style="padding:8px;border:1px solid #ddd;">
+              Stock Added
+            </th>
+
+            <th style="padding:8px;border:1px solid #ddd;">
+              New Stock
+            </th>
+
+            <th style="padding:8px;border:1px solid #ddd;">
+              Reference ID
+            </th>
+
+            <th style="padding:8px;border:1px solid #ddd;">
+              Supplier
+            </th>
+
+          </tr>
+  `;
+
+  movements.forEach(function(movement) {
+
+    html += `
+      <tr>
+
+        <td style="padding:8px;border:1px solid #ddd;">
+          ${new Date(movement.date).toLocaleDateString("en-IN")}
+        </td>
+
+        <td style="padding:8px;border:1px solid #ddd;">
+          ${movement.source || "-"}
+        </td>
+
+        <td style="padding:8px;border:1px solid #ddd;">
+          ${Number(movement.quantity || 0)}
+        </td>
+
+        <td style="padding:8px;border:1px solid #ddd;">
+          ${movement.unit || "-"}
+        </td>
+
+        <td style="padding:8px;border:1px solid #ddd;">
+          ${Number(movement.previousStock || 0)}
+        </td>
+
+        <td style="padding:8px;border:1px solid #ddd;">
+          +${Number(movement.quantity || 0)}
+        </td>
+
+        <td style="padding:8px;border:1px solid #ddd;">
+          ${Number(movement.newStock || 0)}
+        </td>
+
+        <td style="padding:8px;border:1px solid #ddd;">
+          ${movement.referenceId || "-"}
+        </td>
+
+        <td style="padding:8px;border:1px solid #ddd;">
+          ${movement.supplierName || "-"}
+        </td>
+
+      </tr>
+    `;
+
+  });
+
+  html += `
+        </table>
+
+      </div>
+
+    </div>
+  `;
+
+  const existingBox =
+    document.getElementById("stockInResult");
+
+  if (existingBox) {
+
+    existingBox.innerHTML = html;
+
+  } else {
+
+    const box =
+      document.createElement("div");
+
+    box.id = "stockInResult";
+
+    box.innerHTML = html;
+
+    document
+      .getElementById("stockProductHistory")
+      .appendChild(box);
+
+  }
+
+}
   
 function printPurchase() {
 
