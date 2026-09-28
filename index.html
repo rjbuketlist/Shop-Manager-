@@ -1506,6 +1506,10 @@ function getSupplier(id) {
     return db.suppliers.find(s => s.id === id);
 }
 
+  if (!Array.isArray(db.stockMovements)) {
+  db.stockMovements = [];
+}
+
 saveDB();
   
 console.log("Shop Manager Offline Database Ready");
