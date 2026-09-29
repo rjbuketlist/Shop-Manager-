@@ -1107,6 +1107,7 @@ main{padding:15px}
       min="0"
       step="0.01"
       placeholder="Quantity"
+      oninput="updateSaleProductTotal()"
       style="width:100%;padding:12px;margin:6px 0;">
 
     <select id="saleUnit"
@@ -1123,6 +1124,7 @@ main{padding:15px}
       min="0"
       step="0.01"
       placeholder="Selling Price"
+      oninput="updateSaleProductTotal()"
       style="width:100%;padding:12px;margin:6px 0;">
 
     <label style="display:block;margin-top:10px;">
@@ -1151,6 +1153,32 @@ main{padding:15px}
       + Add
     </button>
 
+
+<div id="saleItemsBox"
+     style="
+       margin-top:15px;
+       padding:12px;
+       background:#f4f6f8;
+       border:1px solid #ddd;
+       border-radius:6px;
+       display:none;">
+
+  <h3>Sale Items</h3>
+
+  <div id="saleItemsList"></div>
+
+  <div style="
+    margin-top:12px;
+    padding-top:12px;
+    border-top:1px solid #ddd;
+    font-weight:bold;">
+
+    Total: ₹<span id="saleGrandTotal">0.00</span>
+
+  </div>
+
+</div>
+    
   </div>
 
 </section>
@@ -4010,6 +4038,197 @@ function searchSaleProducts() {
     "none";
  }
 
+
+function addSaleProduct() {
+
+  const productName =
+    document.getElementById("saleProduct").value.trim();
+
+  const quantity =
+    Number(document.getElementById("saleQuantity").value);
+
+  const unit =
+    document.getElementById("saleUnit").value;
+
+  const sellingPrice =
+    Number(document.getElementById("saleSellingPrice").value);
+
+  const stock =
+    Number(document.getElementById("saleCurrentStock").textContent);
+
+  if (!productName) {
+    alert("Please select a product.");
+    return;
+  }
+
+  if (!quantity || quantity <= 0) {
+    alert("Please enter a valid quantity.");
+    return;
+  }
+
+  if (quantity > stock) {
+    alert("Quantity cannot be greater than current stock.");
+    return;
+  }
+
+  if (!sellingPrice || sellingPrice <= 0) {
+    alert("Please enter a valid selling price.");
+    return;
+  }
+
+  const product =
+    db.products.find(function(p) {
+      return (
+        p.name &&
+        p.name.toLowerCase() ===
+        productName.toLowerCase()
+      );
+    });
+
+  if (!product) {
+    alert("Product not found.");
+    return;
+  }
+
+  const total =
+    quantity * sellingPrice;
+
+  const saleItem = {
+    productId: product.id,
+    productName: product.name,
+    quantity: quantity,
+    unit: unit,
+    sellingPrice: sellingPrice,
+    total: total
+  };
+
+  if (!window.saleItems) {
+    window.saleItems = [];
+  }
+
+  window.saleItems.push(saleItem);
+
+  renderSaleItems();
+
+  document.getElementById("saleProduct").value = "";
+  document.getElementById("saleQuantity").value = "";
+  document.getElementById("saleCurrentStock").textContent = "0";
+  document.getElementById("saleSellingPrice").value = "";
+  document.getElementById("saleProductTotal").textContent = "₹0.00";
+}
+
+function renderSaleItems() {
+
+  const box =
+    document.getElementById("saleItemsBox");
+
+  const list =
+    document.getElementById("saleItemsList");
+
+  const grandTotalBox =
+    document.getElementById("saleGrandTotal");
+
+  if (!window.saleItems ||
+      window.saleItems.length === 0) {
+
+    box.style.display = "none";
+    list.innerHTML = "";
+    grandTotalBox.textContent = "0.00";
+
+    return;
+  }
+
+  box.style.display = "block";
+
+  let grandTotal = 0;
+
+  list.innerHTML =
+    window.saleItems.map(function(item, index) {
+
+      grandTotal += Number(item.total || 0);
+
+      return `
+        <div style="
+          background:white;
+          padding:12px;
+          margin-bottom:8px;
+          border:1px solid #ddd;
+          border-radius:6px;">
+
+          <div style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;">
+
+            <strong>${item.productName}</strong>
+
+            <button
+              onclick="removeSaleProduct(${index})"
+              style="
+                background:#dc3545;
+                color:white;
+                border:0;
+                border-radius:4px;
+                padding:5px 9px;">
+              Remove
+            </button>
+
+          </div>
+
+          <div style="
+            margin-top:6px;
+            font-size:14px;
+            color:#555;">
+
+            Qty: ${item.quantity} ${item.unit}
+            × ₹${Number(item.sellingPrice).toFixed(2)}
+
+          </div>
+
+          <div style="
+            margin-top:5px;
+            font-weight:bold;">
+
+            Total: ₹${Number(item.total).toFixed(2)}
+
+          </div>
+
+        </div>
+      `;
+
+    }).join("");
+
+  grandTotalBox.textContent =
+    grandTotal.toFixed(2);
+}
+
+function removeSaleProduct(index) {
+
+  if (!window.saleItems ||
+      index < 0 ||
+      index >= window.saleItems.length) {
+    return;
+  }
+
+  window.saleItems.splice(index, 1);
+
+  renderSaleItems();
+}  
+
+function updateSaleProductTotal() {
+
+  const quantity =
+    Number(document.getElementById("saleQuantity").value || 0);
+
+  const sellingPrice =
+    Number(document.getElementById("saleSellingPrice").value || 0);
+
+  const total =
+    quantity * sellingPrice;
+
+  document.getElementById("saleProductTotal").textContent =
+    "₹" + total.toFixed(2);
+}
   
 function addCustomer() {
 
