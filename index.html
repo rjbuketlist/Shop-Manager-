@@ -4142,66 +4142,166 @@ function renderSaleItems() {
 
   let grandTotal = 0;
 
-  list.innerHTML =
-    window.saleItems.map(function(item, index) {
+  list.innerHTML = `
+    <div style="
+      overflow-x:auto;
+      background:white;
+      border:1px solid #ddd;
+      border-radius:6px;">
 
-      grandTotal += Number(item.total || 0);
+      <table style="
+        width:100%;
+        border-collapse:collapse;
+        font-size:13px;
+        white-space:nowrap;">
 
-      return `
-        <div style="
-          background:white;
-          padding:12px;
-          margin-bottom:8px;
-          border:1px solid #ddd;
-          border-radius:6px;">
+        <thead>
+          <tr style="background:#f4f6f8;">
+            <th style="padding:9px;text-align:left;border-bottom:1px solid #ddd;">
+              Product
+            </th>
 
-          <div style="
-            display:flex;
-            justify-content:space-between;
-            align-items:center;">
+            <th style="padding:9px;text-align:center;border-bottom:1px solid #ddd;">
+              Qty
+            </th>
 
-            <strong>${item.productName}</strong>
+            <th style="padding:9px;text-align:right;border-bottom:1px solid #ddd;">
+              Rate
+            </th>
 
-            <button
-              onclick="removeSaleProduct(${index})"
-              style="
-                background:#dc3545;
-                color:white;
-                border:0;
-                border-radius:4px;
-                padding:5px 9px;">
-              Remove
-            </button>
+            <th style="padding:9px;text-align:right;border-bottom:1px solid #ddd;">
+              Total
+            </th>
 
-          </div>
+            <th style="padding:9px;text-align:center;border-bottom:1px solid #ddd;">
+              Action
+            </th>
+          </tr>
+        </thead>
 
-          <div style="
-            margin-top:6px;
-            font-size:14px;
-            color:#555;">
+        <tbody>
 
-            Qty: ${item.quantity} ${item.unit}
-            × ₹${Number(item.sellingPrice).toFixed(2)}
+          ${window.saleItems.map(function(item, index) {
 
-          </div>
+            grandTotal += Number(item.total || 0);
 
-          <div style="
-            margin-top:5px;
-            font-weight:bold;">
+            return `
+              <tr>
 
-            Total: ₹${Number(item.total).toFixed(2)}
+                <td style="
+                  padding:8px;
+                  border-bottom:1px solid #eee;">
+                  ${item.productName}
+                </td>
 
-          </div>
+                <td style="
+                  padding:8px;
+                  text-align:center;
+                  border-bottom:1px solid #eee;">
+                  ${item.quantity} ${item.unit}
+                </td>
 
-        </div>
-      `;
+                <td style="
+                  padding:8px;
+                  text-align:right;
+                  border-bottom:1px solid #eee;">
+                  ₹${Number(item.sellingPrice).toFixed(2)}
+                </td>
 
-    }).join("");
+                <td style="
+                  padding:8px;
+                  text-align:right;
+                  font-weight:bold;
+                  border-bottom:1px solid #eee;">
+                  ₹${Number(item.total).toFixed(2)}
+                </td>
+
+                <td style="
+                  padding:6px;
+                  text-align:center;
+                  border-bottom:1px solid #eee;">
+
+                  <button
+                    onclick="editSaleProduct(${index})"
+                    style="
+                      background:#f0ad4e;
+                      color:white;
+                      border:0;
+                      border-radius:4px;
+                      padding:5px 8px;
+                      margin-right:3px;">
+                    Edit
+                  </button>
+
+                  <button
+                    onclick="removeSaleProduct(${index})"
+                    style="
+                      background:#dc3545;
+                      color:white;
+                      border:0;
+                      border-radius:4px;
+                      padding:5px 8px;">
+                    Remove
+                  </button>
+
+                </td>
+
+              </tr>
+            `;
+
+          }).join("")}
+
+        </tbody>
+
+      </table>
+
+    </div>
+  `;
 
   grandTotalBox.textContent =
     grandTotal.toFixed(2);
 }
 
+  function editSaleProduct(index) {
+
+  if (!window.saleItems ||
+      index < 0 ||
+      index >= window.saleItems.length) {
+    return;
+  }
+
+  const item =
+    window.saleItems[index];
+
+  document.getElementById("saleProduct").value =
+    item.productName;
+
+  document.getElementById("saleQuantity").value =
+    item.quantity;
+
+  document.getElementById("saleUnit").value =
+    item.unit;
+
+  document.getElementById("saleSellingPrice").value =
+    item.sellingPrice;
+
+  document.getElementById("saleCurrentStock").textContent =
+    Number(
+      (db.products.find(function(p) {
+        return p.id === item.productId;
+      }) || {}).stock || 0
+    );
+
+  updateSaleProductTotal();
+
+  window.saleItems.splice(index, 1);
+
+  renderSaleItems();
+
+  document.getElementById("saleProduct").focus();
+}
+
+  
 function removeSaleProduct(index) {
 
   if (!window.saleItems ||
