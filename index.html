@@ -4077,7 +4077,30 @@ function searchSaleProducts() {
     "none";
  }
 
+function completeSale() {
 
+  if (!window.saleItems ||
+      window.saleItems.length === 0) {
+
+    alert("Please add at least one product.");
+    return;
+  }
+
+  let grandTotal = 0;
+
+  window.saleItems.forEach(function(item) {
+    grandTotal += Number(item.total || 0);
+  });
+
+  document.getElementById("saleFinalTotal").textContent =
+    grandTotal.toFixed(2);
+
+  alert(
+    "Sale ready to complete.\n\n" +
+    "Total: ₹" + grandTotal.toFixed(2)
+  );
+}
+  
 function addSaleProduct() {
 
   const productName =
