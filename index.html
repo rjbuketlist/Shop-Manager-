@@ -1168,57 +1168,38 @@ main{padding:15px}
   <div id="saleItemsList"></div>
 
   <div style="
-    margin-top:12px;
-    padding-top:12px;
-    border-top:1px solid #ddd;
-    font-weight:bold;">
+  margin-top:12px;
+  padding-top:12px;
+  border-top:1px solid #ddd;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;">
+
+  <div style="
+    font-weight:bold;
+    font-size:16px;">
 
     Total: ₹<span id="saleGrandTotal">0.00</span>
 
   </div>
 
-</div>
-
-    <div id="saleCompleteBox"
-     style="
-       margin-top:15px;
-       padding:12px;
-       background:#fff;
-       border:1px solid #ddd;
-       border-radius:6px;">
-
-  <div style="
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    font-size:18px;
-    font-weight:bold;
-    margin-bottom:12px;">
-
-    <span>Grand Total</span>
-
-    <span>
-      ₹<span id="saleFinalTotal">0.00</span>
-    </span>
-
-  </div>
-
-  <button onclick="completeSale()"
+  <button
+    onclick="proceedSale()"
     style="
-      width:100%;
-      padding:13px;
+      padding:10px 14px;
       background:#1f6f43;
       color:white;
       border:0;
       border-radius:6px;
-      font-size:16px;
-      font-weight:bold;">
-    Complete Sale
+      font-weight:bold;
+      white-space:nowrap;">
+    Proceed 
   </button>
 
-</div>
-    
   </div>
+
+</div>
 
 </section>
   
@@ -4077,7 +4058,7 @@ function searchSaleProducts() {
     "none";
  }
 
-function completeSale() {
+function proceedSale() {
 
   if (!window.saleItems ||
       window.saleItems.length === 0) {
@@ -4092,14 +4073,14 @@ function completeSale() {
     grandTotal += Number(item.total || 0);
   });
 
-  document.getElementById("saleFinalTotal").textContent =
+  document.getElementById("saleGrandTotal").textContent =
     grandTotal.toFixed(2);
 
   alert(
-    "Sale ready to complete.\n\n" +
+    "Sale ready to proceed.\n\n" +
     "Total: ₹" + grandTotal.toFixed(2)
   );
-}
+          }
   
 function addSaleProduct() {
 
