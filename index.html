@@ -1196,11 +1196,214 @@ main{padding:15px}
       white-space:nowrap;">
     Proceed 
   </button>
+  </div>
+
+  <div id="saleConfirmationBox"
+     style="
+       display:none;
+       margin-top:15px;
+       padding:15px;
+       background:#fff;
+       border:1px solid #ddd;
+       border-radius:6px;">
+
+  <h3 style="
+    margin-top:0;
+    margin-bottom:15px;">
+    Sale Confirmation
+  </h3>
+
+  <div style="
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-bottom:15px;">
+
+    <div style="
+      padding:10px;
+      background:#f4f6f8;
+      border:1px solid #ddd;
+      border-radius:6px;">
+
+      <div style="font-size:12px;color:#777;">
+        Bill No
+      </div>
+
+      <strong id="saleConfirmBillNo">
+        —
+      </strong>
+
+    </div>
+
+    <div style="
+      padding:10px;
+      background:#f4f6f8;
+      border:1px solid #ddd;
+      border-radius:6px;">
+
+      <div style="font-size:12px;color:#777;">
+        Customer
+      </div>
+
+      <strong id="saleConfirmCustomer">
+        —
+      </strong>
+
+    </div>
 
   </div>
 
-</div>
 
+  <div style="
+    margin-bottom:15px;">
+
+    <strong>Items</strong>
+
+    <div id="saleConfirmItems"
+         style="
+           margin-top:8px;
+           border:1px solid #ddd;
+           border-radius:6px;
+           overflow-x:auto;">
+    </div>
+
+  </div>
+
+
+  <div style="
+    padding:12px;
+    background:#f4f6f8;
+    border:1px solid #ddd;
+    border-radius:6px;
+    margin-bottom:15px;">
+
+    <div style="
+      display:flex;
+      justify-content:space-between;
+      margin-bottom:8px;">
+
+      <span>Grand Total</span>
+
+      <strong>
+        ₹<span id="saleConfirmGrandTotal">
+          0.00
+        </span>
+      </strong>
+
+    </div>
+
+
+    <label>
+      Payment Amount
+    </label>
+
+    <input
+      id="salePaymentAmount"
+      type="number"
+      min="0"
+      step="0.01"
+      value="0"
+      oninput="updateSalePayment()"
+      placeholder="Enter Payment Amount"
+      style="
+        width:100%;
+        padding:12px;
+        margin:6px 0 12px;
+        box-sizing:border-box;">
+
+
+    <label>
+      Payment Method
+    </label>
+
+    <select
+      id="salePaymentMethod"
+      style="
+        width:100%;
+        padding:12px;
+        margin:6px 0 12px;
+        box-sizing:border-box;">
+
+      <option value="cash">
+        Cash
+      </option>
+
+      <option value="upi">
+        UPI
+      </option>
+
+      <option value="bank">
+        Bank
+      </option>
+
+      <option value="other">
+        Other
+      </option>
+
+    </select>
+
+
+    <div style="
+      display:flex;
+      justify-content:space-between;
+      padding-top:10px;
+      border-top:1px solid #ddd;
+      font-weight:bold;">
+
+      <span id="saleBalanceLabel">
+        Balance
+      </span>
+
+      <span>
+        ₹<span id="saleConfirmBalance">
+          0.00
+        </span>
+      </span>
+
+    </div>
+
+  </div>
+
+
+  <div style="
+    display:flex;
+    gap:10px;">
+
+    <button
+      onclick="backFromSaleConfirmation()"
+      style="
+        flex:1;
+        padding:12px;
+        background:#6c757d;
+        color:white;
+        border:0;
+        border-radius:6px;
+        font-weight:bold;">
+
+      Back
+
+    </button>
+
+
+    <button
+      onclick="confirmSale()"
+      style="
+        flex:1;
+        padding:12px;
+        background:#1f6f43;
+        color:white;
+        border:0;
+        border-radius:6px;
+        font-weight:bold;">
+
+      Confirm / Print
+
+    </button>
+
+  </div>
+  </div>
+  
+</div>
 </section>
   
 <section id="customers" class="section">
@@ -4073,14 +4276,221 @@ function proceedSale() {
     grandTotal += Number(item.total || 0);
   });
 
-  document.getElementById("saleGrandTotal").textContent =
+
+  let customerName = "Cash Customer";
+
+  const customerType =
+    document.getElementById("saleCustomerType").value;
+
+
+  if (customerType === "existing") {
+
+    const customerId =
+      document.getElementById("saleCustomerId").value.trim();
+
+    const customer =
+      db.customers.find(function(c) {
+        return c.id === customerId;
+      });
+
+    if (customer) {
+      customerName = customer.name;
+    }
+  }
+
+
+  document.getElementById("saleConfirmBillNo").textContent =
+    "Pending";
+
+  document.getElementById("saleConfirmCustomer").textContent =
+    customerName;
+
+
+  document.getElementById("saleConfirmGrandTotal").textContent =
     grandTotal.toFixed(2);
 
-  alert(
-    "Sale ready to proceed.\n\n" +
-    "Total: ₹" + grandTotal.toFixed(2)
-  );
-          }
+
+  let itemsHTML = `
+    <table style="
+      width:100%;
+      border-collapse:collapse;
+      font-size:13px;
+      white-space:nowrap;">
+
+      <thead>
+
+        <tr style="background:#f4f6f8;">
+
+          <th style="
+            padding:9px;
+            text-align:left;
+            border-bottom:1px solid #ddd;">
+            Product
+          </th>
+
+          <th style="
+            padding:9px;
+            text-align:center;
+            border-bottom:1px solid #ddd;">
+            Qty
+          </th>
+
+          <th style="
+            padding:9px;
+            text-align:right;
+            border-bottom:1px solid #ddd;">
+            Rate
+          </th>
+
+          <th style="
+            padding:9px;
+            text-align:right;
+            border-bottom:1px solid #ddd;">
+            Total
+          </th>
+
+        </tr>
+
+      </thead>
+
+      <tbody>
+  `;
+
+
+  window.saleItems.forEach(function(item) {
+
+    itemsHTML += `
+      <tr>
+
+        <td style="
+          padding:8px;
+          border-bottom:1px solid #eee;">
+          ${item.productName}
+        </td>
+
+        <td style="
+          padding:8px;
+          text-align:center;
+          border-bottom:1px solid #eee;">
+          ${item.quantity} ${item.unit}
+        </td>
+
+        <td style="
+          padding:8px;
+          text-align:right;
+          border-bottom:1px solid #eee;">
+          ₹${Number(item.sellingPrice).toFixed(2)}
+        </td>
+
+        <td style="
+          padding:8px;
+          text-align:right;
+          font-weight:bold;
+          border-bottom:1px solid #eee;">
+          ₹${Number(item.total).toFixed(2)}
+        </td>
+
+      </tr>
+    `;
+
+  });
+
+
+  itemsHTML += `
+      </tbody>
+    </table>
+  `;
+
+
+  document.getElementById("saleConfirmItems").innerHTML =
+    itemsHTML;
+
+
+  document.getElementById("salePaymentAmount").value =
+    "0";
+
+
+  document.getElementById("saleBalanceLabel").textContent =
+    "Balance";
+
+
+  document.getElementById("saleConfirmBalance").textContent =
+    grandTotal.toFixed(2);
+
+
+  document.getElementById("saleProductBox").style.display =
+    "none";
+
+  document.getElementById("saleItemsBox").style.display =
+    "none";
+
+
+  document.getElementById("saleConfirmationBox").style.display =
+    "block";
+}
+
+  function updateSalePayment() {
+
+  const grandTotal =
+    Number(
+      document.getElementById("saleConfirmGrandTotal").textContent
+    ) || 0;
+
+
+  const payment =
+    Number(
+      document.getElementById("salePaymentAmount").value
+    ) || 0;
+
+
+  const difference =
+    grandTotal - payment;
+
+
+  const label =
+    document.getElementById("saleBalanceLabel");
+
+  const balanceBox =
+    document.getElementById("saleConfirmBalance");
+
+
+  if (difference > 0) {
+
+    label.textContent =
+      "Balance";
+
+    balanceBox.textContent =
+      difference.toFixed(2);
+
+  } else if (difference < 0) {
+
+    label.textContent =
+      "Advance";
+
+    balanceBox.textContent =
+      Math.abs(difference).toFixed(2);
+
+  } else {
+
+    label.textContent =
+      "Balance";
+
+    balanceBox.textContent =
+      "0.00";
+  }
+  }
+
+  function backFromSaleConfirmation() {
+
+  document.getElementById("saleConfirmationBox").style.display =
+    "none";
+
+  document.getElementById("saleProductBox").style.display =
+    "block";
+
+  renderSaleItems();
+  }
+
   
 function addSaleProduct() {
 
