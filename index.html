@@ -2452,6 +2452,17 @@ document.getElementById("saleConfirmationBox").style.display =
 
 document.getElementById("saleInvoiceBox").style.display =
   "block";
+document.getElementById("invoiceBillNo").textContent =
+  billId;
+
+document.getElementById("invoiceDate").textContent =
+  new Date(transactionDate).toLocaleString();
+
+document.getElementById("invoiceCustomer").textContent =
+  customerName;
+
+document.getElementById("invoiceCustomerId").textContent =
+  customerId || "—";
   }
 
   
