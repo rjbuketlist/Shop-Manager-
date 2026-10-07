@@ -4593,26 +4593,29 @@ function updateSaleProductTotal() {
 
 
   let customerName = "Cash Customer";
+let previousBalance = 0;
 
-  const customerType =
-    document.getElementById("saleCustomerType").value;
+const customerType =
+  document.getElementById("saleCustomerType").value;
 
+if (customerType === "existing") {
 
-  if (customerType === "existing") {
+  const customerId =
+    document.getElementById("saleCustomerId").value.trim();
 
-    const customerId =
-      document.getElementById("saleCustomerId").value.trim();
+  const customer =
+    db.customers.find(function(c) {
+      return c.id === customerId;
+    });
 
-    const customer =
-      db.customers.find(function(c) {
-        return c.id === customerId;
-      });
+  if (customer) {
 
-    if (customer) {
-      customerName = customer.name;
-    }
+    customerName = customer.name;
+
+    previousBalance =
+      Number(customer.balance || 0);
   }
-
+}
 
   document.getElementById("saleConfirmBillNo").textContent =
     "Pending";
@@ -4620,6 +4623,39 @@ function updateSaleProductTotal() {
   document.getElementById("saleConfirmCustomer").textContent =
     customerName;
 
+  const previousBalanceBox =
+  document.getElementById("saleConfirmPreviousBalanceBox");
+
+const previousBalanceLabel =
+  document.getElementById("saleConfirmPreviousBalanceLabel");
+
+const previousBalanceValue =
+  document.getElementById("saleConfirmPreviousBalance");
+
+if (customerType === "existing") {
+
+  const formattedPrevious =
+    formatPartyBalance(previousBalance);
+
+  previousBalanceLabel.textContent =
+    formattedPrevious.text.startsWith("Balance")
+      ? "Previous Balance"
+      : "Previous Advance";
+
+  previousBalanceValue.textContent =
+    formattedPrevious.text;
+
+  previousBalanceValue.style.color =
+    formattedPrevious.color;
+
+  previousBalanceBox.style.display =
+    "block";
+
+} else {
+
+  previousBalanceBox.style.display =
+    "none";
+}
 
   document.getElementById("saleConfirmGrandTotal").textContent =
     grandTotal.toFixed(2);
