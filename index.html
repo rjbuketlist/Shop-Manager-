@@ -1028,6 +1028,37 @@ main{padding:15px}
   <div id="salesRecordsList">
   </div>
 
+  <div id="saleRecordDetails"
+     style="
+       display:none;
+       margin-top:15px;
+       padding:15px;
+       background:#fff;
+       border:1px solid #ddd;
+       border-radius:6px;">
+
+  <h3 style="margin-top:0;">
+    Sale Details
+  </h3>
+
+  <div id="saleRecordDetailsContent">
+  </div>
+
+  <button
+    onclick="closeSaleRecordDetails()"
+    style="
+      width:100%;
+      padding:12px;
+      margin-top:15px;
+      background:#6c757d;
+      color:white;
+      border:0;
+      border-radius:6px;">
+    Back to Sales Records
+  </button>
+
+  </div>
+  
   <button
     onclick="closeSalesRecords()"
     style="
@@ -2892,6 +2923,234 @@ if (customerType === "existing") {
     html;
 }  
 
+  function viewSaleRecord(saleId) {
+
+  const sale =
+    db.sales.find(function(s) {
+      return s.id === saleId;
+    });
+
+  if (!sale) {
+    alert("Sale record not found.");
+    return;
+  }
+
+  const detailsBox =
+    document.getElementById("saleRecordDetails");
+
+  const content =
+    document.getElementById("saleRecordDetailsContent");
+
+  if (!detailsBox || !content) {
+    alert("Sale details section not found.");
+    return;
+  }
+
+  const formattedBalance =
+    formatPartyBalance(
+      Number(sale.balance || 0)
+    );
+
+  let itemsHTML = `
+    <div style="
+      overflow-x:auto;
+      border:1px solid #ddd;
+      border-radius:6px;
+      margin-top:12px;">
+
+      <table style="
+        width:100%;
+        border-collapse:collapse;
+        min-width:600px;">
+
+        <thead>
+          <tr style="background:#f4f6f8;">
+
+            <th style="padding:9px;border-bottom:1px solid #ddd;">
+              Product
+            </th>
+
+            <th style="padding:9px;border-bottom:1px solid #ddd;">
+              Qty
+            </th>
+
+            <th style="padding:9px;border-bottom:1px solid #ddd;">
+              Rate
+            </th>
+
+            <th style="padding:9px;border-bottom:1px solid #ddd;">
+              Total
+            </th>
+
+          </tr>
+        </thead>
+
+        <tbody>
+  `;
+
+  (sale.products || []).forEach(function(item) {
+
+    itemsHTML += `
+      <tr>
+
+        <td style="padding:9px;border-bottom:1px solid #eee;">
+          ${item.productName || "—"}
+        </td>
+
+        <td style="padding:9px;border-bottom:1px solid #eee;">
+          ${item.quantity || 0} ${item.unit || ""}
+        </td>
+
+        <td style="padding:9px;border-bottom:1px solid #eee;text-align:right;">
+          ₹${Number(item.sellingPrice || 0).toFixed(2)}
+        </td>
+
+        <td style="padding:9px;border-bottom:1px solid #eee;text-align:right;">
+          ₹${Number(item.total || 0).toFixed(2)}
+        </td>
+
+      </tr>
+    `;
+
+  });
+
+  itemsHTML += `
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  content.innerHTML = `
+
+    <div style="
+      background:#f4f6f8;
+      padding:12px;
+      border-radius:6px;">
+
+      <div style="margin-bottom:7px;">
+        <strong>Invoice No:</strong>
+        ${sale.id || "—"}
+      </div>
+
+      <div style="margin-bottom:7px;">
+        <strong>Date:</strong>
+        ${
+          sale.date
+            ? new Date(sale.date).toLocaleString()
+            : "—"
+        }
+      </div>
+
+      <div style="margin-bottom:7px;">
+        <strong>Customer:</strong>
+        ${sale.customerName || "Cash Customer"}
+      </div>
+
+      <div>
+        <strong>Customer ID:</strong>
+        ${sale.customerId || "—"}
+      </div>
+
+    </div>
+
+    <h4 style="margin:15px 0 8px;">
+      Items
+    </h4>
+
+    ${itemsHTML}
+
+    <div style="
+      margin-top:15px;
+      border-top:1px solid #ddd;
+      padding-top:12px;">
+
+      <div style="
+        display:flex;
+        justify-content:space-between;
+        margin-bottom:8px;">
+        <span>Current Bill Amount</span>
+        <strong>
+          ₹${Number(sale.currentBillAmount || 0).toFixed(2)}
+        </strong>
+      </div>
+
+      <div style="
+        display:flex;
+        justify-content:space-between;
+        margin-bottom:8px;">
+        <span>Previous Amount</span>
+        <strong>
+          ${formatPartyBalance(
+            Number(sale.previousBalance || 0)
+          ).text}
+        </strong>
+      </div>
+
+      <div style="
+        display:flex;
+        justify-content:space-between;
+        padding:10px 0;
+        border-top:1px solid #ddd;
+        border-bottom:1px solid #ddd;
+        margin-bottom:10px;">
+
+        <strong>Grand Total</strong>
+
+        <strong>
+          ₹${Number(sale.grandTotal || 0).toFixed(2)}
+        </strong>
+
+      </div>
+
+      <div style="
+        display:flex;
+        justify-content:space-between;
+        margin-bottom:8px;">
+        <span>Payment</span>
+        <strong>
+          ₹${Number(sale.payment || 0).toFixed(2)}
+        </strong>
+      </div>
+
+      <div style="
+        display:flex;
+        justify-content:space-between;
+        margin-bottom:8px;">
+        <span>Payment Method</span>
+        <strong>
+          ${sale.paymentMethod || "—"}
+        </strong>
+      </div>
+
+      <div style="
+        display:flex;
+        justify-content:space-between;
+        padding:10px;
+        background:#f4f6f8;
+        border-radius:6px;
+        font-weight:bold;">
+
+        <span>
+          ${formattedBalance.value > 0 ? "Advance" : "Balance"}
+        </span>
+
+        <span style="color:${formattedBalance.color};">
+          ${formattedBalance.text}
+        </span>
+
+      </div>
+
+    </div>
+  `;
+
+  document.getElementById("salesRecordsList").style.display =
+    "none";
+
+  detailsBox.style.display =
+    "block";
+  }
+
+  
   function closeSalesRecords() {
 
   const recordsBox =
