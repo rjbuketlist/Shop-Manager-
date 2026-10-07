@@ -4617,6 +4617,10 @@ if (customerType === "existing") {
   }
 }
 
+const finalGrandTotal =
+  grandTotal - previousBalance;
+
+
   document.getElementById("saleConfirmBillNo").textContent =
     "Pending";
 
@@ -4656,7 +4660,7 @@ if (customerType === "existing") {
 }
 
   document.getElementById("saleConfirmGrandTotal").textContent =
-    grandTotal.toFixed(2);
+  finalGrandTotal.toFixed(2);
 
 
   let itemsHTML = `
