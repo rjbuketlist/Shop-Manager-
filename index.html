@@ -2604,6 +2604,176 @@ if (customerType === "existing") {
   
   }
 
+  function resetSaleScreen() {
+
+  window.saleItems = [];
+
+  document.getElementById("saleInvoiceBox").style.display =
+    "none";
+
+  document.getElementById("saleConfirmationBox").style.display =
+    "none";
+
+  document.getElementById("saleCustomerTypeBox").style.display =
+    "block";
+
+  document.getElementById("saleCustomerType").value =
+    "";
+
+  document.getElementById("existingCustomerBox").style.display =
+    "none";
+
+  document.getElementById("saleCustomerId").value =
+    "";
+
+  document.getElementById("saleCustomerDetails").innerHTML =
+    "";
+
+  document.getElementById("saleProductBox").style.display =
+    "none";
+
+  document.getElementById("saleProduct").value =
+    "";
+
+  document.getElementById("saleQuantity").value =
+    "";
+
+  document.getElementById("saleUnit").value =
+    "KG";
+
+  document.getElementById("saleCurrentStock").textContent =
+    "0";
+
+  document.getElementById("saleSellingPrice").value =
+    "";
+
+  document.getElementById("saleProductTotal").textContent =
+    "₹0.00";
+
+  document.getElementById("saleProductSuggestions").innerHTML =
+    "";
+
+  document.getElementById("saleProductSuggestions").style.display =
+    "none";
+
+  document.getElementById("saleItemsBox").style.display =
+    "none";
+
+  document.getElementById("saleItemsList").innerHTML =
+    "";
+
+  document.getElementById("saleGrandTotal").textContent =
+    "0.00";
+
+  document.getElementById("salePaymentAmount").value =
+    "0";
+
+  document.getElementById("salePaymentMethod").value =
+    "cash";
+
+  document.getElementById("saleConfirmItems").innerHTML =
+    "";
+
+  document.getElementById("saleConfirmBillNo").textContent =
+    "—";
+
+  document.getElementById("saleConfirmCustomer").textContent =
+    "—";
+
+  document.getElementById("saleConfirmSaleItemsTotal").textContent =
+    "0.00";
+
+  document.getElementById("saleConfirmGrandTotal").textContent =
+    "0.00";
+
+  document.getElementById("saleConfirmBalance").textContent =
+    "0.00";
+
+  document.getElementById("saleConfirmBalance").style.color =
+    "";
+
+  document.getElementById("saleBalanceLabel").textContent =
+    "Balance";
+
+  document.getElementById("saleConfirmPreviousBalanceBox").style.display =
+    "none";
+  }
+
+  function closeSaleInvoice() {
+  resetSaleScreen();
+  }
+
+  function printSaleInvoice() {
+
+  const invoice =
+    document.getElementById("saleInvoiceBox");
+
+  if (!invoice) {
+    alert("Invoice not found.");
+    return;
+  }
+
+  const printWindow =
+    window.open("", "_blank");
+
+  if (!printWindow) {
+    alert("Please allow pop-ups to print the invoice.");
+    return;
+  }
+
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Sale Invoice</title>
+
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          margin: 20px;
+          color: #222;
+        }
+
+        button {
+          display: none !important;
+        }
+
+        table {
+          width: 100%;
+          border-collapse: collapse;
+        }
+
+        th,
+        td {
+          border: 1px solid #ddd;
+          padding: 8px;
+        }
+
+        @media print {
+          body {
+            margin: 10mm;
+          }
+        }
+      </style>
+    </head>
+
+    <body>
+
+      ${invoice.innerHTML}
+
+    </body>
+    </html>
+  `);
+
+  printWindow.document.close();
+
+  printWindow.focus();
+
+  setTimeout(function() {
+    printWindow.print();
+  }, 300);
+  }
+  
   
 function getProduct(id) {
     return db.products.find(p => p.id === id);
