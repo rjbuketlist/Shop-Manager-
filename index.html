@@ -4707,21 +4707,15 @@ function updateSaleProductTotal() {
   document.getElementById("saleConfirmBalance").textContent =
     grandTotal.toFixed(2);
 
-
-  document.getElementById("saleProductBox").style.display =
+document.getElementById("saleProductBox").style.display =
   "none";
 
 document.getElementById("saleItemsBox").style.display =
   "none";
 
-document.getElementById("saleCustomerType").parentElement.style.display =
-  "none";
-
-document.getElementById("existingCustomerBox").style.display =
-  "none";
-
 document.getElementById("saleConfirmationBox").style.display =
   "block";
+}
 
 function updateSalePayment() {
   
