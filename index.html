@@ -2733,7 +2733,8 @@ if (customerType === "existing") {
   resetSaleScreen();
   }
 
-  function viewSalesRecords() {
+  
+ function viewSalesRecords() {
 
   const recordsBox =
     document.getElementById("salesRecordsBox");
@@ -2773,10 +2774,11 @@ if (customerType === "existing") {
       <table style="
         width:100%;
         border-collapse:collapse;
-        min-width:700px;">
+        min-width:800px;">
 
         <thead>
           <tr style="background:#f4f6f8;">
+
             <th style="padding:10px;border-bottom:1px solid #ddd;">
               Invoice No
             </th>
@@ -2800,6 +2802,11 @@ if (customerType === "existing") {
             <th style="padding:10px;border-bottom:1px solid #ddd;">
               Balance
             </th>
+
+            <th style="padding:10px;border-bottom:1px solid #ddd;">
+              Action
+            </th>
+
           </tr>
         </thead>
 
@@ -2851,6 +2858,25 @@ if (customerType === "existing") {
             ${balance.text}
           </td>
 
+          <td style="
+            padding:10px;
+            border-bottom:1px solid #eee;
+            text-align:center;">
+
+            <button
+              onclick="viewSaleRecord('${sale.id}')"
+              style="
+                padding:7px 12px;
+                background:#555;
+                color:white;
+                border:0;
+                border-radius:5px;
+                cursor:pointer;">
+              View
+            </button>
+
+          </td>
+
         </tr>
       `;
 
@@ -2864,7 +2890,7 @@ if (customerType === "existing") {
 
   list.innerHTML =
     html;
-  }
+}  
 
   function closeSalesRecords() {
 
