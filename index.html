@@ -1295,6 +1295,15 @@ main{padding:15px}
 
   </div>
 
+<div style="
+  display:flex;
+  justify-content:space-between;
+  margin-top:10px;
+  padding:10px 0;
+  border-top:1px solid #ddd;">
+  <span>Current Bill Amount</span>
+  <strong>₹<span id="saleConfirmSaleItemsTotal">0.00</span></strong>
+</div>
 
   <div style="
     padding:12px;
@@ -4658,6 +4667,9 @@ if (customerType === "existing") {
   previousBalanceBox.style.display =
     "none";
 }
+
+document.getElementById("saleConfirmSaleItemsTotal").textContent =
+  grandTotal.toFixed(2);
 
   document.getElementById("saleConfirmGrandTotal").textContent =
   finalGrandTotal.toFixed(2);
