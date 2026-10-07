@@ -1436,6 +1436,295 @@ main{padding:15px}
     </button>
   </div>
   </div>
+
+  <div id="saleInvoiceBox"
+     style="
+       display:none;
+       margin-top:15px;
+       padding:20px;
+       background:#fff;
+       border:1px solid #ddd;
+       border-radius:6px;">
+
+  <!-- SHOP HEADER -->
+
+  <div style="
+    text-align:center;
+    padding-bottom:15px;
+    border-bottom:2px solid #222;">
+
+    <h2 id="invoiceShopName"
+        style="margin:0 0 5px;">
+      Shop Name
+    </h2>
+
+    <div id="invoiceShopAddress"
+         style="font-size:13px;">
+      Address
+    </div>
+
+    <div id="invoiceShopMobile"
+         style="font-size:13px;">
+      Mobile
+    </div>
+
+    <div id="invoiceShopGST"
+         style="font-size:13px;">
+      GST
+    </div>
+
+    <h3 style="margin:15px 0 0;">
+      SALE INVOICE
+    </h3>
+
+  </div>
+
+
+  <!-- BILL DETAILS -->
+
+  <div style="
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin:15px 0;">
+
+    <div style="
+      padding:10px;
+      background:#f4f6f8;
+      border:1px solid #ddd;
+      border-radius:6px;">
+
+      <div style="font-size:12px;color:#777;">
+        Invoice No
+      </div>
+
+      <strong id="invoiceBillNo">—</strong>
+
+    </div>
+
+
+    <div style="
+      padding:10px;
+      background:#f4f6f8;
+      border:1px solid #ddd;
+      border-radius:6px;">
+
+      <div style="font-size:12px;color:#777;">
+        Date
+      </div>
+
+      <strong id="invoiceDate">—</strong>
+
+    </div>
+
+
+    <div style="
+      padding:10px;
+      background:#f4f6f8;
+      border:1px solid #ddd;
+      border-radius:6px;">
+
+      <div style="font-size:12px;color:#777;">
+        Customer
+      </div>
+
+      <strong id="invoiceCustomer">—</strong>
+
+    </div>
+
+
+    <div style="
+      padding:10px;
+      background:#f4f6f8;
+      border:1px solid #ddd;
+      border-radius:6px;">
+
+      <div style="font-size:12px;color:#777;">
+        Customer ID
+      </div>
+
+      <strong id="invoiceCustomerId">—</strong>
+
+    </div>
+
+  </div>
+
+
+  <!-- ITEMS -->
+
+  <div style="margin-top:15px;">
+
+    <strong>Items</strong>
+
+    <div id="invoiceItems"
+         style="
+           margin-top:8px;
+           border:1px solid #ddd;
+           border-radius:6px;
+           overflow-x:auto;">
+    </div>
+
+  </div>
+
+
+  <!-- TOTALS -->
+
+  <div style="
+    margin-top:15px;
+    padding-top:12px;
+    border-top:1px solid #ddd;">
+
+    <div style="
+      display:flex;
+      justify-content:space-between;
+      margin-bottom:8px;">
+
+      <span>Current Bill Amount</span>
+
+      <strong>
+        ₹<span id="invoiceCurrentBill">0.00</span>
+      </strong>
+
+    </div>
+
+
+    <div id="invoicePreviousBalanceRow"
+         style="
+           display:none;
+           justify-content:space-between;
+           margin-bottom:8px;">
+
+      <span id="invoicePreviousBalanceLabel">
+        Previous Amount
+      </span>
+
+      <strong id="invoicePreviousBalance">
+        ₹0.00
+      </strong>
+
+    </div>
+
+
+    <div style="
+      display:flex;
+      justify-content:space-between;
+      padding:10px 0;
+      border-top:1px solid #ddd;
+      border-bottom:1px solid #ddd;
+      margin-bottom:10px;">
+
+      <strong>Grand Total</strong>
+
+      <strong>
+        ₹<span id="invoiceGrandTotal">0.00</span>
+      </strong>
+
+    </div>
+
+
+    <div style="
+      display:flex;
+      justify-content:space-between;
+      margin-bottom:8px;">
+
+      <span>Payment</span>
+
+      <strong>
+        ₹<span id="invoicePayment">0.00</span>
+      </strong>
+
+    </div>
+
+
+    <div style="
+      display:flex;
+      justify-content:space-between;
+      margin-bottom:8px;">
+
+      <span>Payment Method</span>
+
+      <strong id="invoicePaymentMethod">—</strong>
+
+    </div>
+
+
+    <div style="
+      display:flex;
+      justify-content:space-between;
+      padding:10px;
+      background:#f4f6f8;
+      border-radius:6px;
+      font-weight:bold;">
+
+      <span id="invoiceBalanceLabel">
+        Balance
+      </span>
+
+      <span>
+        ₹<span id="invoiceBalance">0.00</span>
+      </span>
+
+    </div>
+
+  </div>
+
+
+  <!-- FOOTER -->
+
+  <div style="
+    text-align:center;
+    margin-top:20px;
+    padding-top:15px;
+    border-top:1px solid #ddd;
+    font-size:13px;">
+
+    Thank you for your business!
+
+  </div>
+
+
+  <!-- ACTION BUTTONS -->
+
+  <div style="
+    display:flex;
+    gap:10px;
+    margin-top:20px;">
+
+    <button
+      onclick="printSaleInvoice()"
+      style="
+        flex:1;
+        padding:12px;
+        background:#1f6f43;
+        color:white;
+        border:0;
+        border-radius:6px;
+        font-weight:bold;">
+
+      🖨 Print Invoice
+
+    </button>
+
+
+    <button
+      onclick="closeSaleInvoice()"
+      style="
+        flex:1;
+        padding:12px;
+        background:#6c757d;
+        color:white;
+        border:0;
+        border-radius:6px;
+        font-weight:bold;">
+
+      ✕ Close
+
+    </button>
+
+  </div>
+
+  </div>
+  
 </section>
   
 <section id="customers" class="section">
