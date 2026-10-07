@@ -4799,7 +4799,6 @@ document.getElementById("saleConfirmationBox").style.display =
 }
 
 function updateSalePayment() {
-
   const grandTotal =
     Number(
       document.getElementById("saleConfirmGrandTotal").textContent
@@ -4810,29 +4809,8 @@ function updateSalePayment() {
       document.getElementById("salePaymentAmount").value
     ) || 0;
 
-  let previousAmount = 0;
-
-  const customerType =
-    document.getElementById("saleCustomerType").value;
-
-  if (customerType === "existing") {
-
-    const customerId =
-      document.getElementById("saleCustomerId").value.trim();
-
-    const customer =
-      db.customers.find(function(c) {
-        return c.id === customerId;
-      });
-
-    if (customer) {
-      previousAmount =
-        Number(customer.balance || 0);
-    }
-  }
-
   const finalAmount =
-    previousAmount + grandTotal - payment;
+    payment - grandTotal;
 
   const label =
     document.getElementById("saleBalanceLabel");
@@ -4843,20 +4821,12 @@ function updateSalePayment() {
   const formatted =
     formatPartyBalance(finalAmount);
 
-  if (finalAmount > 0) {
-
-    label.textContent =
-      "Balance";
-
-  } else if (finalAmount < 0) {
-
-    label.textContent =
-      "Advance";
-
+  if (finalAmount < 0) {
+    label.textContent = "Balance";
+  } else if (finalAmount > 0) {
+    label.textContent = "Advance";
   } else {
-
-    label.textContent =
-      "Balance";
+    label.textContent = "Balance";
   }
 
   balanceBox.textContent =
