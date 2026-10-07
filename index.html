@@ -4783,22 +4783,40 @@ document.getElementById("saleConfirmationBox").style.display =
 }
 
 function updateSalePayment() {
-  
+
   const grandTotal =
     Number(
       document.getElementById("saleConfirmGrandTotal").textContent
     ) || 0;
-
 
   const payment =
     Number(
       document.getElementById("salePaymentAmount").value
     ) || 0;
 
+  let previousAmount = 0;
 
-  const difference =
-    grandTotal - payment;
+  const customerType =
+    document.getElementById("saleCustomerType").value;
 
+  if (customerType === "existing") {
+
+    const customerId =
+      document.getElementById("saleCustomerId").value.trim();
+
+    const customer =
+      db.customers.find(function(c) {
+        return c.id === customerId;
+      });
+
+    if (customer) {
+      previousAmount =
+        Number(customer.balance || 0);
+    }
+  }
+
+  const finalAmount =
+    previousAmount + grandTotal - payment;
 
   const label =
     document.getElementById("saleBalanceLabel");
@@ -4806,32 +4824,31 @@ function updateSalePayment() {
   const balanceBox =
     document.getElementById("saleConfirmBalance");
 
+  const formatted =
+    formatPartyBalance(finalAmount);
 
-  if (difference > 0) {
+  if (finalAmount > 0) {
 
     label.textContent =
       "Balance";
 
-    balanceBox.textContent =
-      difference.toFixed(2);
-
-  } else if (difference < 0) {
+  } else if (finalAmount < 0) {
 
     label.textContent =
       "Advance";
-
-    balanceBox.textContent =
-      Math.abs(difference).toFixed(2);
 
   } else {
 
     label.textContent =
       "Balance";
+  }
 
-    balanceBox.textContent =
-      "0.00";
-  }
-  }
+  balanceBox.textContent =
+    formatted.text;
+
+  balanceBox.style.color =
+    formatted.color;
+}
 
 function backFromSaleConfirmation() {
 
