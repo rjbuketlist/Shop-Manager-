@@ -2463,6 +2463,74 @@ document.getElementById("invoiceCustomer").textContent =
 
 document.getElementById("invoiceCustomerId").textContent =
   customerId || "—";
+
+document.getElementById("invoiceShopName").textContent =
+  db.shop.name || "Shop Name";
+
+document.getElementById("invoiceShopAddress").textContent =
+  db.shop.address || "Address";
+
+document.getElementById("invoiceShopMobile").textContent =
+  db.shop.mobile || "Mobile";
+
+document.getElementById("invoiceShopGST").textContent =
+  db.shop.gst
+    ? "GST: " + db.shop.gst
+    : "GST";
+let invoiceItemsHTML = `
+  <table style="
+    width:100%;
+    border-collapse:collapse;
+    font-size:13px;">
+    <thead>
+      <tr style="background:#f4f6f8;">
+        <th style="padding:8px;border-bottom:1px solid #ddd;text-align:left;">
+          Product
+        </th>
+        <th style="padding:8px;border-bottom:1px solid #ddd;text-align:right;">
+          Qty
+        </th>
+        <th style="padding:8px;border-bottom:1px solid #ddd;text-align:right;">
+          Rate
+        </th>
+        <th style="padding:8px;border-bottom:1px solid #ddd;text-align:right;">
+          Total
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+`;
+
+window.saleItems.forEach(function(item) {
+
+  invoiceItemsHTML += `
+    <tr>
+      <td style="padding:8px;border-bottom:1px solid #eee;">
+        ${item.productName}
+      </td>
+      <td style="padding:8px;border-bottom:1px solid #eee;text-align:right;">
+        ${item.quantity} ${item.unit || ""}
+      </td>
+      <td style="padding:8px;border-bottom:1px solid #eee;text-align:right;">
+        ₹${Number(item.sellingPrice || 0).toFixed(2)}
+      </td>
+      <td style="padding:8px;border-bottom:1px solid #eee;text-align:right;">
+        ₹${Number(item.total || 0).toFixed(2)}
+      </td>
+    </tr>
+  `;
+
+});
+
+invoiceItemsHTML += `
+    </tbody>
+  </table>
+`;
+
+document.getElementById("invoiceItems").innerHTML =
+  invoiceItemsHTML;
+  
+
   }
 
   
