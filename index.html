@@ -2447,7 +2447,11 @@ function confirmSale() {
     "Payment: ₹" +
       payment.toFixed(2)
   );
+document.getElementById("saleConfirmationBox").style.display =
+  "none";
 
+document.getElementById("saleInvoiceBox").style.display =
+  "block";
   }
 
   
