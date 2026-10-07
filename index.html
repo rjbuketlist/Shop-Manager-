@@ -1012,7 +1012,37 @@ main{padding:15px}
     </button>
 
   </div>
+<div id="salesRecordsBox"
+     style="
+       display:none;
+       margin-top:15px;
+       padding:15px;
+       background:#fff;
+       border:1px solid #ddd;
+       border-radius:6px;">
 
+  <h3 style="margin-top:0;">
+    Sales Records
+  </h3>
+
+  <div id="salesRecordsList">
+  </div>
+
+  <button
+    onclick="closeSalesRecords()"
+    style="
+      width:100%;
+      padding:12px;
+      margin-top:15px;
+      background:#6c757d;
+      color:white;
+      border:0;
+      border-radius:6px;">
+    Close
+  </button>
+
+</div>
+  
 </section>
 
 <section id="newSale" class="section">
@@ -2702,6 +2732,140 @@ if (customerType === "existing") {
   function closeSaleInvoice() {
   resetSaleScreen();
   }
+
+  function viewSalesRecords() {
+
+  const recordsBox =
+    document.getElementById("salesRecordsBox");
+
+  const list =
+    document.getElementById("salesRecordsList");
+
+  if (!recordsBox || !list) {
+    alert("Sales Records section not found.");
+    return;
+  }
+
+  recordsBox.style.display =
+    "block";
+
+  if (!db.sales ||
+      db.sales.length === 0) {
+
+    list.innerHTML = `
+      <div style="
+        padding:20px;
+        text-align:center;
+        color:#777;">
+        No sales records found.
+      </div>
+    `;
+
+    return;
+  }
+
+  let html = `
+    <div style="
+      overflow-x:auto;
+      border:1px solid #ddd;
+      border-radius:6px;">
+
+      <table style="
+        width:100%;
+        border-collapse:collapse;
+        min-width:700px;">
+
+        <thead>
+          <tr style="background:#f4f6f8;">
+            <th style="padding:10px;border-bottom:1px solid #ddd;">
+              Invoice No
+            </th>
+
+            <th style="padding:10px;border-bottom:1px solid #ddd;">
+              Date
+            </th>
+
+            <th style="padding:10px;border-bottom:1px solid #ddd;">
+              Customer
+            </th>
+
+            <th style="padding:10px;border-bottom:1px solid #ddd;">
+              Bill Amount
+            </th>
+
+            <th style="padding:10px;border-bottom:1px solid #ddd;">
+              Payment
+            </th>
+
+            <th style="padding:10px;border-bottom:1px solid #ddd;">
+              Balance
+            </th>
+          </tr>
+        </thead>
+
+        <tbody>
+  `;
+
+  db.sales
+    .slice()
+    .reverse()
+    .forEach(function(sale) {
+
+      const balance =
+        formatPartyBalance(
+          Number(sale.balance || 0)
+        );
+
+      html += `
+        <tr>
+
+          <td style="padding:10px;border-bottom:1px solid #eee;">
+            ${sale.id || "—"}
+          </td>
+
+          <td style="padding:10px;border-bottom:1px solid #eee;">
+            ${
+              sale.date
+                ? new Date(sale.date).toLocaleString()
+                : "—"
+            }
+          </td>
+
+          <td style="padding:10px;border-bottom:1px solid #eee;">
+            ${sale.customerName || "Cash Customer"}
+          </td>
+
+          <td style="padding:10px;border-bottom:1px solid #eee;text-align:right;">
+            ₹${Number(sale.currentBillAmount || 0).toFixed(2)}
+          </td>
+
+          <td style="padding:10px;border-bottom:1px solid #eee;text-align:right;">
+            ₹${Number(sale.payment || 0).toFixed(2)}
+          </td>
+
+          <td style="
+            padding:10px;
+            border-bottom:1px solid #eee;
+            text-align:right;
+            color:${balance.color};">
+            ${balance.text}
+          </td>
+
+        </tr>
+      `;
+
+    });
+
+  html += `
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  list.innerHTML =
+    html;
+  }
+  
 
   function printSaleInvoice() {
 
