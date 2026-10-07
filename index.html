@@ -2865,6 +2865,19 @@ if (customerType === "existing") {
   list.innerHTML =
     html;
   }
+
+  function closeSalesRecords() {
+
+  const recordsBox =
+    document.getElementById("salesRecordsBox");
+
+  if (!recordsBox) {
+    return;
+  }
+
+  recordsBox.style.display =
+    "none";
+  }
   
 
   function printSaleInvoice() {
