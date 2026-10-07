@@ -2159,8 +2159,99 @@ function confirmSale() {
       payment.toFixed(2)
   );
 
+    /* -----------------------------
+     11. RESET SALE SCREEN
+  ----------------------------- */
+
+  window.saleItems = [];
+
+  document.getElementById("saleConfirmationBox").style.display =
+    "none";
+
+  document.getElementById("saleCustomerTypeBox").style.display =
+    "block";
+
+  document.getElementById("saleCustomerType").value =
+    "";
+
+  document.getElementById("existingCustomerBox").style.display =
+    "none";
+
+  document.getElementById("saleCustomerId").value =
+    "";
+
+  document.getElementById("saleCustomerDetails").innerHTML =
+    "";
+
+  document.getElementById("saleProductBox").style.display =
+    "none";
+
+  document.getElementById("saleProduct").value =
+    "";
+
+  document.getElementById("saleQuantity").value =
+    "";
+
+  document.getElementById("saleUnit").value =
+    "KG";
+
+  document.getElementById("saleCurrentStock").textContent =
+    "0";
+
+  document.getElementById("saleSellingPrice").value =
+    "";
+
+  document.getElementById("saleProductTotal").textContent =
+    "₹0.00";
+
+  document.getElementById("saleProductSuggestions").innerHTML =
+    "";
+
+  document.getElementById("saleProductSuggestions").style.display =
+    "none";
+
+  document.getElementById("saleItemsBox").style.display =
+    "none";
+
+  document.getElementById("saleItemsList").innerHTML =
+    "";
+
+  document.getElementById("saleGrandTotal").textContent =
+    "0.00";
+
+  document.getElementById("salePaymentAmount").value =
+    "0";
+
+  document.getElementById("salePaymentMethod").value =
+    "cash";
+
+  document.getElementById("saleConfirmItems").innerHTML =
+    "";
+
+  document.getElementById("saleConfirmBillNo").textContent =
+    "—";
+
+  document.getElementById("saleConfirmCustomer").textContent =
+    "—";
+
+  document.getElementById("saleConfirmSaleItemsTotal").textContent =
+    "0.00";
+
+  document.getElementById("saleConfirmGrandTotal").textContent =
+    "0.00";
+
+  document.getElementById("saleConfirmBalance").textContent =
+    "0.00";
+
+  document.getElementById("saleConfirmBalance").style.color =
+    "";
+
+  document.getElementById("saleBalanceLabel").textContent =
+    "Balance";
+
+  document.getElementById("saleConfirmPreviousBalanceBox").style.display =
+    "none";
   }
-  
 function getProduct(id) {
     return db.products.find(p => p.id === id);
 }
