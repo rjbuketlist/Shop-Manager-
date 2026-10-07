@@ -1777,6 +1777,390 @@ function generateBillNo() {
     return id;
 }
 
+function confirmSale() {
+
+  /* -----------------------------
+     1. VALIDATE SALE
+  ----------------------------- */
+
+  if (!window.saleItems ||
+      window.saleItems.length === 0) {
+
+    alert("Please add at least one product.");
+    return;
+  }
+
+  const customerType =
+    document.getElementById("saleCustomerType").value;
+
+  if (!customerType) {
+    alert("Please select customer type.");
+    return;
+  }
+
+
+  /* -----------------------------
+     2. BILL / AMOUNTS
+  ----------------------------- */
+
+  const billId =
+    generateBillNo();
+
+  const currentBillAmount =
+    Number(
+      document.getElementById("saleConfirmSaleItemsTotal")
+        .textContent
+    ) || 0;
+
+  const grandTotal =
+    Number(
+      document.getElementById("saleConfirmGrandTotal")
+        .textContent
+    ) || 0;
+
+  const payment =
+    Number(
+      document.getElementById("salePaymentAmount")
+        .value
+    ) || 0;
+
+  const paymentMethod =
+    document.getElementById("salePaymentMethod")
+      .value;
+
+  const finalBalance =
+    payment - grandTotal;
+
+  const transactionDate =
+    new Date().toISOString();
+
+
+  /* -----------------------------
+     3. CUSTOMER INFORMATION
+  ----------------------------- */
+
+  let customer = null;
+
+  let customerId = "";
+
+  let customerName =
+    "Cash Customer";
+
+  let previousBalance = 0;
+
+
+  if (customerType === "existing") {
+
+    customerId =
+      document.getElementById("saleCustomerId")
+        .value
+        .trim();
+
+    customer =
+      db.customers.find(function(c) {
+        return c.id === customerId;
+      });
+
+    if (!customer) {
+      alert("Customer not found.");
+      return;
+    }
+
+    if (customer.status === "blocked") {
+      alert(
+        "This customer is blocked.\n\n" +
+        "Reason: " +
+        (customer.blockReason ||
+          "No reason provided.")
+      );
+      return;
+    }
+
+    customerName =
+      customer.name;
+
+    previousBalance =
+      Number(customer.balance || 0);
+  }
+
+
+  /* -----------------------------
+     4. VALIDATE PAYMENT
+  ----------------------------- */
+
+  if (payment < 0) {
+    alert("Payment cannot be negative.");
+    return;
+  }
+
+  if (payment > grandTotal) {
+    /*
+      Payment above Grand Total creates
+      customer advance.
+      This is allowed.
+    */
+  }
+
+
+  /* -----------------------------
+     5. SAVE / UPDATE STOCK
+  ----------------------------- */
+
+  window.saleItems.forEach(function(item) {
+
+    const product =
+      db.products.find(function(p) {
+        return p.id === item.productId;
+      });
+
+    if (!product) {
+      return;
+    }
+
+    const previousStock =
+      Number(product.stock || 0);
+
+    const quantity =
+      Number(item.quantity || 0);
+
+    product.stock =
+      previousStock - quantity;
+
+
+    /* -----------------------------
+       STOCK MOVEMENT
+    ----------------------------- */
+
+    db.stockMovements.push({
+
+      id:
+        "STKOUT-" +
+        String(db.stockMovements.length + 1)
+          .padStart(5, "0"),
+
+      date:
+        transactionDate,
+
+      type:
+        "stock_out",
+
+      source:
+        "sale",
+
+      productId:
+        product.id,
+
+      productName:
+        product.name,
+
+      quantity:
+        quantity,
+
+      unit:
+        item.unit,
+
+      previousStock:
+        previousStock,
+
+      newStock:
+        Number(product.stock || 0),
+
+      referenceId:
+        billId,
+
+      customerId:
+        customerId,
+
+      customerName:
+        customerName,
+
+      note:
+        "Stock deducted through sale."
+
+    });
+
+  });
+
+
+  /* -----------------------------
+     6. CUSTOMER BALANCE
+  ----------------------------- */
+
+  if (customerType === "existing") {
+
+    customer.balance =
+      finalBalance;
+
+
+    /* -----------------------------
+       CUSTOMER TRANSACTION
+    ----------------------------- */
+
+    customer.transactions =
+      customer.transactions || [];
+
+    customer.transactions.push({
+
+      id:
+        billId,
+
+      type:
+        "sale",
+
+      date:
+        transactionDate,
+
+      billId:
+        billId,
+
+      billAmount:
+        currentBillAmount,
+
+      paid:
+        payment,
+
+      balance:
+        finalBalance,
+
+      paymentMethod:
+        paymentMethod,
+
+      note:
+        "Sale transaction.",
+
+      previousBalance:
+        previousBalance,
+
+      partyId:
+        customer.id,
+
+      partyType:
+        "customer"
+
+    });
+
+  }
+
+
+  /* -----------------------------
+     7. SALE RECORD
+  ----------------------------- */
+
+  const saleRecord = {
+
+    id:
+      billId,
+
+    date:
+      transactionDate,
+
+    customerId:
+      customerId,
+
+    customerName:
+      customerName,
+
+    customerType:
+      customerType,
+
+    products:
+      JSON.parse(
+        JSON.stringify(window.saleItems)
+      ),
+
+    currentBillAmount:
+      currentBillAmount,
+
+    previousBalance:
+      previousBalance,
+
+    grandTotal:
+      grandTotal,
+
+    payment:
+      payment,
+
+    paymentMethod:
+      paymentMethod,
+
+    balance:
+      finalBalance
+
+  };
+
+  db.sales.push(saleRecord);
+
+
+  /* -----------------------------
+     8. PAYMENT RECORD
+  ----------------------------- */
+
+  if (payment > 0) {
+
+    db.payments.push({
+
+      id:
+        "PAY-" +
+        String(db.settings.nextPayNo++)
+          .padStart(5, "0"),
+
+      date:
+        transactionDate,
+
+      billId:
+        billId,
+
+      partyId:
+        customerId,
+
+      partyType:
+        customerType === "existing"
+          ? "customer"
+          : "cash",
+
+      amount:
+        payment,
+
+      paymentMethod:
+        paymentMethod,
+
+      note:
+        "Sale payment."
+
+    });
+
+  }
+
+
+  /* -----------------------------
+     9. SAVE DATABASE
+  ----------------------------- */
+
+  saveDB();
+
+
+  /* -----------------------------
+     10. SUCCESS
+  ----------------------------- */
+
+  alert(
+    "Sale saved successfully!\n\n" +
+    "Bill No: " + billId +
+    "\n" +
+    "Customer: " + customerName +
+    "\n" +
+    "Current Bill: ₹" +
+      currentBillAmount.toFixed(2) +
+    "\n" +
+    "Grand Total: ₹" +
+      grandTotal.toFixed(2) +
+    "\n" +
+    "Payment: ₹" +
+      payment.toFixed(2)
+  );
+
+  }
+  
 function getProduct(id) {
     return db.products.find(p => p.id === id);
 }
