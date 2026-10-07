@@ -2530,7 +2530,78 @@ invoiceItemsHTML += `
 document.getElementById("invoiceItems").innerHTML =
   invoiceItemsHTML;
   
+document.getElementById("invoiceCurrentBill").textContent =
+  currentBillAmount.toFixed(2);
 
+document.getElementById("invoiceGrandTotal").textContent =
+  grandTotal.toFixed(2);
+
+document.getElementById("invoicePayment").textContent =
+  payment.toFixed(2);
+
+document.getElementById("invoicePaymentMethod").textContent =
+  paymentMethod
+    ? paymentMethod.toUpperCase()
+    : "—";
+
+const invoiceBalance =
+  document.getElementById("invoiceBalance");
+
+const invoiceBalanceLabel =
+  document.getElementById("invoiceBalanceLabel");
+
+const formattedInvoiceBalance =
+  formatPartyBalance(finalBalance);
+
+invoiceBalance.textContent =
+  formattedInvoiceBalance.text;
+
+invoiceBalance.style.color =
+  formattedInvoiceBalance.color;
+
+if (finalBalance < 0) {
+  invoiceBalanceLabel.textContent =
+    "Balance";
+} else if (finalBalance > 0) {
+  invoiceBalanceLabel.textContent =
+    "Advance";
+} else {
+  invoiceBalanceLabel.textContent =
+    "Balance";
+  }
+const invoicePreviousRow =
+  document.getElementById("invoicePreviousBalanceRow");
+
+const invoicePreviousValue =
+  document.getElementById("invoicePreviousBalance");
+
+const invoicePreviousLabel =
+  document.getElementById("invoicePreviousBalanceLabel");
+
+if (customerType === "existing") {
+
+  const formattedPrevious =
+    formatPartyBalance(previousBalance);
+
+  invoicePreviousRow.style.display =
+    "flex";
+
+  invoicePreviousLabel.textContent =
+    "Previous Amount";
+
+  invoicePreviousValue.textContent =
+    formattedPrevious.text;
+
+  invoicePreviousValue.style.color =
+    formattedPrevious.color;
+
+} else {
+
+  invoicePreviousRow.style.display =
+    "none";
+
+  }
+  
   }
 
   
