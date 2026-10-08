@@ -3170,8 +3170,39 @@ if (customerType === "existing") {
   "#salesRecordsBox > button"
 ).style.display =
   "none";
+  
   }
 
+  function closeSaleRecordDetails() {
+
+  const detailsBox =
+    document.getElementById("saleRecordDetails");
+
+  const recordsList =
+    document.getElementById("salesRecordsList");
+
+  const recordsCloseButton =
+    document.querySelector(
+      "#salesRecordsBox > button"
+    );
+
+  if (detailsBox) {
+    detailsBox.style.display =
+      "none";
+  }
+
+  if (recordsList) {
+    recordsList.style.display =
+      "block";
+  }
+
+  if (recordsCloseButton) {
+    recordsCloseButton.style.display =
+      "block";
+  }
+  }
+
+  
   
   function closeSalesRecords() {
 
