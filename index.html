@@ -1044,19 +1044,37 @@ main{padding:15px}
   <div id="saleRecordDetailsContent">
   </div>
 
+    <div style="
+  display:flex;
+  gap:10px;
+  margin-top:15px;">
+
   <button
     onclick="closeSaleRecordDetails()"
     style="
-      width:100%;
+      flex:1;
       padding:12px;
-      margin-top:15px;
       background:#6c757d;
       color:white;
       border:0;
       border-radius:6px;">
-    Back to Sales Records
+    ← Back
   </button>
 
+  <button
+    onclick="printSaleRecord()"
+    style="
+      flex:1;
+      padding:12px;
+      background:#1f6f43;
+      color:white;
+      border:0;
+      border-radius:6px;">
+    🖨 Print
+  </button>
+
+    </div>
+  
   </div>
   
   <button
@@ -3148,6 +3166,10 @@ if (customerType === "existing") {
 
   detailsBox.style.display =
     "block";
+    document.querySelector(
+  "#salesRecordsBox > button"
+).style.display =
+  "none";
   }
 
   
