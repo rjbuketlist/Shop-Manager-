@@ -3202,7 +3202,81 @@ if (customerType === "existing") {
   }
   }
 
-  
+  function printSaleRecord() {
+
+  const details =
+    document.getElementById("saleRecordDetails");
+
+  if (!details) {
+    alert("Sale details not found.");
+    return;
+  }
+
+  const printWindow =
+    window.open("", "_blank");
+
+  if (!printWindow) {
+    alert("Please allow pop-ups to print.");
+    return;
+  }
+
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+
+      <title>Sale Record</title>
+
+      <style>
+
+        body {
+          font-family: Arial, sans-serif;
+          margin: 20px;
+          color: #222;
+        }
+
+        button {
+          display: none !important;
+        }
+
+        table {
+          width: 100%;
+          border-collapse: collapse;
+        }
+
+        th,
+        td {
+          border: 1px solid #ddd;
+          padding: 8px;
+        }
+
+        @media print {
+          body {
+            margin: 10mm;
+          }
+        }
+
+      </style>
+
+    </head>
+
+    <body>
+
+      ${details.innerHTML}
+
+    </body>
+
+    </html>
+  `);
+
+  printWindow.document.close();
+
+  printWindow.focus();
+
+  setTimeout(function() {
+    printWindow.print();
+  }, 300);
+  }
   
   function closeSalesRecords() {
 
