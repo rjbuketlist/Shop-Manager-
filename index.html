@@ -1031,18 +1031,36 @@ main{padding:15px}
 
   </div>
 
+  <div style="
+  display:flex;
+  gap:10px;
+  margin-top:15px;">
+
   <button
     onclick="closeTodaySales()"
     style="
-      width:100%;
+      flex:1;
       padding:12px;
-      margin-top:15px;
       background:#6c757d;
       color:white;
       border:0;
       border-radius:6px;">
     Close
   </button>
+
+  <button
+    onclick="printTodaySales()"
+    style="
+      flex:1;
+      padding:12px;
+      background:#1f6f43;
+      color:white;
+      border:0;
+      border-radius:6px;">
+    🖨 Print
+  </button>
+
+  </div>
     </div>
     
     <button onclick="showSection('dashboard',null)"
@@ -3431,11 +3449,6 @@ if (customerType === "existing") {
             <th style="padding:10px;border-bottom:1px solid #ddd;">
               Balance
             </th>
-
-            <th style="padding:10px;border-bottom:1px solid #ddd;">
-              Action
-            </th>
-
           </tr>
         </thead>
 
@@ -3492,25 +3505,6 @@ if (customerType === "existing") {
             color:${balance.color};">
             ${balance.text}
           </td>
-
-          <td style="
-            padding:10px;
-            border-bottom:1px solid #eee;
-            text-align:center;">
-
-            <button
-              onclick="viewSaleRecord('${sale.id}')"
-              style="
-                padding:7px 12px;
-                background:#555;
-                color:white;
-                border:0;
-                border-radius:5px;">
-              View
-            </button>
-
-          </td>
-
         </tr>
       `;
 
@@ -3541,7 +3535,82 @@ if (customerType === "existing") {
   box.style.display =
     "none";
   }
-  
+
+  function printTodaySales() {
+
+  const box =
+    document.getElementById("todaySalesBox");
+
+  if (!box) {
+    alert("Today's Sales section not found.");
+    return;
+  }
+
+  const printWindow =
+    window.open("", "_blank");
+
+  if (!printWindow) {
+    alert("Please allow pop-ups to print.");
+    return;
+  }
+
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+
+      <title>Today's Sales</title>
+
+      <style>
+
+        body {
+          font-family: Arial, sans-serif;
+          margin: 20px;
+          color: #222;
+        }
+
+        button {
+          display: none !important;
+        }
+
+        table {
+          width: 100%;
+          border-collapse: collapse;
+        }
+
+        th,
+        td {
+          border: 1px solid #ddd;
+          padding: 8px;
+        }
+
+        @media print {
+          body {
+            margin: 10mm;
+          }
+        }
+
+      </style>
+
+    </head>
+
+    <body>
+
+      ${box.innerHTML}
+
+    </body>
+
+    </html>
+  `);
+
+  printWindow.document.close();
+  printWindow.focus();
+
+  setTimeout(function() {
+    printWindow.print();
+  }, 300);
+  }
+
   function closeSalesRecords() {
 
   const recordsBox =
