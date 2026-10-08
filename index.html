@@ -3529,6 +3529,19 @@ if (customerType === "existing") {
   totalBox.textContent =
     totalSales.toFixed(2);
   }
+
+  function closeTodaySales() {
+
+  const box =
+    document.getElementById("todaySalesBox");
+
+  if (!box) {
+    return;
+  }
+
+  box.style.display =
+    "none";
+  }
   
   function closeSalesRecords() {
 
