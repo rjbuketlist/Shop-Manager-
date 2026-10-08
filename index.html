@@ -998,6 +998,54 @@ main{padding:15px}
       Today's Sales
     </button>
 
+    <div id="todaySalesBox"
+     style="
+       display:none;
+       margin-top:15px;
+       padding:15px;
+       background:#fff;
+       border:1px solid #ddd;
+       border-radius:6px;">
+
+  <h3 style="margin-top:0;">
+    Today's Sales
+  </h3>
+
+  <div id="todaySalesList">
+  </div>
+
+  <div style="
+    margin-top:15px;
+    padding:12px;
+    background:#f4f6f8;
+    border-radius:6px;
+    display:flex;
+    justify-content:space-between;
+    font-weight:bold;">
+
+    <span>Total Today's Sales</span>
+
+    <span>
+      ₹<span id="todaySalesTotal">0.00</span>
+    </span>
+
+  </div>
+
+  <button
+    onclick="closeTodaySales()"
+    style="
+      width:100%;
+      padding:12px;
+      margin-top:15px;
+      background:#6c757d;
+      color:white;
+      border:0;
+      border-radius:6px;">
+    Close
+  </button>
+
+    </div>
+    
     <button onclick="showSection('dashboard',null)"
       style="
         width:100%;
@@ -3276,6 +3324,210 @@ if (customerType === "existing") {
   setTimeout(function() {
     printWindow.print();
   }, 300);
+  }
+
+  function viewTodaySales() {
+
+  const box =
+    document.getElementById("todaySalesBox");
+
+  const list =
+    document.getElementById("todaySalesList");
+
+  const totalBox =
+    document.getElementById("todaySalesTotal");
+
+  if (!box || !list || !totalBox) {
+    alert("Today's Sales section not found.");
+    return;
+  }
+
+  box.style.display =
+    "block";
+
+  const today =
+    new Date();
+
+  const todayYear =
+    today.getFullYear();
+
+  const todayMonth =
+    today.getMonth();
+
+  const todayDate =
+    today.getDate();
+
+  const todaySales =
+    (db.sales || []).filter(function(sale) {
+
+      if (!sale.date) {
+        return false;
+      }
+
+      const saleDate =
+        new Date(sale.date);
+
+      return (
+        saleDate.getFullYear() === todayYear &&
+        saleDate.getMonth() === todayMonth &&
+        saleDate.getDate() === todayDate
+      );
+
+    });
+
+  if (todaySales.length === 0) {
+
+    list.innerHTML = `
+      <div style="
+        padding:20px;
+        text-align:center;
+        color:#777;">
+        No sales found for today.
+      </div>
+    `;
+
+    totalBox.textContent =
+      "0.00";
+
+    return;
+  }
+
+  let totalSales =
+    0;
+
+  let html = `
+    <div style="
+      overflow-x:auto;
+      border:1px solid #ddd;
+      border-radius:6px;">
+
+      <table style="
+        width:100%;
+        border-collapse:collapse;
+        min-width:800px;">
+
+        <thead>
+          <tr style="background:#f4f6f8;">
+
+            <th style="padding:10px;border-bottom:1px solid #ddd;">
+              Invoice No
+            </th>
+
+            <th style="padding:10px;border-bottom:1px solid #ddd;">
+              Time
+            </th>
+
+            <th style="padding:10px;border-bottom:1px solid #ddd;">
+              Customer
+            </th>
+
+            <th style="padding:10px;border-bottom:1px solid #ddd;">
+              Bill Amount
+            </th>
+
+            <th style="padding:10px;border-bottom:1px solid #ddd;">
+              Payment
+            </th>
+
+            <th style="padding:10px;border-bottom:1px solid #ddd;">
+              Balance
+            </th>
+
+            <th style="padding:10px;border-bottom:1px solid #ddd;">
+              Action
+            </th>
+
+          </tr>
+        </thead>
+
+        <tbody>
+  `;
+
+  todaySales
+    .slice()
+    .reverse()
+    .forEach(function(sale) {
+
+      const billAmount =
+        Number(sale.currentBillAmount || 0);
+
+      totalSales +=
+        billAmount;
+
+      const balance =
+        formatPartyBalance(
+          Number(sale.balance || 0)
+        );
+
+      html += `
+        <tr>
+
+          <td style="padding:10px;border-bottom:1px solid #eee;">
+            ${sale.id || "—"}
+          </td>
+
+          <td style="padding:10px;border-bottom:1px solid #eee;">
+            ${
+              sale.date
+                ? new Date(sale.date).toLocaleTimeString()
+                : "—"
+            }
+          </td>
+
+          <td style="padding:10px;border-bottom:1px solid #eee;">
+            ${sale.customerName || "Cash Customer"}
+          </td>
+
+          <td style="padding:10px;border-bottom:1px solid #eee;text-align:right;">
+            ₹${billAmount.toFixed(2)}
+          </td>
+
+          <td style="padding:10px;border-bottom:1px solid #eee;text-align:right;">
+            ₹${Number(sale.payment || 0).toFixed(2)}
+          </td>
+
+          <td style="
+            padding:10px;
+            border-bottom:1px solid #eee;
+            text-align:right;
+            color:${balance.color};">
+            ${balance.text}
+          </td>
+
+          <td style="
+            padding:10px;
+            border-bottom:1px solid #eee;
+            text-align:center;">
+
+            <button
+              onclick="viewSaleRecord('${sale.id}')"
+              style="
+                padding:7px 12px;
+                background:#555;
+                color:white;
+                border:0;
+                border-radius:5px;">
+              View
+            </button>
+
+          </td>
+
+        </tr>
+      `;
+
+    });
+
+  html += `
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  list.innerHTML =
+    html;
+
+  totalBox.textContent =
+    totalSales.toFixed(2);
   }
   
   function closeSalesRecords() {
