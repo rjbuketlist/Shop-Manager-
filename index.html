@@ -2139,8 +2139,25 @@ main{padding:15px}
 
   <!-- PAYMENT HISTORY -->
 
-  <div class="card"
-       style="margin-top:15px;">
+  
+<button
+  onclick="toggleSettlementHistory()"
+  style="
+    width:100%;
+    padding:12px;
+    margin-top:15px;
+    background:#555;
+    color:white;
+    border:0;
+    border-radius:6px;
+    font-weight:bold;">
+  Settlement History
+</button>
+
+  
+<div id="settlementHistoryCard"
+     class="card"
+     style="display:none; margin-top:15px;">
 
     <h3>Settlement History</h3>
 
@@ -3535,6 +3552,25 @@ if (customerType === "existing") {
   box.style.display =
     "none";
   }
+
+  
+function toggleSettlementHistory() {
+
+  const historyCard =
+    document.getElementById("settlementHistoryCard");
+
+  if (!historyCard) {
+    alert("Settlement History section not found.");
+    return;
+  }
+
+  if (historyCard.style.display === "none") {
+    historyCard.style.display = "block";
+  } else {
+    historyCard.style.display = "none";
+  }
+  }
+    
 
   function printTodaySales() {
 
