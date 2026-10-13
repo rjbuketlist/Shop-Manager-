@@ -9916,6 +9916,12 @@ function openSupplierPayment(supplierId) {
 
 function openPaymentPage(party) {
 
+  document.getElementById("directSettlementForm").style.display =
+    "block";
+
+  document.getElementById("settlementHistoryCard").style.display =
+    "none";
+
   document.getElementById("paymentPartyId").value =
     party.id;
 
