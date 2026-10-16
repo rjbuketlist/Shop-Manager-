@@ -10586,24 +10586,33 @@ function printSettlement() {
 
 function returnToOrigin(party) {
 
-  // Payment form hide
+  // Hide the settlement form after transaction
   const paymentForm =
     document.getElementById("directSettlementForm");
 
   if (paymentForm) {
-    paymentForm.style.display = "block";
+    paymentForm.style.display = "none";
   }
 
-  // Settlement summary clear
+  // Clear settlement form fields
+  document.getElementById("paymentPartyId").value = "";
+  document.getElementById("paymentPartyName").value = "";
+  document.getElementById("paymentBillNo").value = "";
+  document.getElementById("paymentAmount").value = "";
+  document.getElementById("paymentMethod").value = "Cash";
+  document.getElementById("paymentNote").value = "";
+
+  // Reset displayed balance
+  document.getElementById("paymentTotalAmount").textContent = "₹0.00";
+  document.getElementById("paymentTotalAmount").style.color = "";
+
+  // Clear settlement summary
   const summaryBox =
     document.getElementById("settlementSummaryBox");
 
   if (summaryBox) {
-
     summaryBox.innerHTML = "";
-
     summaryBox.style.display = "none";
-
   }
 
   // Return to Customer Details
