@@ -2137,8 +2137,133 @@ main{padding:15px}
   </div>
 
 
-  <!-- PAYMENT HISTORY -->
+  <!-- PAYMENT HISTORY & SUMMARY OPTIONS -->
 
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:15px;">
+
+    <button
+      onclick="
+        const p=document.getElementById('paymentHistoryPanel');
+        p.style.display=p.style.display==='none'?'block':'none';
+        document.getElementById('paymentSummaryPanel').style.display='none';
+      "
+      style="
+        padding:13px 8px;
+        background:#1f6f43;
+        color:white;
+        border:0;
+        border-radius:6px;
+        font-weight:bold;">
+      Payment History
+    </button>
+
+    <button
+      onclick="
+        const p=document.getElementById('paymentSummaryPanel');
+        p.style.display=p.style.display==='none'?'block':'none';
+        document.getElementById('paymentHistoryPanel').style.display='none';
+      "
+      style="
+        padding:13px 8px;
+        background:#2457a7;
+        color:white;
+        border:0;
+        border-radius:6px;
+        font-weight:bold;">
+      Payment Summary
+    </button>
+
+  </div>
+
+  <!-- PAYMENT HISTORY PANEL -->
+
+  <div id="paymentHistoryPanel"
+       class="card"
+       style="display:none; margin-top:15px;">
+
+    <h3>Payment History</h3>
+
+    <p style="color:#666; font-size:13px;">
+      Filter transactions by category and date range.
+    </p>
+
+    <label>Payment Category</label>
+
+    <select id="paymentCategoryFilter"
+      style="
+        width:100%;
+        padding:12px;
+        margin:6px 0 12px;
+        border:1px solid #ddd;
+        border-radius:6px;">
+
+      <option value="all">All Payments</option>
+      <option value="sales">Sales Payments</option>
+      <option value="customer">Customer Payments</option>
+      <option value="supplier">Supplier Payments</option>
+
+    </select>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+
+      <div>
+        <label>From Date</label>
+        <input id="paymentFromDate"
+          type="date"
+          style="
+            width:100%;
+            box-sizing:border-box;
+            padding:10px;
+            margin:6px 0 12px;
+            border:1px solid #ddd;
+            border-radius:6px;">
+      </div>
+
+      <div>
+        <label>To Date</label>
+        <input id="paymentToDate"
+          type="date"
+          style="
+            width:100%;
+            box-sizing:border-box;
+            padding:10px;
+            margin:6px 0 12px;
+            border:1px solid #ddd;
+            border-radius:6px;">
+      </div>
+
+    </div>
+
+    <div id="paymentHistoryResults">
+      <div class="empty">
+        Payment records will appear here.
+      </div>
+    </div>
+
+  </div>
+
+  <!-- PAYMENT SUMMARY PANEL -->
+
+  <div id="paymentSummaryPanel"
+       class="card"
+       style="display:none; margin-top:15px;">
+
+    <h3>Payment Summary</h3>
+
+    <p style="color:#666; font-size:13px;">
+      Summary of received and paid amounts by payment method.
+    </p>
+
+    <div id="paymentSummaryResults">
+      <div class="empty">
+        Payment summary will appear here.
+      </div>
+    </div>
+
+  </div>
+
+
+  
   
 <button
   onclick="toggleSettlementHistory()"
