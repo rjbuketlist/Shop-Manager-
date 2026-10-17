@@ -2147,6 +2147,7 @@ main{padding:15px}
         p.style.display=p.style.display==='none'?'block':'none';
         document.getElementById('paymentSummaryPanel').style.display='none';
       "
+      renderPaymentHistory();
       style="
         padding:13px 8px;
         background:#1f6f43;
@@ -2190,6 +2191,7 @@ main{padding:15px}
     <label>Payment Category</label>
 
     <select id="paymentCategoryFilter"
+  onchange="renderPaymentHistory()"
       style="
         width:100%;
         padding:12px;
@@ -2209,6 +2211,7 @@ main{padding:15px}
       <div>
         <label>From Date</label>
         <input id="paymentFromDate"
+  onchange="renderPaymentHistory()"
           type="date"
           style="
             width:100%;
@@ -2222,6 +2225,7 @@ main{padding:15px}
       <div>
         <label>To Date</label>
         <input id="paymentToDate"
+  onchange="renderPaymentHistory()"
           type="date"
           style="
             width:100%;
