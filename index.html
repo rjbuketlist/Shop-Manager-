@@ -2259,6 +2259,32 @@ main{padding:15px}
       Summary of received and paid amounts by payment method.
     </p>
 
+    
+<div style="display:flex; flex-wrap:wrap; gap:10px; margin:15px 0;">
+
+  <div style="flex:1; min-width:140px;">
+    <label for="paymentSummaryPeriod">Summary Period</label>
+    <select
+      id="paymentSummaryPeriod"
+      onchange="renderPaymentSummary()"
+      style="width:100%; padding:10px; margin-top:5px;">
+      <option value="all">All Time</option>
+      <option value="daily">Daily</option>
+      <option value="monthly">Monthly</option>
+    </select>
+  </div>
+
+  <div style="flex:1; min-width:140px;">
+    <label for="paymentSummaryDate">Select Date</label>
+    <input
+      type="date"
+      id="paymentSummaryDate"
+      onchange="renderPaymentSummary()"
+      style="width:100%; padding:10px; margin-top:5px;">
+  </div>
+
+</div>
+    
     <div id="paymentSummaryResults">
       <div class="empty">
         Payment summary will appear here.
