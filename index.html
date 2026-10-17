@@ -11565,6 +11565,326 @@ function exportPaymentSummaryCSV() {
 }
   
 
+/* PRINT / SAVE PAYMENT SUMMARY AS PDF */
+
+function printPaymentSummary() {
+
+  const periodInput =
+    document.getElementById("paymentSummaryPeriod");
+
+  const dateInput =
+    document.getElementById("paymentSummaryDate");
+
+  const period = periodInput ? periodInput.value : "all";
+
+  function localDateKey(date) {
+    return (
+      date.getFullYear() + "-" +
+      String(date.getMonth() + 1).padStart(2, "0") + "-" +
+      String(date.getDate()).padStart(2, "0")
+    );
+  }
+
+  const selectedDate =
+    (dateInput && dateInput.value) ||
+    localDateKey(new Date());
+
+  const payments =
+    Array.isArray(db.payments) ? db.payments : [];
+
+  const sales =
+    Array.isArray(db.sales) ? db.sales : [];
+
+  function paymentDateKey(payment) {
+
+    if (!payment.date) return "";
+
+    const raw = String(payment.date);
+
+    if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+      return raw;
+    }
+
+    const date = new Date(raw);
+
+    return Number.isNaN(date.getTime())
+      ? ""
+      : localDateKey(date);
+  }
+
+  const filteredPayments = payments.filter(function(payment) {
+
+    if (period === "all") return true;
+
+    const date = paymentDateKey(payment);
+
+    if (!date) return false;
+
+    if (period === "daily") {
+      return date === selectedDate;
+    }
+
+    if (period === "monthly") {
+      return date.slice(0, 7) === selectedDate.slice(0, 7);
+    }
+
+    return true;
+  });
+
+  let totalReceived = 0;
+  let totalPaid = 0;
+
+  const methods = {
+    Cash: { received: 0, paid: 0 },
+    UPI: { received: 0, paid: 0 },
+    Bank: { received: 0, paid: 0 },
+    Other: { received: 0, paid: 0 }
+  };
+
+  const transactionRows = [];
+
+  filteredPayments.forEach(function(payment) {
+
+    const amount = Number(
+      payment.amount ?? payment.paid ?? 0
+    );
+
+    if (!Number.isFinite(amount) || amount <= 0) return;
+
+    const sale = sales.find(
+      item => String(item.id) === String(payment.billId)
+    );
+
+    let category = "Other";
+    let direction = "Other";
+
+    if (sale || payment.partyType === "cash") {
+      category = "Sales";
+      direction = "Received";
+    } else if (
+      payment.type === "payment" &&
+      payment.partyType === "customer"
+    ) {
+      category = "Customer Settlement";
+      direction = "Received";
+    } else if (payment.partyType === "supplier") {
+      category = payment.type === "payment"
+        ? "Supplier Settlement"
+        : "Purchase Payment";
+      direction = "Paid";
+    } else if (payment.partyType === "customer") {
+      category = "Customer";
+      direction = "Received";
+    }
+
+    const methodName = payment.paymentMethod || "Other";
+
+    const method =
+      Object.prototype.hasOwnProperty.call(methods, methodName)
+        ? methodName
+        : "Other";
+
+    if (direction === "Received") {
+      totalReceived += amount;
+      methods[method].received += amount;
+    } else if (direction === "Paid") {
+      totalPaid += amount;
+      methods[method].paid += amount;
+    }
+
+    transactionRows.push({
+      date: paymentDateKey(payment) || "—",
+      id: payment.id || "—",
+      billId: payment.billId || "—",
+      category: category,
+      method: methodName,
+      amount: amount,
+      direction: direction
+    });
+
+  });
+
+  function money(value) {
+    return "₹" + value.toLocaleString("en-IN", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+  }
+
+  function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, function(char) {
+      return {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      }[char];
+    });
+  }
+
+  const periodLabel = period === "daily"
+    ? "Daily — " + selectedDate
+    : period === "monthly"
+      ? "Monthly — " + selectedDate.slice(0, 7)
+      : "All Time";
+
+  const summaryRows = transactionRows.map(function(row) {
+    return `
+      <tr>
+        <td>${escapeHTML(row.date)}</td>
+        <td>${escapeHTML(row.id)}</td>
+        <td>${escapeHTML(row.billId)}</td>
+        <td>${escapeHTML(row.category)}</td>
+        <td>${escapeHTML(row.method)}</td>
+        <td class="amount">${money(row.amount)}</td>
+        <td>${escapeHTML(row.direction)}</td>
+      </tr>
+    `;
+  }).join("");
+
+  const methodRows = Object.keys(methods).map(function(method) {
+    return `
+      <tr>
+        <td>${escapeHTML(method)}</td>
+        <td class="amount">${money(methods[method].received)}</td>
+        <td class="amount">${money(methods[method].paid)}</td>
+      </tr>
+    `;
+  }).join("");
+
+  const reportHTML = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>Payment Summary Report</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          color: #222;
+          margin: 24px;
+          font-size: 12px;
+        }
+        h1 { font-size: 22px; margin-bottom: 5px; }
+        h2 { font-size: 16px; margin-top: 24px; }
+        .muted { color: #555; }
+        .cards {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 10px;
+          margin: 18px 0;
+        }
+        .card {
+          border: 1px solid #ccc;
+          padding: 12px;
+          border-radius: 6px;
+        }
+        .card strong {
+          display: block;
+          font-size: 16px;
+          margin-top: 8px;
+        }
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 10px;
+        }
+        th, td {
+          border: 1px solid #ccc;
+          padding: 7px;
+          text-align: left;
+          overflow-wrap: anywhere;
+        }
+        th { background: #eee; }
+        .amount { text-align: right; white-space: nowrap; }
+        .net { font-weight: bold; }
+        @media print {
+          body { margin: 10mm; }
+          .cards { break-inside: avoid; }
+          tr { break-inside: avoid; }
+          h2 { break-after: avoid; }
+        }
+        @media screen and (max-width: 600px) {
+          body { margin: 12px; }
+          .cards { grid-template-columns: 1fr; }
+        }
+      </style>
+    </head>
+    <body>
+      <h1>Payment Summary Report</h1>
+      <div class="muted">Period: ${escapeHTML(periodLabel)}</div>
+      <div class="muted">Generated: ${escapeHTML(new Date().toLocaleString("en-IN"))}</div>
+
+      <div class="cards">
+        <div class="card">
+          Total Received
+          <strong>${money(totalReceived)}</strong>
+        </div>
+        <div class="card">
+          Total Paid
+          <strong>${money(totalPaid)}</strong>
+        </div>
+        <div class="card">
+          Net Cash Flow
+          <strong>${money(totalReceived - totalPaid)}</strong>
+        </div>
+      </div>
+
+      <h2>Payment Method Breakdown</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Method</th>
+            <th>Received</th>
+            <th>Paid</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${methodRows}
+        </tbody>
+      </table>
+
+      <h2>Transaction Details</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Transaction ID</th>
+            <th>Bill ID</th>
+            <th>Category</th>
+            <th>Method</th>
+            <th>Amount</th>
+            <th>Direction</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${summaryRows || '<tr><td colspan="7">No transactions for this period.</td></tr>'}
+        </tbody>
+      </table>
+    </body>
+    </html>
+  `;
+
+  const printWindow = window.open("", "_blank");
+
+  if (!printWindow) {
+    alert("Print window blocked. Allow pop-ups for this app and try again.");
+    return;
+  }
+
+  printWindow.document.open();
+  printWindow.document.write(reportHTML);
+  printWindow.document.close();
+
+  printWindow.onload = function() {
+    printWindow.focus();
+    printWindow.print();
+  };
+
+}
+  
   
  initApp();
   
