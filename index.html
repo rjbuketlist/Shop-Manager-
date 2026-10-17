@@ -11342,8 +11342,221 @@ function renderPaymentSummary() {
 }
   
 
+/* EXPORT PAYMENT SUMMARY TO CSV */
 
+function exportPaymentSummaryCSV() {
+
+  const payments =
+    Array.isArray(db.payments) ? db.payments : [];
+
+  const sales =
+    Array.isArray(db.sales) ? db.sales : [];
+
+  const periodInput =
+    document.getElementById("paymentSummaryPeriod");
+
+  const dateInput =
+    document.getElementById("paymentSummaryDate");
+
+  const period = periodInput ? periodInput.value : "all";
+
+  function localDateKey(date) {
+    return (
+      date.getFullYear() + "-" +
+      String(date.getMonth() + 1).padStart(2, "0") + "-" +
+      String(date.getDate()).padStart(2, "0")
+    );
+  }
+
+  const selectedDate =
+    (dateInput && dateInput.value) ||
+    localDateKey(new Date());
+
+  function paymentDateKey(payment) {
+
+    if (!payment.date) return "";
+
+    const raw = String(payment.date);
+
+    if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+      return raw;
+    }
+
+    const date = new Date(raw);
+
+    if (Number.isNaN(date.getTime())) return "";
+
+    return localDateKey(date);
+  }
+
+  const filteredPayments = payments.filter(function(payment) {
+
+    if (period === "all") return true;
+
+    const date = paymentDateKey(payment);
+
+    if (!date) return false;
+
+    if (period === "daily") {
+      return date === selectedDate;
+    }
+
+    if (period === "monthly") {
+      return date.slice(0, 7) === selectedDate.slice(0, 7);
+    }
+
+    return true;
+  });
+
+  const rows = [
+    ["Payment Summary Report"],
+    ["Period", period === "daily"
+      ? "Daily"
+      : period === "monthly"
+        ? "Monthly"
+        : "All Time"],
+    ["Selected Date", selectedDate],
+    [],
+    [
+      "Date",
+      "Transaction ID",
+      "Bill ID",
+      "Category",
+      "Party ID",
+      "Payment Method",
+      "Amount (INR)",
+      "Direction",
+      "Note"
+    ]
+  ];
+
+  let totalReceived = 0;
+  let totalPaid = 0;
+
+  const methods = {
+    Cash: { received: 0, paid: 0 },
+    UPI: { received: 0, paid: 0 },
+    Bank: { received: 0, paid: 0 },
+    Other: { received: 0, paid: 0 }
+  };
+
+  filteredPayments.forEach(function(payment) {
+
+    const amount = Number(
+      payment.amount ?? payment.paid ?? 0
+    );
+
+    if (!Number.isFinite(amount) || amount <= 0) return;
+
+    const sale = sales.find(
+      item => String(item.id) === String(payment.billId)
+    );
+
+    let category = "Other";
+    let direction = "Other";
+
+    if (sale || payment.partyType === "cash") {
+      category = "Sales";
+      direction = "Received";
+    } else if (
+      payment.type === "payment" &&
+      payment.partyType === "customer"
+    ) {
+      category = "Customer Settlement";
+      direction = "Received";
+    } else if (payment.partyType === "supplier") {
+      category = payment.type === "payment"
+        ? "Supplier Settlement"
+        : "Purchase Payment";
+      direction = "Paid";
+    } else if (payment.partyType === "customer") {
+      category = "Customer";
+      direction = "Received";
+    }
+
+    const methodName = payment.paymentMethod || "Other";
+
+    const method = Object.prototype.hasOwnProperty.call(methods, methodName)
+      ? methodName
+      : "Other";
+
+    if (direction === "Received") {
+      totalReceived += amount;
+      methods[method].received += amount;
+    } else if (direction === "Paid") {
+      totalPaid += amount;
+      methods[method].paid += amount;
+    }
+
+    rows.push([
+      paymentDateKey(payment),
+      payment.id || "",
+      payment.billId || "",
+      category,
+      payment.partyId || "",
+      methodName,
+      amount.toFixed(2),
+      direction,
+      payment.note || ""
+    ]);
+
+  });
+
+  rows.push(
+    [],
+    ["Total Received (INR)", totalReceived.toFixed(2)],
+    ["Total Paid (INR)", totalPaid.toFixed(2)],
+    ["Net Cash Flow (INR)", (totalReceived - totalPaid).toFixed(2)],
+    [],
+    ["Payment Method", "Received (INR)", "Paid (INR)"]
+  );
+
+  Object.keys(methods).forEach(function(method) {
+    rows.push([
+      method,
+      methods[method].received.toFixed(2),
+      methods[method].paid.toFixed(2)
+    ]);
+  });
+
+  function csvCell(value) {
+    let text = String(value ?? "");
+
+    // Prevent spreadsheet formula injection in text fields.
+    if (/^[=+\-@\t\r]/.test(text)) {
+      text = "'" + text;
+    }
+
+    return '"' + text.replace(/"/g, '""') + '"';
+  }
+
+  const csv = "\uFEFF" + rows.map(function(row) {
+    return row.map(csvCell).join(",");
+  }).join("\r\n");
+
+  const blob = new Blob(
+    [csv],
+    { type: "text/csv;charset=utf-8;" }
+  );
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = "payment-summary-" + period + "-" +
+    selectedDate + ".csv";
+
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+
+  setTimeout(function() {
+    URL.revokeObjectURL(url);
+  }, 1000);
+
+}
   
+
   
  initApp();
   
