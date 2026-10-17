@@ -11084,6 +11084,154 @@ function renderSettlementHistory() {
 }
 
   
+/* PAYMENT SUMMARY */
+
+function renderPaymentSummary() {
+
+  const box =
+    document.getElementById("paymentSummaryResults");
+
+  if (!box) return;
+
+  const payments =
+    Array.isArray(db.payments) ? db.payments : [];
+
+  const sales =
+    Array.isArray(db.sales) ? db.sales : [];
+
+  const customers =
+    Array.isArray(db.customers) ? db.customers : [];
+
+  const suppliers =
+    Array.isArray(db.suppliers) ? db.suppliers : [];
+
+  let totalReceived = 0;
+  let totalPaid = 0;
+
+  const methods = {
+    Cash: { received: 0, paid: 0 },
+    UPI: { received: 0, paid: 0 },
+    Bank: { received: 0, paid: 0 },
+    Other: { received: 0, paid: 0 }
+  };
+
+  payments.forEach(function(payment) {
+
+    const amount = Number(
+      payment.amount ?? payment.paid ?? 0
+    );
+
+    if (!Number.isFinite(amount) || amount <= 0) return;
+
+    const sale = sales.find(
+      item => String(item.id) === String(payment.billId)
+    );
+
+    const methodName = payment.paymentMethod || "Other";
+
+    const method = Object.prototype.hasOwnProperty.call(methods, methodName)
+      ? methodName
+      : "Other";
+
+    /*
+      Sales payment = money received.
+      Customer settlement = money received.
+      Supplier payment/purchase payment = money paid.
+    */
+
+    if (sale || payment.partyType === "cash" ||
+        payment.partyType === "customer") {
+
+      totalReceived += amount;
+      methods[method].received += amount;
+
+    } else if (payment.partyType === "supplier") {
+
+      totalPaid += amount;
+      methods[method].paid += amount;
+
+    }
+
+  });
+
+  const netCashFlow = totalReceived - totalPaid;
+
+  function money(value) {
+    return "₹" + value.toLocaleString("en-IN", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+  }
+
+  let html = `
+    <div style="
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+      gap:10px;">
+
+      <div style="padding:14px;background:#e8f5e9;border-radius:8px;">
+        <div style="font-size:13px;">Total Received</div>
+        <strong style="color:#1f6f43;font-size:18px;">
+          ${money(totalReceived)}
+        </strong>
+      </div>
+
+      <div style="padding:14px;background:#ffebee;border-radius:8px;">
+        <div style="font-size:13px;">Total Paid</div>
+        <strong style="color:#c62828;font-size:18px;">
+          ${money(totalPaid)}
+        </strong>
+      </div>
+
+      <div style="padding:14px;background:#e3f2fd;border-radius:8px;">
+        <div style="font-size:13px;">Net Cash Flow</div>
+        <strong style="color:#1565c0;font-size:18px;">
+          ${money(netCashFlow)}
+        </strong>
+      </div>
+
+    </div>
+
+    <h4 style="margin:20px 0 10px;">Payment Method Breakdown</h4>
+
+    <div style="overflow-x:auto;">
+      <table style="width:100%;border-collapse:collapse;font-size:13px;">
+        <thead>
+          <tr style="background:#e9ecef;">
+            <th style="padding:9px;border:1px solid #ddd;">Method</th>
+            <th style="padding:9px;border:1px solid #ddd;">Received</th>
+            <th style="padding:9px;border:1px solid #ddd;">Paid</th>
+          </tr>
+        </thead>
+        <tbody>
+  `;
+
+  Object.keys(methods).forEach(function(method) {
+
+    html += `
+      <tr>
+        <td style="padding:9px;border:1px solid #ddd;">${method}</td>
+        <td style="padding:9px;border:1px solid #ddd;">
+          ${money(methods[method].received)}
+        </td>
+        <td style="padding:9px;border:1px solid #ddd;">
+          ${money(methods[method].paid)}
+        </td>
+      </tr>
+    `;
+
+  });
+
+  html += `
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  box.innerHTML = html;
+}
+  
+  
  initApp();
   
 </script>
