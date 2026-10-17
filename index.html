@@ -11208,25 +11208,49 @@ function renderPaymentSummary() {
   }
 
   // Filter records before calculating totals.
-  const filteredPayments = payments.filter(function(payment) {
+  
+const fromDateInput =
+  document.getElementById("paymentSummaryFromDate");
 
-    if (period === "all") return true;
+const toDateInput =
+  document.getElementById("paymentSummaryToDate");
 
-    const paymentDate = paymentDateKey(payment);
+const fromDate =
+  fromDateInput ? fromDateInput.value : "";
 
-    if (!paymentDate) return false;
+const toDate =
+  toDateInput ? toDateInput.value : "";
 
-    if (period === "daily") {
-      return paymentDate === selectedDate;
+const filteredPayments = payments.filter(function(payment) {
+
+  const paymentDate = paymentDateKey(payment);
+
+  if (period === "range") {
+
+    if (!fromDate || !toDate || fromDate > toDate) {
+      return false;
     }
 
-    if (period === "monthly") {
-      return paymentDate.slice(0, 7) ===
-        selectedDate.slice(0, 7);
-    }
+    return paymentDate >= fromDate &&
+      paymentDate <= toDate;
+  }
 
-    return true;
-  });
+  if (period === "all") return true;
+
+  if (!paymentDate) return false;
+
+  if (period === "daily") {
+    return paymentDate === selectedDate;
+  }
+
+  if (period === "monthly") {
+    return paymentDate.slice(0, 7) ===
+      selectedDate.slice(0, 7);
+  }
+
+  return true;
+});
+
 
   let totalReceived = 0;
   let totalPaid = 0;
