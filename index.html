@@ -11111,6 +11111,7 @@ function renderSettlementHistory() {
 }
 
   
+
 /* PAYMENT SUMMARY */
 
 function renderPaymentSummary() {
@@ -11126,11 +11127,67 @@ function renderPaymentSummary() {
   const sales =
     Array.isArray(db.sales) ? db.sales : [];
 
-  const customers =
-    Array.isArray(db.customers) ? db.customers : [];
+  const periodInput =
+    document.getElementById("paymentSummaryPeriod");
 
-  const suppliers =
-    Array.isArray(db.suppliers) ? db.suppliers : [];
+  const dateInput =
+    document.getElementById("paymentSummaryDate");
+
+  const period = periodInput ? periodInput.value : "all";
+
+  // Format a date using the device's local calendar.
+  function localDateKey(date) {
+    return (
+      date.getFullYear() + "-" +
+      String(date.getMonth() + 1).padStart(2, "0") + "-" +
+      String(date.getDate()).padStart(2, "0")
+    );
+  }
+
+  // Use today's date when the date field is empty.
+  const selectedDate =
+    (dateInput && dateInput.value) ||
+    localDateKey(new Date());
+
+  // Read the transaction's calendar date.
+  function paymentDateKey(payment) {
+
+    if (!payment.date) return "";
+
+    const raw = String(payment.date);
+
+    // Preserve date-only values without timezone conversion.
+    if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+      return raw;
+    }
+
+    const date = new Date(raw);
+
+    if (Number.isNaN(date.getTime())) return "";
+
+    return localDateKey(date);
+  }
+
+  // Filter records before calculating totals.
+  const filteredPayments = payments.filter(function(payment) {
+
+    if (period === "all") return true;
+
+    const paymentDate = paymentDateKey(payment);
+
+    if (!paymentDate) return false;
+
+    if (period === "daily") {
+      return paymentDate === selectedDate;
+    }
+
+    if (period === "monthly") {
+      return paymentDate.slice(0, 7) ===
+        selectedDate.slice(0, 7);
+    }
+
+    return true;
+  });
 
   let totalReceived = 0;
   let totalPaid = 0;
@@ -11142,7 +11199,7 @@ function renderPaymentSummary() {
     Other: { received: 0, paid: 0 }
   };
 
-  payments.forEach(function(payment) {
+  filteredPayments.forEach(function(payment) {
 
     const amount = Number(
       payment.amount ?? payment.paid ?? 0
@@ -11156,27 +11213,26 @@ function renderPaymentSummary() {
 
     const methodName = payment.paymentMethod || "Other";
 
-    const method = Object.prototype.hasOwnProperty.call(methods, methodName)
-      ? methodName
-      : "Other";
+    const method =
+      Object.prototype.hasOwnProperty.call(methods, methodName)
+        ? methodName
+        : "Other";
 
-    /*
-      Sales payment = money received.
-      Customer settlement = money received.
-      Supplier payment/purchase payment = money paid.
-    */
-
-    if (sale || payment.partyType === "cash" ||
-        payment.partyType === "customer") {
+    // Sales and customer payments = money received.
+    if (
+      sale ||
+      payment.partyType === "cash" ||
+      payment.partyType === "customer"
+    ) {
 
       totalReceived += amount;
       methods[method].received += amount;
 
+    // Supplier payments = money paid.
     } else if (payment.partyType === "supplier") {
 
       totalPaid += amount;
       methods[method].paid += amount;
-
     }
 
   });
@@ -11190,7 +11246,20 @@ function renderPaymentSummary() {
     });
   }
 
+  let periodLabel = "All Time";
+
+  if (period === "daily") {
+    periodLabel = "Daily Summary — " + selectedDate;
+  } else if (period === "monthly") {
+    periodLabel =
+      "Monthly Summary — " + selectedDate.slice(0, 7);
+  }
+
   let html = `
+    <h4 style="margin:10px 0 15px;">
+      ${periodLabel}
+    </h4>
+
     <div style="
       display:grid;
       grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
@@ -11219,7 +11288,9 @@ function renderPaymentSummary() {
 
     </div>
 
-    <h4 style="margin:20px 0 10px;">Payment Method Breakdown</h4>
+    <h4 style="margin:20px 0 10px;">
+      Payment Method Breakdown
+    </h4>
 
     <div style="overflow-x:auto;">
       <table style="width:100%;border-collapse:collapse;font-size:13px;">
@@ -11237,7 +11308,9 @@ function renderPaymentSummary() {
 
     html += `
       <tr>
-        <td style="padding:9px;border:1px solid #ddd;">${method}</td>
+        <td style="padding:9px;border:1px solid #ddd;">
+          ${method}
+        </td>
         <td style="padding:9px;border:1px solid #ddd;">
           ${money(methods[method].received)}
         </td>
@@ -11257,6 +11330,9 @@ function renderPaymentSummary() {
 
   box.innerHTML = html;
 }
+  
+
+
   
   
  initApp();
