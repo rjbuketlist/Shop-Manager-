@@ -3694,10 +3694,11 @@ function toggleSettlementHistory() {
   }
 
   if (historyCard.style.display === "none") {
-    historyCard.style.display = "block";
-  } else {
-    historyCard.style.display = "none";
-  }
+  historyCard.style.display = "block";
+  renderSettlementHistory();
+} else {
+  historyCard.style.display = "none";
+}
   }
     
 
@@ -11004,119 +11005,84 @@ function returnToOrigin(party) {
 }
 
 
-/* Payment History */
+/* SETTLEMENT HISTORY ONLY */
 
-function renderPaymentHistory() {
+function renderSettlementHistory() {
 
   const box =
     document.getElementById("paymentHistoryBox");
 
-  if (!box) {
-    return;
-  }
+  if (!box) return;
 
+  const payments =
+    Array.isArray(db.payments) ? db.payments : [];
 
-  if (!db.payments ||
-      db.payments.length === 0) {
+  const settlements = payments.filter(function(payment) {
+    return payment.type === "payment" &&
+      (payment.partyType === "customer" ||
+       payment.partyType === "supplier");
+  });
 
+  if (settlements.length === 0) {
     box.innerHTML = `
       <div class="empty">
         No settlement transactions yet.
       </div>
     `;
-
     return;
   }
 
-
   let html = `
-
     <div style="overflow-x:auto;">
-
-      <table style="
-        width:100%;
-        border-collapse:collapse;
-        font-size:13px;">
-
-        <tr style="background:#e9ecef;">
-
-          <th style="padding:8px;border:1px solid #ddd;">
-            Date
-          </th>
-
-          <th style="padding:8px;border:1px solid #ddd;">
-            Bill ID
-          </th>
-
-          <th style="padding:8px;border:1px solid #ddd;">
-            Party
-          </th>
-
-          <th style="padding:8px;border:1px solid #ddd;">
-            Amount
-          </th>
-
-          <th style="padding:8px;border:1px solid #ddd;">
-            Method
-          </th>
-
-        </tr>
-
+      <table style="width:100%; border-collapse:collapse; font-size:13px;">
+        <thead>
+          <tr style="background:#e9ecef;">
+            <th style="padding:8px;border:1px solid #ddd;">Date</th>
+            <th style="padding:8px;border:1px solid #ddd;">Settlement ID</th>
+            <th style="padding:8px;border:1px solid #ddd;">Party Type</th>
+            <th style="padding:8px;border:1px solid #ddd;">Party ID</th>
+            <th style="padding:8px;border:1px solid #ddd;">Amount</th>
+            <th style="padding:8px;border:1px solid #ddd;">Method</th>
+          </tr>
+        </thead>
+        <tbody>
   `;
 
-
-  db.payments.forEach(payment => {
-
-    const date =
-      new Date(payment.date)
-        .toLocaleString();
-
+  settlements.slice().reverse().forEach(function(payment) {
 
     html += `
-
       <tr>
-
         <td style="padding:8px;border:1px solid #ddd;">
-          ${date}
+          ${new Date(payment.date).toLocaleString("en-IN")}
         </td>
-
         <td style="padding:8px;border:1px solid #ddd;">
-          ${payment.billId}
+          ${payment.id || payment.billId || "—"}
         </td>
-
         <td style="padding:8px;border:1px solid #ddd;">
-          ${payment.partyId}
+          ${payment.partyType}
         </td>
-
-        <td style="
-          padding:8px;
-          border:1px solid #ddd;
-          font-weight:bold;">
-
-          ₹${Number(payment.paid || 0).toFixed(2)}
-
-        </td>
-
         <td style="padding:8px;border:1px solid #ddd;">
-          ${payment.paymentMethod}
+          ${payment.partyId || "—"}
         </td>
-
+        <td style="padding:8px;border:1px solid #ddd;">
+          ₹${Number(payment.paid ?? payment.amount ?? 0).toFixed(2)}
+        </td>
+        <td style="padding:8px;border:1px solid #ddd;">
+          ${payment.paymentMethod || "—"}
+        </td>
       </tr>
-
     `;
-
   });
 
-
   html += `
+        </tbody>
       </table>
     </div>
   `;
 
-
   box.innerHTML = html;
-
 }
+
   
  initApp();
   
