@@ -267,6 +267,75 @@ main{padding:15px}
     width: 100%;
   }
 }
+
+  
+/* Dashboard Due Details */
+.dashboard-due-section {
+  display: grid;
+  gap: 12px;
+}
+
+.dashboard-due-toggle {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid #cfe4d5;
+  border-radius: 12px;
+  background: #edf8f0;
+  color: #176b3a;
+  font-size: 15px;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.dashboard-due-toggle:focus-visible {
+  outline: 2px solid #16834a;
+  outline-offset: 3px;
+}
+
+#dashboardDueDetails {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+#dashboardDueDetails[hidden] {
+  display: none !important;
+}
+
+.dashboard-due-card {
+  min-width: 0;
+  padding: 16px;
+  background: #ffffff;
+  border: 1px solid #e7efe9;
+  border-radius: 12px;
+  box-shadow: 0 3px 12px #0000000a;
+}
+
+.dashboard-due-card h3 {
+  margin: 0 0 10px;
+  color: #68786d;
+  font-size: 13px;
+}
+
+.dashboard-due-card strong {
+  color: #176b3a;
+  font-size: clamp(18px, 4vw, 24px);
+  overflow-wrap: anywhere;
+}
+
+.dashboard-due-note {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: #77847b;
+  font-size: 12px;
+}
+
+@media (max-width: 360px) {
+  #dashboardDueDetails {
+    grid-template-columns: 1fr;
+  }
+}
   
 </style>
 </head>
@@ -465,6 +534,34 @@ main{padding:15px}
 
   </div>
 
+  
+  <div class="dashboard-due-section">
+    <button
+      type="button"
+      id="dashboardDueToggle"
+      class="dashboard-due-toggle"
+      aria-expanded="false"
+      aria-controls="dashboardDueDetails">
+      View Due Details
+    </button>
+
+    <div id="dashboardDueDetails" hidden>
+      <div class="dashboard-due-card">
+        <h3>Customer Due</h3>
+        <strong id="dashboardCustomerDue">₹0.00</strong>
+      </div>
+
+      <div class="dashboard-due-card">
+        <h3>Supplier Due</h3>
+        <strong id="dashboardSupplierDue">₹0.00</strong>
+      </div>
+
+      <p class="dashboard-due-note">
+        Current outstanding balances
+      </p>
+    </div>
+  </div>
+  
   <div class="cards">
     <div class="card">
       <h3>Total Products</h3>
