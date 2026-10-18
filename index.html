@@ -12650,6 +12650,7 @@ function renderDashboardSalesSummary() {
   }
 
   renderDashboardSalesChart();
+  renderDashboardTopProducts();
 }
 
   
@@ -12821,6 +12822,81 @@ function renderDashboardSalesSummary() {
   });
   }
 
+
+  function renderDashboardTopProducts() {
+  const container =
+    document.getElementById("dashboardTopProducts");
+
+  if (!container) return;
+
+  const sales = getDashboardFilteredSales();
+  const productTotals = {};
+
+  sales.forEach(function(sale) {
+    (sale.products || []).forEach(function(item) {
+      const productId = item.productId || item.productName || "unknown";
+      const productName = item.productName || "Unknown Product";
+      const quantity = Number(item.quantity) || 0;
+      const unit = item.unit || "";
+
+      if (!productTotals[productId]) {
+        productTotals[productId] = {
+          name: productName,
+          quantity: 0,
+          unit: unit
+        };
+      }
+
+      productTotals[productId].quantity += quantity;
+    });
+  });
+
+  const topProducts = Object.values(productTotals)
+    .filter(function(product) {
+      return product.quantity > 0;
+    })
+    .sort(function(a, b) {
+      return b.quantity - a.quantity;
+    })
+    .slice(0, 10);
+
+  if (topProducts.length === 0) {
+    container.innerHTML =
+      "<p>No sales recorded for this period.</p>";
+    return;
+  }
+
+  container.innerHTML = topProducts.map(function(product, index) {
+    const row = document.createElement("div");
+    row.className = "dashboard-product-row";
+
+    const info = document.createElement("div");
+    info.className = "dashboard-product-info";
+
+    const name = document.createElement("span");
+    name.className = "dashboard-product-name";
+    name.textContent = product.name;
+
+    const rank = document.createElement("span");
+    rank.className = "dashboard-product-rank";
+    rank.textContent = "Rank #" + (index + 1);
+
+    const quantity = document.createElement("span");
+    quantity.className = "dashboard-product-quantity";
+    quantity.textContent =
+      product.quantity.toLocaleString("en-IN") +
+      (product.unit ? " " + product.unit : "");
+
+    info.appendChild(name);
+    info.appendChild(rank);
+    row.appendChild(info);
+    row.appendChild(quantity);
+
+    return row.outerHTML;
+  }).join("");
+  }
+
+  
 /* ==================================
    DASHBOARD PERIOD FILTER EVENTS
 ================================== */
