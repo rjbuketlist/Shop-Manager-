@@ -12902,20 +12902,14 @@ function renderDashboardSalesSummary() {
 ================================== */
 
 function setupDashboardSalesFilters() {
-  const period =
-    document.getElementById("dashboardPeriod");
-
-  const monthInput =
-    document.getElementById("dashboardSelectedMonth");
-
-  const monthPicker =
-    document.querySelector(".dashboard-month-picker");
+  const period = document.getElementById("dashboardPeriod");
+  const monthInput = document.getElementById("dashboardSelectedMonth");
+  const monthPicker = document.querySelector(".dashboard-month-picker");
 
   if (!period) return;
 
   if (monthInput && !monthInput.value) {
     const now = new Date();
-
     monthInput.value =
       now.getFullYear() + "-" +
       String(now.getMonth() + 1).padStart(2, "0");
@@ -12926,40 +12920,9 @@ function setupDashboardSalesFilters() {
       monthPicker.style.display =
         period.value === "custom-month" ? "flex" : "none";
     }
-
     renderDashboardSalesSummary();
   }
-}
 
-  function setupDashboardDueToggle() {
-  const toggle = document.getElementById("dashboardDueToggle");
-  const details = document.getElementById("dashboardDueDetails");
-  
-alert("Due toggle function started");
-  
-  if (!toggle || !details) {
-    console.error("Dashboard due elements not found.");
-    return;
-  }
-  toggle.style.position = "relative";
-toggle.style.zIndex = "99999";
-toggle.style.pointerEvents = "auto";
-
-toggle.addEventListener("click", function() {
-  alert("Direct click detected!");
-});
-
-  toggle.onclick = function() {
-    alert("Due button clicked!");
-    const shouldOpen = details.hidden;
-
-    details.hidden = !shouldOpen;
-    toggle.setAttribute("aria-expanded", String(shouldOpen));
-    toggle.textContent = shouldOpen
-      ? "Hide Due Details"
-      : "View Due Details";
-  };
-  }
   period.addEventListener("change", refreshDashboardSummary);
 
   if (monthInput) {
@@ -12969,6 +12932,28 @@ toggle.addEventListener("click", function() {
       }
     });
   }
+
+  refreshDashboardSummary();
+}
+
+function setupDashboardDueToggle() {
+  const toggle = document.getElementById("dashboardDueToggle");
+  const details = document.getElementById("dashboardDueDetails");
+
+  if (!toggle || !details) {
+    console.error("Dashboard due elements not found.");
+    return;
+  }
+
+  toggle.onclick = function() {
+    const shouldOpen = details.hidden;
+    details.hidden = !shouldOpen;
+    toggle.setAttribute("aria-expanded", String(shouldOpen));
+    toggle.textContent = shouldOpen
+      ? "Hide Due Details"
+      : "View Due Details";
+  };
+}
   
  initApp();
 
