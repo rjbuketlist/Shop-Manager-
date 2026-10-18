@@ -12923,22 +12923,27 @@ function setupDashboardSalesFilters() {
   }
 
   
+
 function setupDashboardDueToggle() {
   const toggle = document.getElementById("dashboardDueToggle");
   const details = document.getElementById("dashboardDueDetails");
 
-  if (!toggle || !details) return;
+  if (!toggle || !details) {
+    console.error("Dashboard due elements not found.");
+    return;
+  }
 
-  toggle.addEventListener("click", function() {
-    const isExpanded = toggle.getAttribute("aria-expanded") === "true";
+  toggle.onclick = function() {
+    const shouldOpen = details.hidden;
 
-    details.hidden = isExpanded;
-    toggle.setAttribute("aria-expanded", String(!isExpanded));
-    toggle.textContent = isExpanded
-      ? "View Due Details"
-      : "Hide Due Details";
-  });
+    details.hidden = !shouldOpen;
+    toggle.setAttribute("aria-expanded", String(shouldOpen));
+    toggle.textContent = shouldOpen
+      ? "Hide Due Details"
+      : "View Due Details";
+  };
 }
+
   
 
   function refreshDashboardSummary() {
