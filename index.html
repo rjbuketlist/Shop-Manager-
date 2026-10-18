@@ -336,6 +336,109 @@ main{padding:15px}
     grid-template-columns: 1fr;
   }
 }
+
+  
+/* Dashboard Month Picker */
+.dashboard-month-picker {
+  display: none;
+  min-width: 150px;
+  gap: 6px;
+}
+
+.dashboard-month-picker label {
+  color: #68786d;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.dashboard-month-picker input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  border: 1px solid #d6e5da;
+  border-radius: 9px;
+  background: #f7fbf8;
+  color: #173b2a;
+  font-size: 14px;
+}
+
+@media (max-width: 480px) {
+  .dashboard-month-picker {
+    width: 100%;
+  }
+}
+
+  
+/* Dashboard Report Layout */
+.dashboard-report-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin: 12px 0;
+}
+
+#dashboardPrintBtn {
+  padding: 12px 16px;
+  border: none;
+  border-radius: 10px;
+  background: #16834a;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.dashboard-print-report {
+  display: none;
+  background: #ffffff;
+  color: #222222;
+  padding: 24px;
+  border-radius: 12px;
+}
+
+.dashboard-report-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.dashboard-report-summary > div {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid #dddddd;
+  border-radius: 8px;
+}
+
+.dashboard-report-summary span {
+  font-size: 13px;
+  color: #555555;
+}
+
+.dashboard-report-summary strong {
+  font-size: 20px;
+}
+
+@media print {
+  body.dashboard-printing * {
+    visibility: hidden !important;
+  }
+
+  body.dashboard-printing #dashboardPrintableReport,
+  body.dashboard-printing #dashboardPrintableReport * {
+    visibility: visible !important;
+  }
+
+  body.dashboard-printing #dashboardPrintableReport {
+    display: block !important;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+  }
+}
+  
   
 </style>
 </head>
@@ -480,6 +583,35 @@ main{padding:15px}
 
 <section id="dashboard" class="section">
   <h2>Dashboard</h2>
+
+  
+  <div class="dashboard-report-actions">
+    <button type="button" id="dashboardPrintBtn">
+      Print / Save as PDF
+    </button>
+  </div>
+
+  <section id="dashboardPrintableReport" class="dashboard-print-report">
+    <h2>Sales Report</h2>
+    <p id="dashboardReportPeriod">Today's Report</p>
+
+    <div class="dashboard-report-summary">
+      <div>
+        <span>Total Sales</span>
+        <strong id="dashboardReportSales">₹0.00</strong>
+      </div>
+      <div>
+        <span>Total Bills</span>
+        <strong id="dashboardReportBills">0</strong>
+      </div>
+    </div>
+
+    <h3>Sales Trend</h3>
+    <div id="dashboardReportChart"></div>
+
+    <h3>Top 10 Best-Selling Products</h3>
+    <div id="dashboardReportTopProducts"></div>
+  </section>
   
   <div class="dashboard-analytics">
 
@@ -490,6 +622,14 @@ main{padding:15px}
         <option value="weekly">Last 7 Days</option>
         <option value="monthly">This Month</option>
       </select>
+      
+      <div class="dashboard-month-picker">
+        <label for="dashboardSelectedMonth">Select Month</label>
+        <input
+          type="month"
+          id="dashboardSelectedMonth"
+          aria-label="Select dashboard month">
+      </div>
     </div>
 
     <div class="cards dashboard-sales-cards">
