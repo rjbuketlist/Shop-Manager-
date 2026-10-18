@@ -12921,9 +12921,16 @@ function setupDashboardSalesFilters() {
       String(now.getMonth() + 1).padStart(2, "0");
   }
 
-  
+  function refreshDashboardSummary() {
+    if (monthPicker) {
+      monthPicker.style.display =
+        period.value === "custom-month" ? "flex" : "none";
+    }
 
-function setupDashboardDueToggle() {
+    renderDashboardSalesSummary();
+  }
+
+  function setupDashboardDueToggle() {
   const toggle = document.getElementById("dashboardDueToggle");
   const details = document.getElementById("dashboardDueDetails");
   
@@ -12951,19 +12958,7 @@ toggle.addEventListener("click", function() {
       ? "Hide Due Details"
       : "View Due Details";
   };
-}
-
-  
-
-  function refreshDashboardSummary() {
-    if (monthPicker) {
-      monthPicker.style.display =
-        period.value === "custom-month" ? "flex" : "none";
-    }
-
-    renderDashboardSalesSummary();
   }
-
   period.addEventListener("change", refreshDashboardSummary);
 
   if (monthInput) {
@@ -12973,9 +12968,6 @@ toggle.addEventListener("click", function() {
       }
     });
   }
-
-  refreshDashboardSummary();
-}
   
  initApp();
 
