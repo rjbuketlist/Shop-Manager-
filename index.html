@@ -109,6 +109,165 @@ main{padding:15px}
   }
 }
 
+  
+/* Dashboard Sales Analytics */
+.dashboard-analytics {
+  display: grid;
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.dashboard-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  background: #ffffff;
+  padding: 16px;
+  border-radius: 14px;
+  box-shadow: 0 3px 12px #0000000a;
+}
+
+.dashboard-heading h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #173b2a;
+}
+
+#dashboardPeriod {
+  max-width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d6e5da;
+  border-radius: 9px;
+  background: #f7fbf8;
+  color: #173b2a;
+  font-size: 14px;
+}
+
+.dashboard-sales-cards {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.dashboard-sales-cards .card {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid #e7efe9;
+  border-radius: 14px;
+  box-shadow: 0 3px 12px #0000000a;
+}
+
+.dashboard-sales-cards .card h3 {
+  font-size: 13px;
+}
+
+.dashboard-sales-cards .card strong {
+  display: block;
+  overflow-wrap: anywhere;
+  color: #16834a;
+  font-size: clamp(20px, 5vw, 28px);
+}
+
+.dashboard-sales-cards .card p {
+  margin: 8px 0 0;
+  color: #77847b;
+  font-size: 12px;
+}
+
+.dashboard-panel {
+  min-width: 0;
+  padding: 16px;
+  background: #ffffff;
+  border: 1px solid #e7efe9;
+  border-radius: 14px;
+  box-shadow: 0 3px 12px #0000000a;
+}
+
+.dashboard-panel > h3 {
+  margin: 0 0 6px;
+  color: #173b2a;
+  font-size: 17px;
+}
+
+.dashboard-panel > p {
+  margin: 0 0 14px;
+  color: #77847b;
+  font-size: 13px;
+}
+
+.dashboard-chart-wrap {
+  position: relative;
+  width: 100%;
+  height: 240px;
+}
+
+#dashboardSalesChart {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+#dashboardChartEmpty {
+  padding: 18px 0;
+  text-align: center;
+  color: #77847b;
+}
+
+#dashboardTopProducts {
+  display: grid;
+  gap: 10px;
+}
+
+.dashboard-product-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  background: #f7fbf8;
+  border: 1px solid #e7efe9;
+  border-radius: 10px;
+}
+
+.dashboard-product-info {
+  min-width: 0;
+}
+
+.dashboard-product-name {
+  display: block;
+  overflow-wrap: anywhere;
+  color: #243b2d;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.dashboard-product-rank {
+  color: #77847b;
+  font-size: 12px;
+}
+
+.dashboard-product-quantity {
+  flex-shrink: 0;
+  color: #16834a;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+@media (max-width: 360px) {
+  .dashboard-sales-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-heading {
+    align-items: stretch;
+  }
+
+  #dashboardPeriod {
+    width: 100%;
+  }
+}
+  
 </style>
 </head>
 
@@ -253,6 +412,59 @@ main{padding:15px}
 <section id="dashboard" class="section">
   <h2>Dashboard</h2>
   
+  <div class="dashboard-analytics">
+
+    <div class="dashboard-heading">
+      <h3>Sales Overview</h3>
+      <select id="dashboardPeriod" aria-label="Sales period">
+        <option value="daily" selected>Today</option>
+        <option value="weekly">Last 7 Days</option>
+        <option value="monthly">This Month</option>
+      </select>
+    </div>
+
+    <div class="cards dashboard-sales-cards">
+      <div class="card">
+        <h3>Total Sales</h3>
+        <strong id="dashboardTotalSales">₹0.00</strong>
+        <p id="dashboardPeriodLabel">Today's sales</p>
+      </div>
+
+      <div class="card">
+        <h3>Total Bills</h3>
+        <strong id="dashboardTotalBills">0</strong>
+        <p>Completed sales</p>
+      </div>
+    </div>
+
+    <div class="dashboard-panel">
+      <h3>Sales Trend</h3>
+      <p id="dashboardChartSubtitle">
+        Sales amount for today
+      </p>
+      <div class="dashboard-chart-wrap">
+        <canvas id="dashboardSalesChart"
+          role="img"
+          aria-label="Sales trend chart">
+        </canvas>
+      </div>
+      <p id="dashboardChartEmpty" hidden>
+        No sales recorded for this period.
+      </p>
+    </div>
+
+    <div class="dashboard-panel">
+      <h3>Top 10 Best-Selling Products</h3>
+      <p id="dashboardTopProductsSubtitle">
+        Ranked by quantity sold today
+      </p>
+      <div id="dashboardTopProducts">
+        <p>No sales recorded for this period.</p>
+      </div>
+    </div>
+
+  </div>
+
   <div class="cards">
     <div class="card">
       <h3>Total Products</h3>
