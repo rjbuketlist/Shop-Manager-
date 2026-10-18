@@ -12960,15 +12960,7 @@ function setupDashboardDueToggle() {
   
 setupDashboardSalesFilters();
 renderDashboardSalesSummary();
-  
-alert("Before function call");
-
-try {
-  setupDashboardDueToggle();
-  alert("Function call completed");
-} catch (error) {
-  alert("JavaScript error: " + error.message);
-}
+setupDashboardDueToggle();
 
   
 </script>
