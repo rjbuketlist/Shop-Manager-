@@ -12502,9 +12502,204 @@ const periodLabel = period === "daily"
   };
 
 }
-  
+
+  /* ==================================
+   DASHBOARD SALES SUMMARY
+================================== */
+
+function getDashboardFilteredSales() {
+  const period = document.getElementById("dashboardPeriod");
+  const monthInput = document.getElementById("dashboardSelectedMonth");
+
+  const selectedPeriod = period ? period.value : "daily";
+  const now = new Date();
+
+  let startDate;
+  let endDate;
+
+  if (selectedPeriod === "daily") {
+    startDate = new Date(
+      now.getFullYear(), now.getMonth(), now.getDate()
+    );
+    endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate() + 1);
+
+  } else if (selectedPeriod === "weekly") {
+    startDate = new Date(
+      now.getFullYear(), now.getMonth(), now.getDate()
+    );
+    startDate.setDate(startDate.getDate() - 6);
+
+    endDate = new Date(
+      now.getFullYear(), now.getMonth(), now.getDate() + 1
+    );
+
+  } else if (selectedPeriod === "monthly") {
+    startDate = new Date(
+      now.getFullYear(), now.getMonth(), 1
+    );
+    endDate = new Date(
+      now.getFullYear(), now.getMonth() + 1, 1
+    );
+
+  } else if (selectedPeriod === "custom-month") {
+    const value = monthInput ? monthInput.value : "";
+
+    if (!value || !/^\d{4}-\d{2}$/.test(value)) {
+      return [];
+    }
+
+    const parts = value.split("-").map(Number);
+
+    startDate = new Date(parts[0], parts[1] - 1, 1);
+    endDate = new Date(parts[0], parts[1], 1);
+
+  } else {
+    return [];
+  }
+
+  return (db.sales || []).filter(function(sale) {
+    if (!sale.date) return false;
+
+    const saleDate = new Date(sale.date);
+
+    if (Number.isNaN(saleDate.getTime())) {
+      return false;
+    }
+
+    return saleDate >= startDate && saleDate < endDate;
+  });
+}
+
+
+function renderDashboardSalesSummary() {
+  const sales = getDashboardFilteredSales();
+
+  const totalSales = sales.reduce(function(sum, sale) {
+    return sum + (Number(sale.currentBillAmount) || 0);
+  }, 0);
+
+  const totalBills = sales.length;
+
+  const salesElement =
+    document.getElementById("dashboardTotalSales");
+
+  const billsElement =
+    document.getElementById("dashboardTotalBills");
+
+  const periodLabel =
+    document.getElementById("dashboardPeriodLabel");
+
+  const chartSubtitle =
+    document.getElementById("dashboardChartSubtitle");
+
+  const topSubtitle =
+    document.getElementById("dashboardTopProductsSubtitle");
+
+  const period =
+    document.getElementById("dashboardPeriod");
+
+  const monthInput =
+    document.getElementById("dashboardSelectedMonth");
+
+  let label = "Today's sales";
+
+  if (period && period.value === "weekly") {
+    label = "Last 7 days' sales";
+
+  } else if (period && period.value === "monthly") {
+    label = "This month's sales";
+
+  } else if (period && period.value === "custom-month") {
+    if (monthInput && monthInput.value) {
+      const parts = monthInput.value.split("-").map(Number);
+
+      label = new Date(parts[0], parts[1] - 1, 1)
+        .toLocaleDateString("en-IN", {
+          month: "long",
+          year: "numeric"
+        }) + " sales";
+    } else {
+      label = "Select a month";
+    }
+  }
+
+  if (salesElement) {
+    salesElement.textContent =
+      "₹" + totalSales.toLocaleString("en-IN", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+  }
+
+  if (billsElement) {
+    billsElement.textContent = String(totalBills);
+  }
+
+  if (periodLabel) {
+    periodLabel.textContent = label;
+  }
+
+  if (chartSubtitle) {
+    chartSubtitle.textContent = label;
+  }
+
+  if (topSubtitle) {
+    topSubtitle.textContent =
+      "Ranked by quantity sold for the selected period";
+  }
+}
+
+
+/* ==================================
+   DASHBOARD PERIOD FILTER EVENTS
+================================== */
+
+function setupDashboardSalesFilters() {
+  const period =
+    document.getElementById("dashboardPeriod");
+
+  const monthInput =
+    document.getElementById("dashboardSelectedMonth");
+
+  const monthPicker =
+    document.querySelector(".dashboard-month-picker");
+
+  if (!period) return;
+
+  if (monthInput && !monthInput.value) {
+    const now = new Date();
+
+    monthInput.value =
+      now.getFullYear() + "-" +
+      String(now.getMonth() + 1).padStart(2, "0");
+  }
+
+  function refreshDashboardSummary() {
+    if (monthPicker) {
+      monthPicker.style.display =
+        period.value === "custom-month" ? "flex" : "none";
+    }
+
+    renderDashboardSalesSummary();
+  }
+
+  period.addEventListener("change", refreshDashboardSummary);
+
+  if (monthInput) {
+    monthInput.addEventListener("change", function() {
+      if (period.value === "custom-month") {
+        renderDashboardSalesSummary();
+      }
+    });
+  }
+
+  refreshDashboardSummary();
+}
   
  initApp();
+setupDashboardSalesFilters();
+renderDashboardSalesSummary();
   
 </script>
 
