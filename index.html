@@ -12651,6 +12651,7 @@ function renderDashboardSalesSummary() {
 
   renderDashboardSalesChart();
   renderDashboardTopProducts();
+  setupDashboardDueToggle();
 }
 
   
@@ -12920,6 +12921,25 @@ function setupDashboardSalesFilters() {
       now.getFullYear() + "-" +
       String(now.getMonth() + 1).padStart(2, "0");
   }
+
+  
+function setupDashboardDueToggle() {
+  const toggle = document.getElementById("dashboardDueToggle");
+  const details = document.getElementById("dashboardDueDetails");
+
+  if (!toggle || !details) return;
+
+  toggle.addEventListener("click", function() {
+    const isExpanded = toggle.getAttribute("aria-expanded") === "true";
+
+    details.hidden = isExpanded;
+    toggle.setAttribute("aria-expanded", String(!isExpanded));
+    toggle.textContent = isExpanded
+      ? "View Due Details"
+      : "Hide Due Details";
+  });
+}
+  
 
   function refreshDashboardSummary() {
     if (monthPicker) {
