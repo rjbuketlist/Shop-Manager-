@@ -12508,6 +12508,7 @@ const periodLabel = period === "daily"
 ================================== */
 
 function getDashboardFilteredSales() {
+  
   const period = document.getElementById("dashboardPeriod");
   const monthInput = document.getElementById("dashboardSelectedMonth");
 
@@ -12573,6 +12574,7 @@ function getDashboardFilteredSales() {
 
 
 function renderDashboardSalesSummary() {
+  
   const sales = getDashboardFilteredSales();
 
   const totalSales = sales.reduce(function(sum, sale) {
@@ -12651,10 +12653,46 @@ function renderDashboardSalesSummary() {
 
   renderDashboardSalesChart();
   renderDashboardTopProducts();
+  renderDashboardDueSummary();
 }
 
+  function renderDashboardDueSummary() {
+    
+  const customerDue = (db.customers || []).reduce(function(total, customer) {
+    const balance = Number(customer.balance || 0);
+    return total + (balance > 0 ? balance : 0);
+  }, 0);
+
+  const supplierDue = (db.suppliers || []).reduce(function(total, supplier) {
+    const balance = Number(supplier.balance || 0);
+    return total + (balance < 0 ? Math.abs(balance) : 0);
+  }, 0);
+
+  const customerDueElement =
+    document.getElementById("dashboardCustomerDue");
+
+  const supplierDueElement =
+    document.getElementById("dashboardSupplierDue");
+
+  if (customerDueElement) {
+    customerDueElement.textContent =
+      "₹" + customerDue.toLocaleString("en-IN", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+  }
+
+  if (supplierDueElement) {
+    supplierDueElement.textContent =
+      "₹" + supplierDue.toLocaleString("en-IN", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+  }
+  }
   
   function renderDashboardSalesChart() {
+    
   const canvas = document.getElementById("dashboardSalesChart");
   const emptyMessage = document.getElementById("dashboardChartEmpty");
 
