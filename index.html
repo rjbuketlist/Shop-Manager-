@@ -12679,9 +12679,9 @@ function renderDashboardDueSummary() {
   customers.forEach(function(customer) {
     const balance = Number(customer.balance || 0);
 
-    if (balance > 0) {
+    if (balance < 0) {
       customerDue += balance;
-    } else if (balance < 0) {
+    } else if (balance > 0) {
       customerAdvance += Math.abs(balance);
     }
   });
