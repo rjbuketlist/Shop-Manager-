@@ -12666,40 +12666,59 @@ function renderDashboardSalesSummary() {
   renderDashboardDueSummary();
 }
 
-  function renderDashboardDueSummary() {
-    
-  const customerDue = (db.customers || []).reduce(function(total, customer) {
+  
+function renderDashboardDueSummary() {
+  const customers = db.customers || [];
+  const suppliers = db.suppliers || [];
+
+  let customerDue = 0;
+  let customerAdvance = 0;
+  let supplierPayable = 0;
+  let supplierAdvance = 0;
+
+  customers.forEach(function(customer) {
     const balance = Number(customer.balance || 0);
-    return total + (balance > 0 ? balance : 0);
-  }, 0);
 
-  const supplierDue = (db.suppliers || []).reduce(function(total, supplier) {
+    if (balance > 0) {
+      customerDue += balance;
+    } else if (balance < 0) {
+      customerAdvance += Math.abs(balance);
+    }
+  });
+
+  suppliers.forEach(function(supplier) {
     const balance = Number(supplier.balance || 0);
-    return total + (balance < 0 ? Math.abs(balance) : 0);
-  }, 0);
 
-  const customerDueElement =
-    document.getElementById("dashboardCustomerDue");
+    if (balance < 0) {
+      supplierPayable += Math.abs(balance);
+    } else if (balance > 0) {
+      supplierAdvance += balance;
+    }
+  });
 
-  const supplierDueElement =
-    document.getElementById("dashboardSupplierDue");
-
-  if (customerDueElement) {
-    customerDueElement.textContent =
-      "₹" + customerDue.toLocaleString("en-IN", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      });
+  function formatAmount(amount) {
+    return "₹" + amount.toLocaleString("en-IN", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
   }
 
-  if (supplierDueElement) {
-    supplierDueElement.textContent =
-      "₹" + supplierDue.toLocaleString("en-IN", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      });
-  }
-  }
+  const amounts = {
+    dashboardCustomerDue: customerDue,
+    dashboardCustomerAdvance: customerAdvance,
+    dashboardSupplierDue: supplierPayable,
+    dashboardSupplierAdvance: supplierAdvance
+  };
+
+  Object.keys(amounts).forEach(function(id) {
+    const element = document.getElementById(id);
+
+    if (element) {
+      element.textContent = formatAmount(amounts[id]);
+    }
+  });
+}
+
   
   function renderDashboardSalesChart() {
     
