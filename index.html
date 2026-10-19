@@ -12664,10 +12664,42 @@ function renderDashboardSalesSummary() {
   renderDashboardSalesChart();
   renderDashboardTopProducts();
   renderDashboardDueSummary();
+  renderDashboardCounts();
 }
 
+  function renderDashboardCounts() 
+  {
+  const products = db.products || [];
+  const customers = db.customers || [];
+  const suppliers = db.suppliers || [];
+
+  const totalProducts = products.length;
+
+  const totalStock = products.reduce(function(total, product) {
+    return total + (Number(product.stock) || 0);
+  }, 0);
+
+  const totalCustomers = customers.length;
+  const totalSuppliers = suppliers.length;
+
+  const counts = {
+    totalProducts: totalProducts,
+    totalStock: totalStock,
+    totalCustomers: totalCustomers,
+    totalSuppliers: totalSuppliers
+  };
+
+  Object.keys(counts).forEach(function(id) {
+    const element = document.getElementById(id);
+
+    if (element) {
+      element.textContent = counts[id].toLocaleString("en-IN");
+    }
+  });
+  }
   
 function renderDashboardDueSummary() {
+  
   const customers = db.customers || [];
   const suppliers = db.suppliers || [];
 
