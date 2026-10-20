@@ -4724,8 +4724,8 @@ let currentPurchase = {
   const unit = document.getElementById("purchaseUnit").value;
   const purchasePrice = Number(document.getElementById("purchasePrice").value);
   const sellingPrice = Number(document.getElementById("purchaseSellingPrice").value);
-  const minStock = Number(document.getElementById("purchaseMinStock").value) || 20;
-
+  const stockTarget = Number(document.getElementById("purchaseMinStock").value) || 0;
+    
   if (!supplier) {
     alert("Please enter Supplier Name");
     return;
@@ -4786,7 +4786,8 @@ if (!currentPurchase.supplierBillNo) {
   purchasePrice: purchasePrice,
   sellingPrice: sellingPrice,
   amount: amount,
-  minStockPercent: minStock
+  stockTarget: stockTarget,
+  minStockPercent: 20
 };
 
 if (editingPurchaseIndex !== null) {
@@ -5577,9 +5578,6 @@ const previousStock =
       product.unit =
         item.unit;
 
-      product.minStockPercent =
-        Number(item.minStockPercent || 20);
-
     } else {
 
       const productId =
@@ -5587,27 +5585,16 @@ const previousStock =
         String(db.products.length + 1).padStart(5, "0");
 
       product = {
-
-        id: productId,
-
-        name: item.productName,
-
-        category: item.category,
-
-        unit: item.unit,
-
-        stock: Number(item.quantity || 0),
-
-        sellingPrice:
-          Number(item.sellingPrice || 0),
-
-        minStockPercent:
-          Number(item.minStockPercent || 20),
-
-        createdAt:
-          new Date().toISOString()
-
-      };
+  id: productId,
+  name: item.productName,
+  category: item.category,
+  unit: item.unit,
+  stock: Number(item.quantity || 0),
+  sellingPrice: Number(item.sellingPrice || 0),
+  stockTarget: Number(item.stockTarget || 0),
+  minStockPercent: 20,
+  createdAt: new Date().toISOString()
+};
 
       db.products.push(product);
 
