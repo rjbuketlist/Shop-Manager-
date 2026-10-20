@@ -12815,10 +12815,11 @@ function renderDashboardSalesSummary() {
   renderDashboardTopProducts();
   renderDashboardDueSummary();
   renderDashboardCounts();
+  renderDashboardRestockList();
 }
 
-  function renderDashboardCounts() 
-  {
+  function renderDashboardCounts() {
+    
   const products = db.products || [];
   const customers = db.customers || [];
   const suppliers = db.suppliers || [];
@@ -12879,6 +12880,48 @@ function renderDashboardSalesSummary() {
     }
   });
   }
+
+  
+function renderDashboardRestockList() {
+  
+  const products = db.products || [];
+  const container = document.getElementById("dashboardRestockList");
+
+  if (!container) return;
+
+  const restockProducts = products.filter(function(product) {
+    const currentStock = Number(product.stock || 0);
+    const stockTarget = Number(product.stockTarget || 0);
+    const minimumStock = stockTarget * 20 / 100;
+
+    return currentStock <= minimumStock;
+  });
+
+  if (restockProducts.length === 0) {
+    container.innerHTML = "<p>All products have sufficient stock.</p>";
+    return;
+  }
+
+  container.innerHTML = restockProducts.map(function(product) {
+    const currentStock = Number(product.stock || 0);
+    const minimumStock = Number(product.stockTarget || 0) * 20 / 100;
+    const status = currentStock <= 0 ? "Empty" : "Low Stock";
+
+    return `
+      <div class="restock-item">
+        <div>
+          <strong>${product.name || "Unnamed Product"}</strong>
+          <p>${status}</p>
+        </div>
+        <div>
+          <strong>${currentStock} ${product.unit || ""}</strong>
+          <small>Minimum: ${minimumStock} ${product.unit || ""}</small>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+  
   
 function renderDashboardDueSummary() {
   
