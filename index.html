@@ -749,6 +749,32 @@ main{padding:15px}
       <p>Loading stock status...</p>
     </div>
   </div>
+
+    
+<div id="dashboardStockFilterPanel"
+     style="display:none; margin-top:15px;">
+
+  <div style="
+       display:flex;
+       justify-content:space-between;
+       align-items:center;
+       gap:10px;">
+
+    <h3 id="dashboardStockFilterTitle">
+      Products
+    </h3>
+
+    <button type="button"
+            onclick="hideDashboardStockFilter()">
+      Close
+    </button>
+
+  </div>
+
+  <div id="dashboardStockFilterList"></div>
+
+</div>
+    
   </section>
   
   <section id="dashboardPrintableReport" class="dashboard-print-report">
@@ -6402,8 +6428,24 @@ function printPurchase() {
 }
 
   
+
 function filterProductsByStockStatus(status) {
   
+  const panel = document.getElementById("dashboardStockFilterPanel");
+  const title = document.getElementById("dashboardStockFilterTitle");
+  const list = document.getElementById("dashboardStockFilterList");
+
+  if (!panel || !title || !list) return;
+
+  // Same button dobara click karne par list hide hogi
+  if (
+    panel.style.display !== "none" &&
+    panel.dataset.stockStatus === status
+  ) {
+    hideDashboardStockFilter();
+    return;
+  }
+
   const products = db.products || [];
 
   const filteredProducts = products.filter(function(product) {
@@ -6422,45 +6464,78 @@ function filterProductsByStockStatus(status) {
       return currentStock > minimumStock;
     }
 
-    return true;
+    if (status === "all") {
+      return true;
+    }
+
+    return false;
   });
 
-  showSection("products");
+  const titles = {
+    good: "Good Stock Products",
+    low: "Low Stock Products",
+    empty: "Out of Stock Products",
+    all: "All Products"
+  };
 
-  const input = document.getElementById("stockProductSearch");
-  const box = document.getElementById("stockProductSuggestions");
-
-  input.value = "";
-  box.innerHTML = "";
+  title.textContent = titles[status] || "Products";
+  panel.dataset.stockStatus = status;
 
   if (filteredProducts.length === 0) {
-    box.innerHTML = `
-      <div style="padding:12px;color:#777;">
-        No products found for this status.
-      </div>
+    list.innerHTML = `
+      <p style="padding:12px;color:#777;">
+        No products found in this category.
+      </p>
     `;
   } else {
-    box.innerHTML = filteredProducts.map(function(product) {
+    list.innerHTML = filteredProducts.map(function(product) {
       const currentStock = Number(product.stock || 0);
       const minimumStock = Number(product.stockTarget || 0) * 20 / 100;
 
+      let stockStatus = "Good Stock";
+
+      if (currentStock <= 0) {
+        stockStatus = "Out of Stock";
+      } else if (currentStock <= minimumStock) {
+        stockStatus = "Low Stock";
+      }
+
       return `
-        <div
-          onclick="selectStockProduct('${product.id}')"
-          style="padding:12px;border-bottom:1px solid #eee;cursor:pointer;">
-          <strong>${product.name}</strong>
+        <div style="
+          padding:12px;
+          margin-bottom:8px;
+          border:1px solid #ddd;
+          border-radius:8px;
+        ">
+          <strong>${product.name || "Unnamed Product"}</strong>
+
+          <div style="margin-top:5px;">
+            Current Stock: ${currentStock} ${product.unit || ""}
+          </div>
+
           <div style="font-size:12px;color:#777;margin-top:3px;">
-            Stock: ${currentStock} ${product.unit || ""}
-            | Minimum: ${minimumStock} ${product.unit || ""}
+            Minimum Stock: ${minimumStock} ${product.unit || ""}
+          </div>
+
+          <div style="font-size:12px;margin-top:5px;">
+            ${stockStatus}
           </div>
         </div>
       `;
     }).join("");
   }
 
-  box.style.display = "block";
-  document.getElementById("stockProductDetails").style.display = "none";
+  panel.style.display = "block";
+}
+
+function hideDashboardStockFilter() {
+  const panel = document.getElementById("dashboardStockFilterPanel");
+
+  if (panel) {
+    panel.style.display = "none";
   }
+}
+
   
 
 function selectStockProduct(productId) {
