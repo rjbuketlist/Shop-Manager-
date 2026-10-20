@@ -6401,6 +6401,67 @@ function printPurchase() {
   box.style.display = "block";
 }
 
+  
+function filterProductsByStockStatus(status) {
+  
+  const products = db.products || [];
+
+  const filteredProducts = products.filter(function(product) {
+    const currentStock = Number(product.stock || 0);
+    const minimumStock = Number(product.stockTarget || 0) * 20 / 100;
+
+    if (status === "empty") {
+      return currentStock <= 0;
+    }
+
+    if (status === "low") {
+      return currentStock > 0 && currentStock <= minimumStock;
+    }
+
+    if (status === "good") {
+      return currentStock > minimumStock;
+    }
+
+    return true;
+  });
+
+  showSection("products");
+
+  const input = document.getElementById("stockProductSearch");
+  const box = document.getElementById("stockProductSuggestions");
+
+  input.value = "";
+  box.innerHTML = "";
+
+  if (filteredProducts.length === 0) {
+    box.innerHTML = `
+      <div style="padding:12px;color:#777;">
+        No products found for this status.
+      </div>
+    `;
+  } else {
+    box.innerHTML = filteredProducts.map(function(product) {
+      const currentStock = Number(product.stock || 0);
+      const minimumStock = Number(product.stockTarget || 0) * 20 / 100;
+
+      return `
+        <div
+          onclick="selectStockProduct('${product.id}')"
+          style="padding:12px;border-bottom:1px solid #eee;cursor:pointer;">
+          <strong>${product.name}</strong>
+          <div style="font-size:12px;color:#777;margin-top:3px;">
+            Stock: ${currentStock} ${product.unit || ""}
+            | Minimum: ${minimumStock} ${product.unit || ""}
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  box.style.display = "block";
+  document.getElementById("stockProductDetails").style.display = "none";
+  }
+  
 
 function selectStockProduct(productId) {
 
@@ -12920,6 +12981,21 @@ function renderDashboardRestockList() {
       </div>
     `;
   }).join("");
+}
+
+  
+document.querySelectorAll("[data-stock-status]").forEach(function(card) {
+  card.onclick = function() {
+    filterProductsByStockStatus(card.dataset.stockStatus);
+  };
+});
+
+const viewAllButton = document.getElementById("inventoryViewAllBtn");
+
+if (viewAllButton) {
+  viewAllButton.onclick = function() {
+    filterProductsByStockStatus("all");
+  };
 }
   
   
