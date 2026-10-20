@@ -6595,7 +6595,8 @@ document.getElementById("stockDetailMinimumStock").textContent =
     Number(product.stock || 0) + " " + product.unit;
 
   document.getElementById("stockDetailMinimumStock").textContent =
-    product.minStockPercent + "%";
+    Number(product.stockTarget || 0) * 20 / 100 +
+    " " + (product.unit || "");
 
   document.getElementById("stockDetailSellingPrice").textContent =
     Number(product.sellingPrice || 0).toFixed(2);
@@ -6604,7 +6605,7 @@ document.getElementById("stockDetailMinimumStock").textContent =
     Number(product.stock || 0);
 
   const minimumStock =
-    currentStock * product.minStockPercent / 100;
+    Number(product.stockTarget || 0) * 20 / 100;
 
   const stockStatus =
     document.getElementById("stockDetailStatus");
