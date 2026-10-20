@@ -6525,7 +6525,8 @@ function hideDashboardStockFilter() {
 
   
 function printDashboardScreen() {
-  
+
+function printDashboardScreen() {
   const dashboard = document.getElementById("dashboard");
 
   if (!dashboard) {
@@ -6533,56 +6534,76 @@ function printDashboardScreen() {
     return;
   }
 
-  const printWindow = window.open("", "_blank");
+  const originalScroll = window.scrollY;
+  const originalStyles = dashboard.getAttribute("style");
 
-  if (!printWindow) {
-    alert("Please allow pop-ups to print the dashboard.");
-    return;
-  }
+  dashboard.scrollIntoView({ behavior: "instant", block: "start" });
 
-  const styles = Array.from(
-    document.querySelectorAll("style, link[rel='stylesheet']")
-  ).map(function(style) {
-    return style.outerHTML;
-  }).join("\n");
+  const captureDashboard = async function() {
+    try {
+      if (typeof html2canvas === "undefined") {
+        alert("Screenshot library is not loaded yet.");
+        return;
+      }
 
-  printWindow.document.open();
-  printWindow.document.write(`
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <title>Dashboard</title>
-      ${styles}
-      <style>
-        body {
-          margin: 16px;
-          background: white;
-        }
+      const canvas = await html2canvas(dashboard, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#ffffff",
+        windowWidth: document.documentElement.scrollWidth,
+        scrollX: 0,
+        scrollY: -window.scrollY
+      });
 
-        .dashboard-report-actions,
-        nav,
-        button {
-          display: none !important;
-        }
+      const image = canvas.toDataURL("image/png");
+      const printWindow = window.open("", "_blank");
 
-        #dashboard {
-          display: block !important;
-        }
-      </style>
-    </head>
-    <body>
-      ${dashboard.outerHTML}
-    </body>
-    </html>
-  `);
-  printWindow.document.close();
+      if (!printWindow) {
+        alert("Please allow pop-ups to print the dashboard.");
+        return;
+      }
 
-  printWindow.onload = function() {
-    printWindow.focus();
-    printWindow.print();
-    printWindow.close();
+      printWindow.document.open();
+      printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Dashboard Print</title>
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <style>
+            @page { margin: 8mm; }
+            body { margin: 0; text-align: center; }
+            img { width: 100%; height: auto; }
+          </style>
+        </head>
+        <body>
+          <img src="${image}" alt="Dashboard screenshot">
+          <script>
+            window.onload = function() {
+              window.print();
+            };
+          <\/script>
+        </body>
+        </html>
+      `);
+      printWindow.document.close();
+    } catch (error) {
+      alert("Dashboard screenshot could not be created. Please try again.");
+      console.error(error);
+    } finally {
+      window.scrollTo(0, originalScroll);
+
+      if (originalStyles === null) {
+        dashboard.removeAttribute("style");
+      } else {
+        dashboard.setAttribute("style", originalStyles);
+      }
+    }
   };
-  }
+
+  captureDashboard();
+}
+
 
   const dashboardPrintBtn =
   document.getElementById("dashboardPrintBtn");
