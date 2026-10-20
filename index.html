@@ -737,20 +737,6 @@ main{padding:15px}
     </button>
   </div>
 
-  <div class="dashboard-restock-panel">
-    <div class="dashboard-restock-heading">
-      <h4>Restock Required</h4>
-      <button type="button" id="inventoryViewAllBtn">
-        View All
-      </button>
-    </div>
-
-    <div id="dashboardRestockList">
-      <p>Loading stock status...</p>
-    </div>
-  </div>
-
-    
 <div id="dashboardStockFilterPanel"
      style="display:none; margin-top:15px;">
 
@@ -13065,13 +13051,6 @@ document.querySelectorAll("[data-stock-status]").forEach(function(card) {
   };
 });
 
-const viewAllButton = document.getElementById("inventoryViewAllBtn");
-
-if (viewAllButton) {
-  viewAllButton.onclick = function() {
-    filterProductsByStockStatus("all");
-  };
-}
   
   
 function renderDashboardDueSummary() {
