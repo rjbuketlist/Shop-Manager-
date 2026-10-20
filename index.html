@@ -5578,6 +5578,11 @@ const previousStock =
       product.unit =
         item.unit;
 
+      product.stockTarget =
+    Number(item.stockTarget || product.stockTarget || 0);
+
+product.minStockPercent = 20;
+      
     } else {
 
       const productId =
