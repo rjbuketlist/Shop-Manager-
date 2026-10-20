@@ -12832,6 +12832,38 @@ function renderDashboardSalesSummary() {
   const totalCustomers = customers.length;
   const totalSuppliers = suppliers.length;
 
+    let inventoryGood = 0;
+  let inventoryLow = 0;
+  let inventoryEmpty = 0;
+
+  products.forEach(function(product) {
+    const currentStock = Number(product.stock || 0);
+    const stockTarget = Number(product.stockTarget || 0);
+    const minimumStock = stockTarget * 20 / 100;
+
+    if (currentStock <= 0) {
+      inventoryEmpty++;
+    } else if (currentStock <= minimumStock) {
+      inventoryLow++;
+    } else {
+      inventoryGood++;
+    }
+  });
+
+  const inventoryCounts = {
+    inventoryGoodCount: inventoryGood,
+    inventoryLowCount: inventoryLow,
+    inventoryEmptyCount: inventoryEmpty
+  };
+
+  Object.keys(inventoryCounts).forEach(function(id) {
+    const element = document.getElementById(id);
+
+    if (element) {
+      element.textContent = inventoryCounts[id].toLocaleString("en-IN");
+    }
+  });
+    
   const counts = {
     totalProducts: totalProducts,
     totalStock: totalStock,
