@@ -591,6 +591,46 @@ main{padding:15px}
     </button>
   </div>
 
+  <section id="dashboardInventoryStatus" class="dashboard-inventory-status">
+  <h3>Inventory Status</h3>
+
+  <div class="dashboard-inventory-summary">
+    <button type="button" class="inventory-status-card inventory-good"
+      data-stock-status="good">
+      <span>Good</span>
+      <strong id="inventoryGoodCount">0</strong>
+      <small>Products</small>
+    </button>
+
+    <button type="button" class="inventory-status-card inventory-low"
+      data-stock-status="low">
+      <span>Low</span>
+      <strong id="inventoryLowCount">0</strong>
+      <small>Products</small>
+    </button>
+
+    <button type="button" class="inventory-status-card inventory-empty"
+      data-stock-status="empty">
+      <span>Empty</span>
+      <strong id="inventoryEmptyCount">0</strong>
+      <small>Products</small>
+    </button>
+  </div>
+
+  <div class="dashboard-restock-panel">
+    <div class="dashboard-restock-heading">
+      <h4>Restock Required</h4>
+      <button type="button" id="inventoryViewAllBtn">
+        View All
+      </button>
+    </div>
+
+    <div id="dashboardRestockList">
+      <p>Loading stock status...</p>
+    </div>
+  </div>
+  </section>
+  
   <section id="dashboardPrintableReport" class="dashboard-print-report">
     <h2>Sales Report</h2>
     <p id="dashboardReportPeriod">Today's Report</p>
@@ -717,11 +757,6 @@ main{padding:15px}
     <div class="card">
       <h3>Total Products</h3>
       <strong id="totalProducts">0</strong>
-    </div>
-
-    <div class="card">
-      <h3>Total Stock</h3>
-      <strong id="totalStock">0</strong>
     </div>
 
     <div class="card">
