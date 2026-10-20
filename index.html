@@ -438,7 +438,127 @@ main{padding:15px}
     padding: 12px;
   }
 }
-  
+
+  /* Dashboard Inventory Status */
+.dashboard-inventory-status {
+  margin: 18px 0;
+  padding: 16px;
+  background: var(--card-bg, #ffffff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 12px;
+}
+
+.dashboard-inventory-status > h3 {
+  margin: 0 0 14px;
+}
+
+.dashboard-inventory-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.inventory-status-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-width: 0;
+  padding: 14px 6px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  font: inherit;
+}
+
+.inventory-status-card span {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.inventory-status-card strong {
+  font-size: 24px;
+}
+
+.inventory-status-card small {
+  font-size: 12px;
+}
+
+.inventory-good {
+  color: #137333;
+  background: #e6f4ea;
+  border-color: #b7dfc3;
+}
+
+.inventory-low {
+  color: #995200;
+  background: #fef7e0;
+  border-color: #f5dda0;
+}
+
+.inventory-empty {
+  color: #b3261e;
+  background: #fce8e6;
+  border-color: #f3b9b5;
+}
+
+.dashboard-restock-panel {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-color, #e2e8f0);
+}
+
+.dashboard-restock-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.dashboard-restock-heading h4 {
+  margin: 0;
+  font-size: 16px;
+}
+
+#inventoryViewAllBtn {
+  padding: 7px 12px;
+  border: 1px solid #64748b;
+  border-radius: 7px;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+}
+
+#dashboardRestockList {
+  display: grid;
+  gap: 8px;
+}
+
+#dashboardRestockList > p {
+  margin: 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
+@media (max-width: 360px) {
+  .dashboard-inventory-status {
+    padding: 10px;
+  }
+
+  .dashboard-inventory-summary {
+    gap: 6px;
+  }
+
+  .inventory-status-card {
+    padding: 12px 3px;
+  }
+
+  .inventory-status-card strong {
+    font-size: 21px;
+  }
+}
   
 </style>
 </head>
