@@ -6424,11 +6424,14 @@ function selectStockProduct(productId) {
   document.getElementById("stockDetailCurrentStock").textContent =
     currentStock + " " + (product.unit || "");
 
-  const minStockPercent =
-    Number(product.minStockPercent || 20);
+  const stockTarget =
+    Number(product.stockTarget || 0);
 
-  document.getElementById("stockDetailMinimumStock").textContent =
-    minStockPercent + "%";
+const minimumStock =
+    stockTarget * 20 / 100;
+
+document.getElementById("stockDetailMinimumStock").textContent =
+    minimumStock + " " + (product.unit || "");
 
   document.getElementById("stockDetailSellingPrice").textContent =
     Number(product.sellingPrice || 0).toFixed(2);
@@ -6437,8 +6440,8 @@ function selectStockProduct(productId) {
     document.getElementById("stockDetailStatus");
 
   const minimumStock =
-    currentStock * minStockPercent / 100;
-
+    stockTarget * 20 / 100;
+  
   if (currentStock <= 0) {
 
     stockStatus.textContent = "Out of Stock";
@@ -6504,7 +6507,7 @@ function selectStockProduct(productId) {
     Number(product.sellingPrice || 0).toFixed(2);
 
   document.getElementById("editStockProductMinStock").value =
-    Number(product.minStockPercent || 20);
+    Number(product.stockTarget || 0);
 
   document.getElementById("stockProductEditBox").style.display =
     "block";
@@ -6545,7 +6548,7 @@ function selectStockProduct(productId) {
       document.getElementById("editStockProductSellingPrice").value
     );
 
-  const newMinStock =
+  const newStockTarget =
     Number(
       document.getElementById("editStockProductMinStock").value
     );
@@ -6561,18 +6564,18 @@ function selectStockProduct(productId) {
   }
 
   if (
-    isNaN(newMinStock) ||
-    newMinStock < 0 ||
-    newMinStock > 100
-  ) {
-    alert("Minimum Stock Alert must be between 0 and 100.");
-    return;
-  }
+  !Number.isFinite(newStockTarget) ||
+  newStockTarget < 0
+) {
+  alert("Please enter a valid Stock Target quantity.");
+  return;
+}
 
   product.category = newCategory;
   product.unit = newUnit;
   product.sellingPrice = newSellingPrice;
-  product.minStockPercent = newMinStock;
+  product.stockTarget = newStockTarget;
+  product.minStockPercent = 20;
 
   saveDB();
 
