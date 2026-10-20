@@ -1017,24 +1017,26 @@ main{padding:15px}
   0
 </div>
     
-    <label>Minimum Stock Alert (%)</label>
+    
+<label>Stock Target</label>
 <input id="purchaseMinStock"
   type="number"
   min="0"
-  max="100"
-  value="20"
-  placeholder="Example: 20"
+  step="any"
+  value="100"
+  placeholder="Example: 100"
   style="width:100%;padding:12px;margin:6px 0 12px;">
-    
-    <button onclick="continuePurchase()"
-      style="padding:12px 22px;
-             background:#1f6f43;
-             color:white;
-             border:0;
-             border-radius:6px;
-             margin-top:8px;">
-      Continue
-    </button>
+
+<button onclick="continuePurchase()"
+  style="padding:12px 22px;
+         background:#1f6f43;
+         color:white;
+         border:0;
+         border-radius:6px;
+         margin-top:8px;">
+  Continue
+</button>
+
 
 <div id="purchaseProductList"
      style="
