@@ -1552,60 +1552,78 @@ main{padding:15px}
 </div>
 
 
-  <!-- Future-ready sections -->
-  <div
-    id="stockProductHistory"
-    class="card"
-    style="
-      display:block;
-      margin-top:15px;">
+  
+<!-- Product List & Stock Controls -->
+<div
+  id="stockProductHistory"
+  class="card"
+  style="display:block; margin-top:15px;">
 
-    <h3>Product History & Controls</h3>
+  <h3>Product List & Stock Controls</h3>
 
-    <div style="
-      display:grid;
-      grid-template-columns:repeat(2,1fr);
-      gap:10px;">
+  <!-- Product List -->
+  <div style="
+    display:flex;
+    flex-direction:column;
+    gap:10px;">
 
-      <button
-        onclick="viewProductSalesHistory()"
-        style="padding:12px;">
-        Sales History
-      </button>
+    <button
+      type="button"
+      onclick="filterProductsByStockStatus('all')"
+      style="
+        padding:12px;
+        text-align:left;">
+      All Products
+    </button>
 
-      <button
-        onclick="viewProductStockIn()"
-        style="padding:12px;">
-        Stock In
-      </button>
+    <div>
+      <label for="stockCategoryFilter">
+        Filter by Category
+      </label>
 
-      <button
-        onclick="viewProductStockOut()"
-        style="padding:12px;">
-        Stock Out
-      </button>
-
-      <button
-        onclick="viewProductBarcode()"
-        style="padding:12px;">
-        Barcode
-      </button>
-
-      <button
-        onclick="viewProductGST()"
-        style="padding:12px;">
-        GST
-      </button>
-
-      <button
-        onclick="viewProductReports()"
-        style="padding:12px;">
-        Reports
-      </button>
-
+      <select
+        id="stockCategoryFilter"
+        style="
+          width:100%;
+          padding:12px;
+          margin-top:6px;">
+        <option value="all">All Categories</option>
+      </select>
     </div>
 
   </div>
+
+  <!-- Stock Controls -->
+  <h4 style="margin:18px 0 10px;">
+    Stock Controls
+  </h4>
+
+  <div style="
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:10px;">
+
+    <button
+      type="button"
+      onclick="viewProductStockIn()"
+      style="padding:14px 8px;">
+      <strong>Stock In</strong>
+      <br>
+      <small>Product Returns</small>
+    </button>
+
+    <button
+      type="button"
+      onclick="viewProductStockOut()"
+      style="padding:14px 8px;">
+      <strong>Stock Out</strong>
+      <br>
+      <small>Stock Reduction</small>
+    </button>
+
+  </div>
+
+</div>
 
 </section>
 
