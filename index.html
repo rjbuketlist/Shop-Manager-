@@ -1589,6 +1589,62 @@ main{padding:15px}
           margin-top:6px;">
         <option value="all">All Categories</option>
       </select>
+
+      
+<!-- Product List Display Area -->
+<div
+  id="stockProductList"
+  style="
+    margin-top:12px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;">
+
+  <p style="
+    padding:12px;
+    text-align:center;
+    color:#777;
+    border:1px dashed #ccc;
+    border-radius:8px;">
+    Products will appear here
+  </p>
+
+</div>
+
+      
+<!-- Product Return History -->
+<button
+  type="button"
+  id="productReturnHistoryBtn"
+  onclick="viewProductReturnHistory()"
+  style="
+    width:100%;
+    padding:12px;
+    margin-top:8px;">
+  Return History
+</button>
+
+      
+<!-- Product Return Form Container -->
+<div
+  id="productReturnForm"
+  style="
+    display:none;
+    margin-top:12px;
+    padding:12px;
+    border:1px solid #ddd;
+    border-radius:8px;">
+
+  <h4 style="margin-top:0;">Product Return Entry</h4>
+
+  <p style="color:#777;font-size:13px;">
+    Record products returned by customers or accepted back
+    into saleable stock.
+  </p>
+
+</div>
+      
+      
     </div>
 
   </div>
@@ -1603,25 +1659,65 @@ main{padding:15px}
     grid-template-columns:repeat(2,minmax(0,1fr));
     gap:10px;">
 
-    <button
-      type="button"
-      onclick="viewProductStockIn()"
-      style="padding:14px 8px;">
-      <strong>Stock In</strong>
-      <br>
-      <small>Product Returns</small>
-    </button>
-
-    <button
-      type="button"
-      onclick="viewProductStockOut()"
-      style="padding:14px 8px;">
-      <strong>Stock Out</strong>
-      <br>
-      <small>Stock Reduction</small>
-    </button>
+    
+<button
+  type="button"
+  onclick="viewProductStockIn()"
+  style="
+    padding:14px 8px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:5px;">
+  <strong>Stock In</strong>
+  <small>Product Returns</small>
+</button>
+    
+<button
+  type="button"
+  onclick="viewProductStockOut()"
+  style="
+    padding:14px 8px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:5px;">
+  <strong>Stock Out</strong>
+  <small>Damage, Expiry & Other Loss</small>
+</button>
 
   </div>
+
+  
+<!-- Stock Out History -->
+<button
+  type="button"
+  id="stockOutHistoryBtn"
+  onclick="viewProductStockOutHistory()"
+  style="
+    width:100%;
+    padding:12px;
+    margin-top:10px;">
+  Stock Out History
+</button>
+
+<!-- Stock Out Form Container -->
+<div
+  id="stockOutForm"
+  style="
+    display:none;
+    margin-top:12px;
+    padding:12px;
+    border:1px solid #ddd;
+    border-radius:8px;">
+
+  <h4 style="margin-top:0;">Stock Reduction Entry</h4>
+
+  <p style="color:#777;font-size:13px;">
+    Record damaged, expired, personal-use or missing stock.
+  </p>
+
+</div>
 
 </div>
 
