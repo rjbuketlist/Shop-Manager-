@@ -1569,7 +1569,7 @@ main{padding:15px}
 
     <button
       type="button"
-      onclick="renderStockProductList()"
+      onclick="toggleStockProductList()"
       style="
         padding:12px;
         text-align:left;">
@@ -6670,6 +6670,7 @@ function renderStockProductCategories() {
   }
 
   
+
 function renderStockProductList() {
   const list = document.getElementById("stockProductList");
   const select = document.getElementById("stockCategoryFilter");
@@ -6694,28 +6695,76 @@ function renderStockProductList() {
     return;
   }
 
-  list.innerHTML = filteredProducts.map(function(product) {
+  const rows = filteredProducts.map(function(product, index) {
     const stock = Number(product.stock || 0);
+    const category = product.category || "Uncategorized";
+    const unit = product.unit || "";
 
     return `
-      <div style="
-        padding:12px;
-        border:1px solid #ddd;
-        border-radius:8px;">
-        <strong>${product.name || "Unnamed Product"}</strong>
-        <div style="margin-top:5px;">
-          Category: ${product.category || "Uncategorized"}
-        </div>
-        <div style="margin-top:5px;">
-          Stock: ${stock} ${product.unit || ""}
-        </div>
-      </div>
+      <tr>
+        <td style="padding:10px;border:1px solid #ddd;">
+          ${index + 1}
+        </td>
+        <td style="padding:10px;border:1px solid #ddd;">
+          <strong>${product.name || "Unnamed Product"}</strong>
+        </td>
+        <td style="padding:10px;border:1px solid #ddd;">
+          ${category}
+        </td>
+        <td style="padding:10px;border:1px solid #ddd;text-align:right;">
+          ${stock}
+        </td>
+        <td style="padding:10px;border:1px solid #ddd;">
+          ${unit}
+        </td>
+      </tr>
     `;
   }).join("");
-  }
-  
-  
 
+  list.innerHTML = `
+    <div style="overflow-x:auto;width:100%;">
+      <table style="
+        width:100%;
+        min-width:520px;
+        border-collapse:collapse;
+        font-size:13px;
+        background:white;">
+
+        <thead>
+          <tr style="background:#e9ecef;">
+            <th style="padding:10px;border:1px solid #ddd;">#</th>
+            <th style="padding:10px;border:1px solid #ddd;text-align:left;">Product Name</th>
+            <th style="padding:10px;border:1px solid #ddd;text-align:left;">Category</th>
+            <th style="padding:10px;border:1px solid #ddd;text-align:right;">Stock</th>
+            <th style="padding:10px;border:1px solid #ddd;text-align:left;">Unit</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          ${rows}
+        </tbody>
+
+      </table>
+    </div>
+  `;
+}
+
+
+  
+function toggleStockProductList() {
+  const list = document.getElementById("stockProductList");
+
+  if (!list) return;
+
+  if (list.style.display === "none") {
+    list.style.display = "block";
+    renderStockProductList();
+  } else {
+    list.style.display = "none";
+  }
+  }
+
+  
 function hideDashboardStockFilter() {
   
   const panel = document.getElementById("dashboardStockFilterPanel");
