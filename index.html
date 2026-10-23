@@ -1583,6 +1583,7 @@ main{padding:15px}
 
       <select
         id="stockCategoryFilter"
+        onchange="renderStockProductList()"
         style="
           width:100%;
           padding:12px;
@@ -6630,6 +6631,90 @@ function filterProductsByStockStatus(status) {
 
   panel.style.display = "block";
 }
+
+  
+function renderStockProductCategories() {
+  const select = document.getElementById("stockCategoryFilter");
+
+  if (!select) return;
+
+  const currentCategory = select.value || "all";
+  const products = db.products || [];
+
+  const categories = [...new Set(
+    products
+      .map(function(product) {
+        return (product.category || "").trim();
+      })
+      .filter(function(category) {
+        return category !== "";
+      })
+  )].sort();
+
+  select.innerHTML =
+    '<option value="all">All Categories</option>' +
+    categories.map(function(category) {
+      return '<option value="' +
+        category.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;") +
+        '">' +
+        category.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") +
+        '</option>';
+    }).join("");
+
+  if (
+    currentCategory === "all" ||
+    categories.includes(currentCategory)
+  ) {
+    select.value = currentCategory;
+  }
+  }
+
+  
+function renderStockProductList() {
+  const list = document.getElementById("stockProductList");
+  const select = document.getElementById("stockCategoryFilter");
+
+  if (!list || !select) return;
+
+  const selectedCategory = select.value || "all";
+  const products = db.products || [];
+
+  const filteredProducts = products.filter(function(product) {
+    if (selectedCategory === "all") return true;
+
+    return (product.category || "").trim() === selectedCategory;
+  });
+
+  if (filteredProducts.length === 0) {
+    list.innerHTML = `
+      <p style="padding:12px;text-align:center;color:#777;">
+        No products found.
+      </p>
+    `;
+    return;
+  }
+
+  list.innerHTML = filteredProducts.map(function(product) {
+    const stock = Number(product.stock || 0);
+
+    return `
+      <div style="
+        padding:12px;
+        border:1px solid #ddd;
+        border-radius:8px;">
+        <strong>${product.name || "Unnamed Product"}</strong>
+        <div style="margin-top:5px;">
+          Category: ${product.category || "Uncategorized"}
+        </div>
+        <div style="margin-top:5px;">
+          Stock: ${stock} ${product.unit || ""}
+        </div>
+      </div>
+    `;
+  }).join("");
+  }
+  
+  
 
 function hideDashboardStockFilter() {
   
