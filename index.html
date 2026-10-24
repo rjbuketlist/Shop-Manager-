@@ -6166,6 +6166,22 @@ product.minStockPercent = 20;
   }
 
 }
+
+  
+function viewProductStockOut() {
+  const form = document.getElementById("stockOutForm");
+
+  if (!form) {
+    alert("Stock Out form not found.");
+    return;
+  }
+
+  form.style.display =
+    form.style.display === "none" || !form.style.display
+      ? "block"
+      : "none";
+  }
+  
   
 function printPurchase() {
 
