@@ -1718,6 +1718,56 @@ main{padding:15px}
     Record damaged, expired, personal-use or missing stock.
   </p>
 
+
+<div style="margin-top:12px;display:flex;flex-direction:column;gap:10px;">
+
+  <label for="stockOutProduct">Select Product</label>
+  <select id="stockOutProduct" style="width:100%;padding:12px;">
+    <option value="">Select a product</option>
+  </select>
+
+  <div id="stockOutCurrentStock" style="padding:10px;background:#f5f5f5;border-radius:6px;">
+    Current Stock: —
+  </div>
+
+  <label for="stockOutQuantity">Quantity to Reduce</label>
+  <input
+    type="number"
+    id="stockOutQuantity"
+    min="0.01"
+    step="any"
+    placeholder="Enter quantity"
+    style="width:100%;padding:12px;box-sizing:border-box;"
+  >
+
+  <label for="stockOutReason">Reason</label>
+  <select id="stockOutReason" style="width:100%;padding:12px;">
+    <option value="">Select reason</option>
+    <option value="Damaged">Damaged</option>
+    <option value="Expired">Expired</option>
+    <option value="Personal Use">Personal Use</option>
+    <option value="Missing / Shortage">Missing / Shortage</option>
+    <option value="Other">Other</option>
+  </select>
+
+  <label for="stockOutNote">Notes (Optional)</label>
+  <textarea
+    id="stockOutNote"
+    rows="3"
+    placeholder="Enter additional details"
+    style="width:100%;padding:12px;box-sizing:border-box;"
+  ></textarea>
+
+  <button
+    type="button"
+    onclick="saveProductStockOut()"
+    style="width:100%;padding:13px;background:#b91c1c;color:white;border:0;border-radius:6px;"
+  >
+    Save Stock Out
+  </button>
+
+</div>
+  
 </div>
 
 </div>
