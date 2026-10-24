@@ -1722,7 +1722,7 @@ main{padding:15px}
 <div style="margin-top:12px;display:flex;flex-direction:column;gap:10px;">
 
   <label for="stockOutProduct">Select Product</label>
-  <select id="stockOutProduct" style="width:100%;padding:12px;">
+  <select id="stockOutProduct" onchange="updateStockOutCurrentStock()" style="width:100%;padding:12px;">
     <option value="">Select a product</option>
   </select>
 
@@ -6220,6 +6220,7 @@ product.minStockPercent = 20;
   
 
 function viewProductStockOut() {
+  
   const form = document.getElementById("stockOutForm");
 
   if (!form) {
@@ -6259,6 +6260,32 @@ function viewProductStockOut() {
   }
 }
 
+  
+function updateStockOutCurrentStock() {
+  const select =
+    document.getElementById("stockOutProduct");
+
+  const display =
+    document.getElementById("stockOutCurrentStock");
+
+  if (!select || !display) return;
+
+  const product =
+    (db.products || []).find(function(p) {
+      return p.id === select.value;
+    });
+
+  if (!product) {
+    display.textContent = "Current Stock: —";
+    return;
+  }
+
+  display.textContent =
+    "Current Stock: " +
+    Number(product.stock || 0) +
+    " " + (product.unit || "");
+  }
+  
   
   
 function printPurchase() {
