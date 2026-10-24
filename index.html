@@ -6218,6 +6218,7 @@ product.minStockPercent = 20;
 }
 
   
+
 function viewProductStockOut() {
   const form = document.getElementById("stockOutForm");
 
@@ -6226,11 +6227,38 @@ function viewProductStockOut() {
     return;
   }
 
-  form.style.display =
-    form.style.display === "none" || !form.style.display
-      ? "block"
-      : "none";
+  const isOpening =
+    form.style.display === "none" || !form.style.display;
+
+  if (isOpening) {
+    const select = document.getElementById("stockOutProduct");
+
+    if (!select) {
+      alert("Product dropdown not found.");
+      return;
+    }
+
+    select.innerHTML =
+      '<option value="">Select a product</option>';
+
+    (db.products || []).forEach(function(product) {
+      const option = document.createElement("option");
+
+      option.value = product.id;
+      option.textContent =
+        product.name + " (Stock: " +
+        Number(product.stock || 0) + " " +
+        (product.unit || "") + ")";
+
+      select.appendChild(option);
+    });
+
+    form.style.display = "block";
+  } else {
+    form.style.display = "none";
   }
+}
+
   
   
 function printPurchase() {
