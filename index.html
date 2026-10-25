@@ -6364,6 +6364,122 @@ function searchStockOutProducts() {
 
   box.style.display = "block";
   }
+
+  
+function saveProductStockOut() {
+  const productId =
+    document.getElementById("stockOutProduct").value;
+
+  const quantityInput =
+    document.getElementById("stockOutQuantity");
+
+  const reason =
+    document.getElementById("stockOutReason").value;
+
+  const note =
+    document.getElementById("stockOutNote").value.trim();
+
+  const quantity = Number(quantityInput.value);
+
+  const product =
+    (db.products || []).find(function(p) {
+      return p.id === productId;
+    });
+
+  if (!product) {
+    alert("Please search and select a product.");
+    return;
+  }
+
+  if (!Number.isFinite(quantity) || quantity <= 0) {
+    alert("Please enter a valid quantity.");
+    return;
+  }
+
+  if (!reason) {
+    alert("Please select a reason.");
+    return;
+  }
+
+  const previousStock = Number(product.stock || 0);
+
+  if (quantity > previousStock) {
+    alert(
+      "Insufficient stock!\n\n" +
+      "Current Stock: " + previousStock + " " +
+      (product.unit || "") + "\n" +
+      "Requested Quantity: " + quantity
+    );
+    return;
+  }
+
+  if (!Array.isArray(db.stockMovements)) {
+    db.stockMovements = [];
+  }
+
+  const movementNumber = db.stockMovements.length + 1;
+
+  const movementId =
+    "STKOUT-" +
+    String(movementNumber).padStart(5, "0");
+
+  const transactionDate = new Date().toISOString();
+
+  product.stock = previousStock - quantity;
+
+  db.stockMovements.push({
+    id: movementId,
+    date: transactionDate,
+    type: "stock_out",
+    source: "adjustment",
+    productId: product.id,
+    productName: product.name,
+    quantity: quantity,
+    unit: product.unit || "",
+    previousStock: previousStock,
+    newStock: Number(product.stock || 0),
+    referenceId: movementId,
+    reason: reason,
+    note: note || reason
+  });
+
+  try {
+    saveDB();
+  } catch (error) {
+    product.stock = previousStock;
+
+    db.stockMovements.pop();
+
+    alert("Could not save Stock Out. Please try again.");
+    return;
+  }
+
+  alert(
+    "Stock Out saved successfully!\n\n" +
+    "Product: " + product.name + "\n" +
+    "Quantity Reduced: " + quantity + " " +
+    (product.unit || "") + "\n" +
+    "Remaining Stock: " + product.stock + " " +
+    (product.unit || "")
+  );
+
+  document.getElementById("stockOutProductSearch").value = "";
+  document.getElementById("stockOutProduct").value = "";
+  document.getElementById("stockOutQuantity").value = "";
+  document.getElementById("stockOutReason").value = "";
+  document.getElementById("stockOutNote").value = "";
+  document.getElementById("stockOutProductSuggestions").style.display = "none";
+
+  updateStockOutCurrentStock();
+
+  if (typeof renderDashboardCounts === "function") {
+    renderDashboardCounts();
+  }
+
+  if (typeof renderStockProductList === "function") {
+    renderStockProductList();
+  }
+  }
   
   
 function printPurchase() {
