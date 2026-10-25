@@ -6524,6 +6524,132 @@ function saveProductStockOut() {
     renderStockProductList();
   }
   }
+
+  
+function viewProductStockOutHistory() {
+  const panel =
+    document.getElementById("stockHistoryPanel");
+
+  if (!panel) {
+    alert("Stock History panel not found.");
+    return;
+  }
+
+  if (
+    panel.style.display === "none" ||
+    !panel.style.display
+  ) {
+    panel.style.display = "block";
+  } else {
+    panel.style.display = "none";
+  }
+  }
+
+  
+function renderStockHistory() {
+  const list =
+    document.getElementById("stockHistoryList");
+
+  const filter =
+    document.getElementById("stockHistoryFilter");
+
+  if (!list || !filter) return;
+
+  const movements =
+    (Array.isArray(db.stockMovements) ? db.stockMovements : [])
+      .filter(function(movement) {
+        if (filter.value === "all") return true;
+
+        if (filter.value === "purchase") {
+          return movement.source === "purchase";
+        }
+
+        if (filter.value === "sale") {
+          return movement.source === "sale";
+        }
+
+        if (filter.value === "stock_in") {
+          return movement.type === "stock_in" &&
+            movement.source !== "purchase";
+        }
+
+        if (filter.value === "stock_out") {
+          return movement.type === "stock_out" &&
+            movement.source !== "sale";
+        }
+
+        return false;
+      })
+      .slice()
+      .sort(function(a, b) {
+        return new Date(b.date || 0) -
+          new Date(a.date || 0);
+      });
+
+  if (movements.length === 0) {
+    list.innerHTML =
+      '<p style="padding:12px;text-align:center;color:#777;">No history records found.</p>';
+    return;
+  }
+
+  let html =
+    '<table style="width:100%;min-width:700px;border-collapse:collapse;font-size:13px;">' +
+    '<thead><tr>' +
+    '<th style="padding:8px;border:1px solid #ddd;">Date</th>' +
+    '<th style="padding:8px;border:1px solid #ddd;">Product</th>' +
+    '<th style="padding:8px;border:1px solid #ddd;">Type</th>' +
+    '<th style="padding:8px;border:1px solid #ddd;">Source / Reason</th>' +
+    '<th style="padding:8px;border:1px solid #ddd;">Quantity</th>' +
+    '<th style="padding:8px;border:1px solid #ddd;">Previous Stock</th>' +
+    '<th style="padding:8px;border:1px solid #ddd;">New Stock</th>' +
+    '<th style="padding:8px;border:1px solid #ddd;">Reference</th>' +
+    '</tr></thead><tbody>';
+
+  movements.forEach(function(movement) {
+    const dateText = movement.date
+      ? new Date(movement.date).toLocaleString()
+      : "—";
+
+    let typeText = movement.type || "—";
+
+    if (movement.source === "purchase") {
+      typeText = "Purchase";
+    } else if (movement.source === "sale") {
+      typeText = "Sale";
+    } else if (movement.type === "stock_in") {
+      typeText = "Stock In";
+    } else if (movement.type === "stock_out") {
+      typeText = "Stock Out";
+    }
+
+    const sourceText =
+      movement.reason ||
+      movement.source ||
+      movement.note ||
+      "—";
+
+    html +=
+      "<tr>" +
+      '<td style="padding:8px;border:1px solid #ddd;">' + dateText + "</td>" +
+      '<td style="padding:8px;border:1px solid #ddd;">' +
+        (movement.productName || "—") + "</td>" +
+      '<td style="padding:8px;border:1px solid #ddd;">' + typeText + "</td>" +
+      '<td style="padding:8px;border:1px solid #ddd;">' + sourceText + "</td>" +
+      '<td style="padding:8px;border:1px solid #ddd;">' +
+        Number(movement.quantity || 0) + " " +
+        (movement.unit || "") + "</td>" +
+      '<td style="padding:8px;border:1px solid #ddd;">' +
+        (movement.previousStock ?? "—") + "</td>" +
+      '<td style="padding:8px;border:1px solid #ddd;">' +
+        (movement.newStock ?? "—") + "</td>" +
+      '<td style="padding:8px;border:1px solid #ddd;">' +
+        (movement.referenceId || "—") + "</td>" +
+      "</tr>";
+  });
+
+  html += "</tbody></table>";
+  list.innerHTML = html;
+  }
   
   
 function printPurchase() {
