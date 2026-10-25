@@ -6303,6 +6303,68 @@ function updateStockOutCurrentStock() {
   }
   
   
+function searchStockOutProducts() {
+  const input =
+    document.getElementById("stockOutProductSearch");
+
+  const box =
+    document.getElementById("stockOutProductSuggestions");
+
+  const hidden =
+    document.getElementById("stockOutProduct");
+
+  if (!input || !box || !hidden) return;
+
+  const query = input.value.trim().toLowerCase();
+
+  hidden.value = "";
+  updateStockOutCurrentStock();
+
+  if (!query) {
+    box.innerHTML = "";
+    box.style.display = "none";
+    return;
+  }
+
+  const matches = (db.products || []).filter(function(product) {
+    return product.name &&
+      product.name.toLowerCase().includes(query);
+  });
+
+  box.innerHTML = "";
+
+  if (matches.length === 0) {
+    box.innerHTML =
+      '<div style="padding:12px;color:#777;">No products found</div>';
+    box.style.display = "block";
+    return;
+  }
+
+  matches.slice(0, 10).forEach(function(product) {
+    const option = document.createElement("div");
+
+    option.textContent =
+      product.name + " — Stock: " +
+      Number(product.stock || 0) + " " +
+      (product.unit || "");
+
+    option.style.cssText =
+      "padding:12px;border-bottom:1px solid #eee;cursor:pointer;";
+
+    option.onclick = function() {
+      input.value = product.name;
+      hidden.value = product.id;
+      box.style.display = "none";
+      box.innerHTML = "";
+      updateStockOutCurrentStock();
+    };
+
+    box.appendChild(option);
+  });
+
+  box.style.display = "block";
+  }
+  
   
 function printPurchase() {
 
