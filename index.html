@@ -1691,15 +1691,13 @@ main{padding:15px}
 
   
 <!-- Stock Out History -->
-<button
-  type="button"
-  id="stockOutHistoryBtn"
-  onclick="viewProductStockOutHistory()"
-  style="
-    width:100%;
-    padding:12px;
-    margin-top:10px;">
-  Stock Out History
+<button type="button" 
+  id="stockOutHistoryBtn" 
+  onclick="viewProductStockOutHistory()" 
+  style="width:100%;
+  padding:12px;
+  margin-top:10px;">
+  Stock History
 </button>
 
 <!-- Stock Out Form Container -->
@@ -1735,14 +1733,25 @@ main{padding:15px}
 
   <div
     id="stockOutProductSuggestions"
-    style="display:none;position:relative;margin-top:4px;border:1px solid #ddd;border-radius:6px;background:white;max-height:200px;overflow-y:auto;"
-  ></div>
+    style="display:none;
+    position:relative;
+    margin-top:4px;
+    border:1px solid #ddd;
+    border-radius:6px;
+    background:white;
+    max-height:200px;
+    overflow-y:auto;">
+    
+</div>
+  
 </div>
 
 <input type="hidden" id="stockOutProduct">
 
-
-  <div id="stockOutCurrentStock" style="padding:10px;background:#f5f5f5;border-radius:6px;">
+  <div id="stockOutCurrentStock" 
+    style="padding:10px;
+    background:#f5f5f5;
+    border-radius:6px;">
     Current Stock: —
   </div>
 
@@ -1753,8 +1762,8 @@ main{padding:15px}
     min="0.01"
     step="any"
     placeholder="Enter quantity"
-    style="width:100%;padding:12px;box-sizing:border-box;"
-  >
+    style="width:100%;
+    padding:12px;box-sizing:border-box;">
 
   <label for="stockOutReason">Reason</label>
   <select id="stockOutReason" style="width:100%;padding:12px;">
@@ -1777,13 +1786,48 @@ main{padding:15px}
   <button
     type="button"
     onclick="saveProductStockOut()"
-    style="width:100%;padding:13px;background:#b91c1c;color:white;border:0;border-radius:6px;"
-  >
+    style="width:100%;
+    padding:13px;
+    background:#b91c1c;
+    color:white;
+    border:0;
+    border-radius:6px;">
     Save Stock Out
   </button>
 
 </div>
   
+</div>
+  
+<div id="stockHistoryPanel" 
+  style="display:none;
+  margin-top:12px;
+  padding:12px;
+  border:1px solid #ddd;
+  border-radius:8px;">
+
+  <h4 style="margin-top:0;">Product Stock History</h4>
+
+  <label for="stockHistoryFilter">Filter History</label>
+  <select
+    id="stockHistoryFilter"
+    onchange="renderStockHistory()"
+    style="width:100%;padding:12px;margin-top:6px;">
+    <option value="all">All History</option>
+    <option value="purchase">Purchase</option>
+    <option value="sale">Sale</option>
+    <option value="stock_in">Stock In / Returns</option>
+    <option value="stock_out">Stock Out</option>
+  </select>
+
+  <div
+    id="stockHistoryList"
+    style="margin-top:12px;overflow-x:auto;">
+    <p style="text-align:center;color:#777;">
+      Stock history will appear here.
+    </p>
+  </div>
+
 </div>
 
 </div>
