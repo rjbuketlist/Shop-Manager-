@@ -6594,9 +6594,18 @@ function renderStockHistory() {
 
   if (!list || !filter) return;
 
+  const selectedProductId =
+  document.getElementById("stockHistoryProductId")?.value || "";
+  
   const movements =
     (Array.isArray(db.stockMovements) ? db.stockMovements : [])
       .filter(function(movement) {
+        if (
+  selectedProductId &&
+  movement.productId !== selectedProductId ) 
+        {
+  return false;
+  }
         if (filter.value === "all") return true;
 
         if (filter.value === "purchase") {
@@ -6688,6 +6697,83 @@ function renderStockHistory() {
 
   html += "</tbody></table>";
   list.innerHTML = html;
+  }
+
+
+  
+function searchStockHistoryProducts() {
+  const input =
+    document.getElementById("stockHistoryProductSearch");
+
+  const box =
+    document.getElementById("stockHistoryProductSuggestions");
+
+  const hidden =
+    document.getElementById("stockHistoryProductId");
+
+  if (!input || !box || !hidden) return;
+
+  const query = input.value.trim().toLowerCase();
+
+  hidden.value = "";
+
+  if (!query) {
+    box.innerHTML = "";
+    box.style.display = "none";
+    renderStockHistory();
+    return;
+  }
+
+  const matches = (db.products || []).filter(function(product) {
+    return product.name &&
+      product.name.toLowerCase().includes(query);
+  });
+
+  box.innerHTML = "";
+
+  if (matches.length === 0) {
+    box.innerHTML =
+      '<div style="padding:12px;color:#777;">No products found</div>';
+    box.style.display = "block";
+    renderStockHistory();
+    return;
+  }
+
+  matches.slice(0, 10).forEach(function(product) {
+    const option = document.createElement("div");
+
+    option.textContent = product.name;
+    option.style.cssText =
+      "padding:12px;border-bottom:1px solid #eee;cursor:pointer;";
+
+    option.onclick = function() {
+      input.value = product.name;
+      hidden.value = product.id;
+
+      box.innerHTML = "";
+      box.style.display = "none";
+
+      renderStockHistory();
+    };
+
+    box.appendChild(option);
+  });
+
+  box.style.display = "block";
+}
+
+
+function clearStockHistoryProduct() {
+  document.getElementById("stockHistoryProductSearch").value = "";
+  document.getElementById("stockHistoryProductId").value = "";
+
+  const box =
+    document.getElementById("stockHistoryProductSuggestions");
+
+  box.innerHTML = "";
+  box.style.display = "none";
+
+  renderStockHistory();
   }
   
   
