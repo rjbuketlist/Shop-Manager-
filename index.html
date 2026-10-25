@@ -1722,9 +1722,25 @@ main{padding:15px}
 <div style="margin-top:12px;display:flex;flex-direction:column;gap:10px;">
 
   <label for="stockOutProduct">Select Product</label>
-  <select id="stockOutProduct" onchange="updateStockOutCurrentStock()" style="width:100%;padding:12px;">
-    <option value="">Select a product</option>
-  </select>
+  
+<div style="position:relative;">
+  <input
+    type="text"
+    id="stockOutProductSearch"
+    placeholder="Type product name to search..."
+    autocomplete="off"
+    style="width:100%;padding:12px;box-sizing:border-box;"
+    oninput="searchStockOutProducts()"
+  >
+
+  <div
+    id="stockOutProductSuggestions"
+    style="display:none;position:relative;margin-top:4px;border:1px solid #ddd;border-radius:6px;background:white;max-height:200px;overflow-y:auto;"
+  ></div>
+</div>
+
+<input type="hidden" id="stockOutProduct">
+
 
   <div id="stockOutCurrentStock" style="padding:10px;background:#f5f5f5;border-radius:6px;">
     Current Stock: —
