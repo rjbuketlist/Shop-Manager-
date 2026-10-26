@@ -1586,6 +1586,58 @@ button[onclick="viewProductStockOut()"] {
   color: #176b3a !important;
   border: 1px solid #cce4d3 !important;
 }
+
+  
+/* Sales Menu - Premium Styling */
+
+.sales-menu {
+  text-align: center;
+}
+
+.sales-menu .sales-menu-btn {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 48px;
+  padding: 13px 14px;
+  margin: 6px 0;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.sales-menu .sales-primary {
+  background: #1f6f43;
+  color: #ffffff;
+  border: 1px solid #1f6f43;
+}
+
+.sales-menu .sales-primary:hover {
+  background: #185b36;
+}
+
+.sales-menu .sales-secondary {
+  background: #f0f6f2;
+  color: #176b3a;
+  border: 1px solid #d4e2d8;
+}
+
+.sales-menu .sales-secondary:hover {
+  background: #e3f0e7;
+}
+
+.sales-menu .sales-back {
+  background: #ffffff;
+  color: #425348;
+  border: 1px solid #d4e2d8;
+}
+
+.sales-menu .sales-back:hover {
+  background: #f5f8f6;
+}
+
   
 </style>
 
@@ -3014,9 +3066,10 @@ button[onclick="viewProductStockOut()"] {
 
   <h2>Sales</h2>
 
-  <div class="card" style="text-align:center;">
+  <div class="card sales-menu">
 
-    <button onclick="openNewSale()"
+    <button class="sales-menu-btn sales-primary"
+  onclick="openNewSale()"
       style="
         width:100%;
         padding:14px;
@@ -3029,7 +3082,8 @@ button[onclick="viewProductStockOut()"] {
       + New Sale
     </button>
 
-    <button onclick="viewSalesRecords()"
+    <button class="sales-menu-btn sales-secondary"
+  onclick="viewSalesRecords()"
       style="
         width:100%;
         padding:14px;
@@ -3042,7 +3096,8 @@ button[onclick="viewProductStockOut()"] {
       View Sales Record
     </button>
 
-    <button onclick="viewTodaySales()"
+    <button class="sales-menu-btn sales-secondary"
+  onclick="viewTodaySales()"
       style="
         width:100%;
         padding:14px;
@@ -3055,7 +3110,8 @@ button[onclick="viewProductStockOut()"] {
       Today's Sales
     </button>
     
-    <button onclick="showSection('dashboard',null)"
+    <button class="sales-menu-btn sales-back"
+  onclick="showSection('dashboard',null)"
       style="
         width:100%;
         padding:14px;
