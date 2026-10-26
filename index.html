@@ -6460,6 +6460,95 @@ function saveProductReturn() {
     renderStockProductList();
   }
   }
+
+  
+function viewProductReturnHistory() {
+  const panel =
+    document.getElementById("productReturnHistoryPanel");
+
+  if (!panel) {
+    alert("Product Return History panel not found.");
+    return;
+  }
+
+  const isOpening =
+    panel.style.display === "none" ||
+    !panel.style.display;
+
+  if (isOpening) {
+    panel.style.display = "block";
+    renderProductReturnHistory();
+  } else {
+    panel.style.display = "none";
+  }
+}
+
+
+function renderProductReturnHistory() {
+  const list =
+    document.getElementById("productReturnHistoryList");
+
+  if (!list) {
+    alert("Product Return History list not found.");
+    return;
+  }
+
+  const movements = (db.stockMovements || [])
+    .filter(function(movement) {
+      return movement.type === "stock_in" &&
+        movement.source === "return";
+    })
+    .sort(function(a, b) {
+      return new Date(b.date) - new Date(a.date);
+    });
+
+  if (movements.length === 0) {
+    list.innerHTML =
+      '<p style="text-align:center;color:#777;">No product returns recorded yet.</p>';
+    return;
+  }
+
+  let html = `
+    <table style="width:100%;border-collapse:collapse;font-size:13px;">
+      <thead>
+        <tr style="background:#e9ecef;">
+          <th style="padding:8px;border:1px solid #ddd;">Date</th>
+          <th style="padding:8px;border:1px solid #ddd;">Return ID</th>
+          <th style="padding:8px;border:1px solid #ddd;">Product</th>
+          <th style="padding:8px;border:1px solid #ddd;">Quantity</th>
+          <th style="padding:8px;border:1px solid #ddd;">Previous Stock</th>
+          <th style="padding:8px;border:1px solid #ddd;">New Stock</th>
+          <th style="padding:8px;border:1px solid #ddd;">Reason / Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  movements.forEach(function(movement) {
+    const date = movement.date
+      ? new Date(movement.date).toLocaleString("en-IN")
+      : "-";
+
+    html += `
+      <tr>
+        <td style="padding:8px;border:1px solid #ddd;">${date}</td>
+        <td style="padding:8px;border:1px solid #ddd;">${movement.referenceId || movement.id || "-"}</td>
+        <td style="padding:8px;border:1px solid #ddd;">${movement.productName || "-"}</td>
+        <td style="padding:8px;border:1px solid #ddd;">${Number(movement.quantity || 0)} ${movement.unit || ""}</td>
+        <td style="padding:8px;border:1px solid #ddd;">${Number(movement.previousStock || 0)}</td>
+        <td style="padding:8px;border:1px solid #ddd;">${Number(movement.newStock || 0)}</td>
+        <td style="padding:8px;border:1px solid #ddd;">${movement.reason || movement.note || "-"}</td>
+      </tr>
+    `;
+  });
+
+  html += `
+      </tbody>
+    </table>
+  `;
+
+  list.innerHTML = html;
+  }
   
 
 function viewProductStockOut() {
