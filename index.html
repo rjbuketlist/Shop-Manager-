@@ -1576,7 +1576,17 @@ main{padding:15px}
       All Products
     </button>
 
-    <div>
+      
+<!-- Product List Display Area -->
+<div
+  id="stockProductList"
+  style="
+    margin-top:12px;
+    display:none;
+    flex-direction:column;
+    gap:8px;">
+
+  <div>
       <label for="stockCategoryFilter">
         Filter by Category
       </label>
@@ -1590,17 +1600,7 @@ main{padding:15px}
           margin-top:6px;">
         <option value="all">All Categories</option>
       </select>
-
-      
-<!-- Product List Display Area -->
-<div
-  id="stockProductList"
-  style="
-    margin-top:12px;
-    display:none;
-    flex-direction:column;
-    gap:8px;">
-
+    
   <p style="
     padding:12px;
     text-align:center;
