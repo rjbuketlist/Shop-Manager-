@@ -6323,6 +6323,117 @@ function searchReturnProducts() {
 
   box.style.display = "block";
   }
+
+  
+function saveProductReturn() {
+  const productId =
+    document.getElementById("returnProductId").value;
+
+  const quantityInput =
+    document.getElementById("returnQuantity");
+
+  const reason =
+    document.getElementById("returnReason").value;
+
+  const note =
+    document.getElementById("returnNote").value.trim();
+
+  const quantity = Number(quantityInput.value);
+
+  const product = (db.products || []).find(function(p) {
+    return p.id === productId;
+  });
+
+  if (!product) {
+    alert("Please search and select a product.");
+    return;
+  }
+
+  if (
+    !quantityInput.value.trim() ||
+    !Number.isFinite(quantity) ||
+    quantity <= 0
+  ) {
+    alert("Please enter a valid return quantity.");
+    return;
+  }
+
+  if (!reason) {
+    alert("Please select a return reason.");
+    return;
+  }
+
+  const previousStock = Number(product.stock || 0);
+  const newStock = previousStock + quantity;
+
+  if (!Array.isArray(db.stockMovements)) {
+    db.stockMovements = [];
+  }
+
+  const returnNumber = db.stockMovements.filter(function(movement) {
+    return movement.source === "return";
+  }).length + 1;
+
+  const returnId =
+    "RET-" + String(returnNumber).padStart(5, "0");
+
+  const movement = {
+    id: returnId,
+    date: new Date().toISOString(),
+    type: "stock_in",
+    source: "return",
+    productId: product.id,
+    productName: product.name,
+    quantity: quantity,
+    unit: product.unit || "",
+    previousStock: previousStock,
+    newStock: newStock,
+    referenceId: returnId,
+    reason: reason,
+    note: note || reason
+  };
+
+  product.stock = newStock;
+  db.stockMovements.push(movement);
+
+  try {
+    saveDB();
+  } catch (error) {
+    product.stock = previousStock;
+    db.stockMovements.pop();
+
+    alert("Return could not be saved. Please try again.");
+    return;
+  }
+
+  alert(
+    "Product Return saved successfully!\n\n" +
+    "Product: " + product.name + "\n" +
+    "Returned: " + quantity + " " + (product.unit || "") + "\n" +
+    "Previous Stock: " + previousStock + "\n" +
+    "New Stock: " + newStock + "\n" +
+    "Return ID: " + returnId
+  );
+
+  document.getElementById("returnProductSearch").value = "";
+  document.getElementById("returnProductId").value = "";
+  document.getElementById("returnQuantity").value = "";
+  document.getElementById("returnReason").value = "";
+  document.getElementById("returnNote").value = "";
+
+  document.getElementById("returnProductSuggestions").style.display = "none";
+  document.getElementById("returnProductSuggestions").innerHTML = "";
+
+  updateReturnCurrentStock();
+
+  if (typeof renderDashboardCounts === "function") {
+    renderDashboardCounts();
+  }
+
+  if (typeof renderStockProductList === "function") {
+    renderStockProductList();
+  }
+  }
   
 
 function viewProductStockOut() {
