@@ -4662,24 +4662,32 @@ function confirmSale() {
       This is allowed.
     */
   }
-
-
   
-  /* CASH CUSTOMER: FULL PAYMENT REQUIRED */
+  /* CASH CUSTOMER: EXACT PAYMENT REQUIRED */
 
   if (customerType === "cash" &&
-      payment < grandTotal) {
+      Math.abs(payment - grandTotal) > 0.009) {
 
-    alert(
-      "Full payment is required for Cash Customer.\n\n" +
-      "Payable Amount: ₹" + grandTotal.toFixed(2) +
-      "\nReceived Amount: ₹" + payment.toFixed(2) +
-      "\nRemaining: ₹" + (grandTotal - payment).toFixed(2)
-    );
+    const difference = Math.abs(payment - grandTotal);
+
+    if (payment < grandTotal) {
+      alert(
+        "Full payment is required for Cash Customer.\n\n" +
+        "Payable Amount: ₹" + grandTotal.toFixed(2) +
+        "\nReceived Amount: ₹" + payment.toFixed(2) +
+        "\nRemaining: ₹" + difference.toFixed(2)
+      );
+    } else {
+      alert(
+        "Extra payment is not allowed for Cash Customer.\n\n" +
+        "Payable Amount: ₹" + grandTotal.toFixed(2) +
+        "\nEntered Amount: ₹" + payment.toFixed(2) +
+        "\nExtra Amount: ₹" + difference.toFixed(2)
+      );
+    }
 
     return;
   }
-
   
   /* -----------------------------
      5. SAVE / UPDATE STOCK
