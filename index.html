@@ -670,6 +670,143 @@ main{padding:15px}
     font-size: 22px;
   }
 }
+
+  
+/* Purchase Form - Button Styling */
+
+#purchase button {
+  min-height: 44px;
+  padding: 11px 20px !important;
+  border: 1px solid transparent !important;
+  border-radius: 9px !important;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.15s ease;
+}
+
+#purchase button:active {
+  transform: scale(0.98);
+}
+
+#purchase button:hover {
+  box-shadow: 0 4px 10px rgba(23, 107, 58, 0.14);
+}
+
+/* Main purchase action buttons */
+#purchase button[onclick="continuePurchase()"],
+#purchase button[onclick="confirmPurchasePayment()"],
+#purchase button[onclick="saveFinalPurchase()"] {
+  background: #176b3a !important;
+  color: #ffffff !important;
+}
+
+#purchase button[onclick="continuePurchase()"]:hover,
+#purchase button[onclick="confirmPurchasePayment()"]:hover,
+#purchase button[onclick="saveFinalPurchase()"]:hover {
+  background: #10532d !important;
+}
+
+/* Secondary actions */
+#purchase button[onclick="finishPurchase()"],
+#purchase button[onclick="printFinalPurchase()"] {
+  background: #f0f6f2 !important;
+  color: #176b3a !important;
+  border-color: #d4e2d8 !important;
+}
+
+  
+/* Purchase Summary - Premium Styling */
+
+#purchaseSummary,
+#purchaseFinalConfirmation {
+  margin-top: 18px !important;
+  padding: 18px !important;
+  background: #ffffff !important;
+  border: 1px solid #dce9df !important;
+  border-radius: 14px !important;
+  box-shadow: 0 5px 18px rgba(23, 107, 58, 0.07);
+}
+
+#purchaseSummary h3,
+#purchaseFinalConfirmation h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  color: #176b3a;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+#purchaseSummary > div,
+#purchaseFinalConfirmation > div {
+  border: 1px solid #e2ebe5;
+  border-radius: 10px;
+}
+
+#purchaseSummary span,
+#purchaseFinalConfirmation span {
+  overflow-wrap: anywhere;
+}
+
+#purchaseSummary label,
+#purchaseFinalConfirmation label {
+  color: #425348;
+}
+
+@media (max-width: 480px) {
+  #purchaseSummary,
+  #purchaseFinalConfirmation {
+    padding: 13px !important;
+  }
+}
+
+
+/* Purchase Payment - Premium Styling */
+
+#purchaseSummary input,
+#purchaseSummary select,
+#purchaseSummary textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px !important;
+}
+
+#purchaseSummary textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+#purchaseSummary input[type="number"] {
+  font-variant-numeric: tabular-nums;
+}
+
+#purchaseSummary button[onclick="confirmPurchasePayment()"] {
+  width: 100%;
+  margin-top: 14px;
+}
+
+#purchaseSummary h3 {
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e2ebe5;
+}
+
+#purchaseSummary > div {
+  margin-bottom: 14px;
+}
+
+@media (max-width: 480px) {
+  #purchaseSummary input,
+  #purchaseSummary select,
+  #purchaseSummary textarea {
+    font-size: 16px;
+  }
+}
+
+  
   
 </style>
 
