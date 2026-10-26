@@ -1026,6 +1026,509 @@ main{padding:15px}
     width: 100px !important;
   }
 }
+
+  
+/* Product / Stock - Premium Green & White */
+
+#stockProductHistory {
+  margin-top: 16px !important;
+  padding: 18px !important;
+  background: #ffffff !important;
+  border: 1px solid #dce9df !important;
+  border-radius: 16px !important;
+  box-shadow: 0 5px 18px rgba(23, 107, 58, 0.07);
+}
+
+#stockProductHistory h3 {
+  margin: 0 0 16px;
+  color: #176b3a;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+#stockProductHistory label {
+  display: block;
+  margin-bottom: 6px;
+  color: #425348;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+#stockProductHistory button,
+#stockProductHistory select {
+  box-sizing: border-box;
+  max-width: 100%;
+  min-height: 44px;
+  border-radius: 9px !important;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+#stockProductHistory button {
+  border: 1px solid #d4e2d8 !important;
+  background: #f0f6f2 !important;
+  color: #176b3a !important;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+#stockProductHistory button:hover {
+  background: #e3f0e7 !important;
+}
+
+#stockProductHistory select {
+  padding: 10px 12px !important;
+  border: 1px solid #d4e2d8 !important;
+  background: #fbfdfb;
+  color: #263b2d;
+}
+
+#stockProductHistory select:focus {
+  outline: none;
+  border-color: #21834b !important;
+  box-shadow: 0 0 0 3px rgba(33, 131, 75, 0.12);
+}
+
+#stockProductHistory #productReturnHistoryBtn {
+  margin-top: 8px !important;
+}
+
+@media (max-width: 480px) {
+  #stockProductHistory {
+    padding: 13px !important;
+  }
+
+  #stockProductHistory h3 {
+    font-size: 18px;
+  }
+}
+
+  
+/* Product List & Category Filter */
+
+#stockProductListSection {
+  margin-top: 14px !important;
+  padding: 12px;
+  background: #f7fbf8;
+  border: 1px solid #e0ebe3;
+  border-radius: 12px;
+}
+
+#stockProductListSection > div:first-child {
+  margin-bottom: 14px !important;
+}
+
+#stockProductListSection #stockCategoryFilter {
+  width: 100% !important;
+  min-height: 46px;
+  padding: 11px 12px !important;
+  border-radius: 9px !important;
+  background: #ffffff;
+  border: 1px solid #d4e2d8 !important;
+  color: #263b2d;
+}
+
+#stockProductList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px !important;
+  min-width: 0;
+}
+
+#stockProductList > p {
+  margin: 0;
+  padding: 16px !important;
+  background: #ffffff;
+  border: 1px dashed #cbdccf !important;
+  border-radius: 10px !important;
+  color: #718077 !important;
+  line-height: 1.5;
+}
+
+#stockProductList > div {
+  min-width: 0;
+  padding: 12px;
+  background: #ffffff;
+  border: 1px solid #dce9df;
+  border-radius: 10px;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 480px) {
+  #stockProductListSection {
+    padding: 9px;
+  }
+
+  #stockProductList > div {
+    padding: 10px;
+  }
+}
+
+  
+/* Product Return History - Premium Styling */
+
+#productReturnHistoryBtn {
+  width: 100%;
+  min-height: 46px;
+  padding: 12px 14px !important;
+  display: block;
+  border-radius: 10px !important;
+  background: #f0f6f2 !important;
+  color: #176b3a !important;
+  border: 1px solid #d4e2d8 !important;
+  font-weight: 700;
+}
+
+#productReturnHistoryBtn:hover {
+  background: #e3f0e7 !important;
+}
+
+#productReturnHistoryBtn:active {
+  transform: scale(0.99);
+}
+
+/* Return History content, if displayed inside the stock card */
+
+#stockProductHistory h4 {
+  color: #176b3a;
+  font-size: 16px;
+  margin: 14px 0 10px;
+}
+
+#stockProductHistory table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#stockProductHistory th {
+  padding: 10px;
+  text-align: left;
+  background: #e8f3eb;
+  color: #176b3a;
+  white-space: nowrap;
+}
+
+#stockProductHistory td {
+  padding: 10px;
+  border-bottom: 1px solid #e2ebe5;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 480px) {
+  #stockProductHistory th,
+  #stockProductHistory td {
+    padding: 8px;
+    font-size: 13px;
+  }
+}
+
+  
+/* Stock In / Stock Out - Premium Buttons */
+
+#stockInBtn,
+#stockOutBtn {
+  width: 100%;
+  min-height: 46px;
+  padding: 12px 14px !important;
+  border-radius: 10px !important;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+#stockInBtn {
+  background: #e8f5ec !important;
+  color: #176b3a !important;
+  border: 1px solid #cce4d3 !important;
+}
+
+#stockOutBtn {
+  background: #fff4ed !important;
+  color: #a84b20 !important;
+  border: 1px solid #f0d5c5 !important;
+}
+
+#stockInBtn:hover {
+  background: #d9eddf !important;
+}
+
+#stockOutBtn:hover {
+  background: #fce8dc !important;
+}
+
+@media (max-width: 480px) {
+  #stockInBtn,
+  #stockOutBtn {
+    min-height: 44px;
+    font-size: 14px;
+  }
+}
+
+  
+/* Stock History & Product Return Form */
+
+#stockHistory,
+#stockHistorySection,
+#productReturnForm,
+#productReturnHistory {
+  margin-top: 14px;
+  padding: 14px;
+  background: #ffffff;
+  border: 1px solid #dce9df;
+  border-radius: 12px;
+  box-shadow: 0 3px 12px rgba(23, 107, 58, 0.05);
+}
+
+#productReturnForm h4,
+#stockHistory h4,
+#stockHistorySection h4,
+#productReturnHistory h4 {
+  margin-top: 0;
+  color: #176b3a;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+#productReturnForm label,
+#stockHistory label,
+#stockHistorySection label,
+#productReturnHistory label {
+  display: block;
+  margin: 10px 0 5px;
+  color: #425348;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+#productReturnForm input,
+#productReturnForm select,
+#productReturnForm textarea,
+#stockHistory input,
+#stockHistory select,
+#stockHistorySection input,
+#stockHistorySection select,
+#productReturnHistory input,
+#productReturnHistory select {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-height: 42px;
+  padding: 10px 12px;
+  border: 1px solid #d4e2d8;
+  border-radius: 9px;
+  background: #fbfdfb;
+  color: #263b2d;
+  font: inherit;
+}
+
+#productReturnForm textarea {
+  min-height: 76px;
+}
+
+@media (max-width: 480px) {
+  #productReturnForm,
+  #stockHistory,
+  #stockHistorySection,
+  #productReturnHistory {
+    padding: 10px;
+  }
+}
+
+  
+/* Stock Controls - Inputs & Buttons */
+
+#productReturnForm button,
+#stockHistory button,
+#stockHistorySection button,
+#productReturnHistory button {
+  min-height: 42px;
+  padding: 10px 14px;
+  border: 1px solid #d4e2d8;
+  border-radius: 9px;
+  background: #f0f6f2;
+  color: #176b3a;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+#productReturnForm button:hover,
+#stockHistory button:hover,
+#stockHistorySection button:hover,
+#productReturnHistory button:hover {
+  background: #e3f0e7;
+}
+
+#productReturnForm input:focus,
+#productReturnForm select:focus,
+#productReturnForm textarea:focus,
+#stockHistory input:focus,
+#stockHistory select:focus,
+#stockHistorySection input:focus,
+#stockHistorySection select:focus {
+  outline: none;
+  border-color: #21834b;
+  box-shadow: 0 0 0 3px rgba(33, 131, 75, 0.12);
+}
+
+#productReturnForm button:active,
+#stockHistory button:active,
+#stockHistorySection button:active,
+#productReturnHistory button:active {
+  transform: scale(0.98);
+}
+
+@media (max-width: 480px) {
+  #productReturnForm button,
+  #stockHistory button,
+  #stockHistorySection button,
+  #productReturnHistory button {
+    max-width: 100%;
+    white-space: normal;
+  }
+}
+
+  
+/* Product Cards - Premium Green & White */
+
+#stockProductList > div {
+  margin-bottom: 2px;
+  padding: 14px;
+  background: #ffffff;
+  border: 1px solid #dce9df;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(23, 107, 58, 0.04);
+  overflow-wrap: anywhere;
+}
+
+#stockProductList > div h4 {
+  margin: 0 0 8px;
+  color: #176b3a;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+#stockProductList > div p {
+  margin: 6px 0;
+  color: #536258;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+#stockProductList > div button {
+  min-height: 38px;
+  margin: 5px 5px 0 0;
+  padding: 9px 12px !important;
+  border-radius: 8px !important;
+}
+
+#stockProductList > div input,
+#stockProductList > div select {
+  box-sizing: border-box;
+  max-width: 100%;
+  border-radius: 8px !important;
+}
+
+@media (max-width: 480px) {
+  #stockProductList > div {
+    padding: 11px;
+  }
+
+  #stockProductList > div p {
+    font-size: 13px;
+  }
+
+  #stockProductList > div button {
+    margin-right: 4px;
+  }
+}
+
+  
+/* Product / Stock - Responsive Layout */
+
+#stockProductHistory,
+#stockProductListSection,
+#stockProductList {
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+}
+
+#stockProductHistory *,
+#stockProductListSection * {
+  box-sizing: border-box;
+}
+
+#stockProductHistory button,
+#stockProductHistory select,
+#stockProductHistory input,
+#stockProductHistory textarea {
+  max-width: 100%;
+}
+
+#stockProductList {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 480px) {
+  #stockProductHistory {
+    padding: 12px !important;
+  }
+
+  #stockProductHistory h3 {
+    line-height: 1.35;
+  }
+
+  #stockProductHistory button {
+    width: 100%;
+  }
+
+  #stockProductListSection {
+    padding: 8px;
+  }
+}
+
+  
+/* Product / Stock - Final Polish */
+
+#stockProductHistory button:focus-visible {
+  outline: 3px solid rgba(33, 131, 75, 0.3);
+  outline-offset: 2px;
+}
+
+#stockProductHistory select:focus-visible {
+  outline: 2px solid #21834b;
+  outline-offset: 2px;
+}
+
+#stockProductHistory button,
+#stockProductList button {
+  overflow-wrap: anywhere;
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+#stockProductHistory button:hover,
+#stockProductList button:hover {
+  box-shadow: 0 3px 8px rgba(23, 107, 58, 0.1);
+}
+
+#stockProductList p {
+  overflow-wrap: anywhere;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #stockProductHistory button,
+  #stockProductList button {
+    transition: none;
+  }
+}
   
   
 </style>
