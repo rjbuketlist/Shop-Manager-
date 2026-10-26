@@ -6229,6 +6229,100 @@ function viewProductStockIn() {
     form.style.display = "none";
   }
   }
+
+  
+function updateReturnCurrentStock() {
+  const productId =
+    document.getElementById("returnProductId").value;
+
+  const display =
+    document.getElementById("returnCurrentStock");
+
+  if (!display) return;
+
+  const product = (db.products || []).find(function(p) {
+    return p.id === productId;
+  });
+
+  if (!product) {
+    display.textContent = "Current Stock: —";
+    return;
+  }
+
+  display.textContent =
+    "Current Stock: " +
+    Number(product.stock || 0) +
+    " " +
+    (product.unit || "");
+}
+
+
+function searchReturnProducts() {
+  const input =
+    document.getElementById("returnProductSearch");
+
+  const box =
+    document.getElementById("returnProductSuggestions");
+
+  const hidden =
+    document.getElementById("returnProductId");
+
+  if (!input || !box || !hidden) return;
+
+  const query = input.value.trim().toLowerCase();
+
+  hidden.value = "";
+  updateReturnCurrentStock();
+
+  if (!query) {
+    box.innerHTML = "";
+    box.style.display = "none";
+    return;
+  }
+
+  const matches = (db.products || []).filter(function(product) {
+    return product.name &&
+      product.name.toLowerCase().includes(query);
+  });
+
+  box.innerHTML = "";
+
+  if (matches.length === 0) {
+    box.innerHTML =
+      '<div style="padding:12px;color:#777;">No products found</div>';
+
+    box.style.display = "block";
+    return;
+  }
+
+  matches.slice(0, 10).forEach(function(product) {
+    const option = document.createElement("div");
+
+    option.textContent =
+      product.name +
+      " — Stock: " +
+      Number(product.stock || 0) +
+      " " +
+      (product.unit || "");
+
+    option.style.cssText =
+      "padding:12px;border-bottom:1px solid #eee;cursor:pointer;";
+
+    option.onclick = function() {
+      input.value = product.name;
+      hidden.value = product.id;
+
+      box.innerHTML = "";
+      box.style.display = "none";
+
+      updateReturnCurrentStock();
+    };
+
+    box.appendChild(option);
+  });
+
+  box.style.display = "block";
+  }
   
 
 function viewProductStockOut() {
