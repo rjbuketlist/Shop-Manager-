@@ -1224,11 +1224,11 @@ main{padding:15px}
   }
 }
 
-  
+
 /* Stock In / Stock Out - Premium Buttons */
 
-#stockInBtn,
-#stockOutBtn {
+#stockProductHistory button[onclick="viewProductStockIn()"],
+#stockProductHistory button[onclick="viewProductStockOut()"] {
   width: 100%;
   min-height: 46px;
   padding: 12px 14px !important;
@@ -1240,33 +1240,34 @@ main{padding:15px}
   transition: background-color 0.2s ease;
 }
 
-#stockInBtn {
+#stockProductHistory button[onclick="viewProductStockIn()"] {
   background: #e8f5ec !important;
   color: #176b3a !important;
   border: 1px solid #cce4d3 !important;
 }
 
-#stockOutBtn {
+#stockProductHistory button[onclick="viewProductStockOut()"] {
   background: #fff4ed !important;
   color: #a84b20 !important;
   border: 1px solid #f0d5c5 !important;
 }
 
-#stockInBtn:hover {
+#stockProductHistory button[onclick="viewProductStockIn()"]:hover {
   background: #d9eddf !important;
 }
 
-#stockOutBtn:hover {
+#stockProductHistory button[onclick="viewProductStockOut()"]:hover {
   background: #fce8dc !important;
 }
 
 @media (max-width: 480px) {
-  #stockInBtn,
-  #stockOutBtn {
+  #stockProductHistory button[onclick="viewProductStockIn()"],
+  #stockProductHistory button[onclick="viewProductStockOut()"] {
     min-height: 44px;
     font-size: 14px;
   }
 }
+
 
   
 /* Stock History & Product Return Form */
