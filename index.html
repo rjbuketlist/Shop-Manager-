@@ -1643,6 +1643,76 @@ main{padding:15px}
     into saleable stock.
   </p>
 
+
+<div style="display:flex;flex-direction:column;gap:10px;margin-top:12px;">
+
+  <label for="returnProductSearch">Search Returned Product</label>
+  <div style="position:relative;">
+    <input
+      type="text"
+      id="returnProductSearch"
+      placeholder="Type product name..."
+      autocomplete="off"
+      oninput="searchReturnProducts()"
+      style="width:100%;padding:12px;box-sizing:border-box;"
+    >
+
+    <div
+      id="returnProductSuggestions"
+      style="display:none;margin-top:4px;border:1px solid #ddd;border-radius:6px;background:white;max-height:200px;overflow-y:auto;"
+    ></div>
+  </div>
+
+  <input type="hidden" id="returnProductId">
+
+  <div
+    id="returnCurrentStock"
+    style="padding:10px;background:#f5f5f5;border-radius:6px;"
+  >
+    Current Stock: —
+  </div>
+
+  <label for="returnQuantity">Return Quantity</label>
+  <input
+    type="number"
+    id="returnQuantity"
+    min="0.01"
+    step="any"
+    placeholder="Enter returned quantity"
+    style="width:100%;padding:12px;box-sizing:border-box;"
+  >
+
+  <label for="returnReason">Return Reason</label>
+  <select
+    id="returnReason"
+    style="width:100%;padding:12px;"
+  >
+    <option value="">Select reason</option>
+    <option value="Customer Return">Customer Return</option>
+    <option value="Wrong Product Returned">Wrong Product Returned</option>
+    <option value="Excess Quantity Returned">Excess Quantity Returned</option>
+    <option value="Other">Other</option>
+  </select>
+
+  <label for="returnNote">Notes (Optional)</label>
+  <textarea
+    id="returnNote"
+    rows="3"
+    placeholder="Customer name or return details..."
+    style="width:100%;padding:12px;box-sizing:border-box;"
+  ></textarea>
+
+  <button
+    type="button"
+    onclick="saveProductReturn()"
+    style="width:100%;padding:13px;background:#15803d;color:white;border:0;border-radius:6px;"
+  >
+    Save Product Return
+  </button>
+
+</div>
+  
+  
 </div>
       
       
@@ -6141,181 +6211,24 @@ product.minStockPercent = 20;
 
 }
 
-  function viewProductStockIn() {
+  
+function viewProductStockIn() {
+  const form = document.getElementById("productReturnForm");
 
-  const productName =
-    document.getElementById("stockProductSearch").value.trim();
-
-  const product =
-    db.products.find(function(p) {
-
-      return p.name &&
-        p.name.trim().toLowerCase() ===
-        productName.toLowerCase();
-
-    });
-
-  if (!product) {
-    alert("Product not found.");
+  if (!form) {
+    alert("Product Return Form not found.");
     return;
   }
 
-  const movements =
-    db.stockMovements
-      .filter(function(movement) {
-
-        return movement.productId === product.id &&
-          movement.type === "stock_in";
-
-      })
-      .sort(function(a, b) {
-
-        return new Date(b.date) -
-          new Date(a.date);
-
-      })
-      .slice(0, 10);
-
-  if (movements.length === 0) {
-
-    alert("No Stock In history found.");
-    return;
-
-  }
-
-  let html = `
-    <div class="card" style="margin-top:15px;">
-
-      <h3>
-        Stock In — ${product.name}
-      </h3>
-
-      <div style="overflow-x:auto;">
-
-        <table style="
-          width:100%;
-          border-collapse:collapse;
-          font-size:13px;">
-
-          <tr style="background:#e9ecef;">
-
-            <th style="padding:8px;border:1px solid #ddd;">
-              Date
-            </th>
-
-            <th style="padding:8px;border:1px solid #ddd;">
-              Source
-            </th>
-
-            <th style="padding:8px;border:1px solid #ddd;">
-              Quantity
-            </th>
-
-            <th style="padding:8px;border:1px solid #ddd;">
-              Unit
-            </th>
-
-            <th style="padding:8px;border:1px solid #ddd;">
-              Previous Stock
-            </th>
-
-            <th style="padding:8px;border:1px solid #ddd;">
-              Stock Added
-            </th>
-
-            <th style="padding:8px;border:1px solid #ddd;">
-              New Stock
-            </th>
-
-            <th style="padding:8px;border:1px solid #ddd;">
-              Reference ID
-            </th>
-
-            <th style="padding:8px;border:1px solid #ddd;">
-              Supplier
-            </th>
-
-          </tr>
-  `;
-
-  movements.forEach(function(movement) {
-
-    html += `
-      <tr>
-
-        <td style="padding:8px;border:1px solid #ddd;">
-          ${new Date(movement.date).toLocaleDateString("en-IN")}
-        </td>
-
-        <td style="padding:8px;border:1px solid #ddd;">
-          ${movement.source || "-"}
-        </td>
-
-        <td style="padding:8px;border:1px solid #ddd;">
-          ${Number(movement.quantity || 0)}
-        </td>
-
-        <td style="padding:8px;border:1px solid #ddd;">
-          ${movement.unit || "-"}
-        </td>
-
-        <td style="padding:8px;border:1px solid #ddd;">
-          ${Number(movement.previousStock || 0)}
-        </td>
-
-        <td style="padding:8px;border:1px solid #ddd;">
-          +${Number(movement.quantity || 0)}
-        </td>
-
-        <td style="padding:8px;border:1px solid #ddd;">
-          ${Number(movement.newStock || 0)}
-        </td>
-
-        <td style="padding:8px;border:1px solid #ddd;">
-          ${movement.referenceId || "-"}
-        </td>
-
-        <td style="padding:8px;border:1px solid #ddd;">
-          ${movement.supplierName || "-"}
-        </td>
-
-      </tr>
-    `;
-
-  });
-
-  html += `
-        </table>
-
-      </div>
-
-    </div>
-  `;
-
-  const existingBox =
-    document.getElementById("stockInResult");
-
-  if (existingBox) {
-
-    existingBox.innerHTML = html;
-
+  if (
+    form.style.display === "none" ||
+    !form.style.display
+  ) {
+    form.style.display = "block";
   } else {
-
-    const box =
-      document.createElement("div");
-
-    box.id = "stockInResult";
-
-    box.innerHTML = html;
-
-    document
-      .getElementById("stockProductHistory")
-      .appendChild(box);
-
+    form.style.display = "none";
   }
-
-}
-
+  }
   
 
 function viewProductStockOut() {
