@@ -4664,6 +4664,23 @@ function confirmSale() {
   }
 
 
+  
+  /* CASH CUSTOMER: FULL PAYMENT REQUIRED */
+
+  if (customerType === "cash" &&
+      payment < grandTotal) {
+
+    alert(
+      "Full payment is required for Cash Customer.\n\n" +
+      "Payable Amount: ₹" + grandTotal.toFixed(2) +
+      "\nReceived Amount: ₹" + payment.toFixed(2) +
+      "\nRemaining: ₹" + (grandTotal - payment).toFixed(2)
+    );
+
+    return;
+  }
+
+  
   /* -----------------------------
      5. SAVE / UPDATE STOCK
   ----------------------------- */
