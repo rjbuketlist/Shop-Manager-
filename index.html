@@ -35,24 +35,47 @@ header{
   background:white;
   border-bottom:1px solid #ddd;
 }
-nav{
-  display:flex;
-  overflow-x:auto;
-  background:white;
-  border-bottom:1px solid #ddd;
+
+nav {
+  display: flex;
+  overflow-x: auto;
+  background: #ffffff;
+  border-bottom: 1px solid var(--border-color);
+  scrollbar-width: thin;
+  position: relative;
 }
-nav button{
-  border:0;
-  background:white;
-  padding:14px 18px;
-  white-space:nowrap;
-  cursor:pointer;
+
+nav button {
+  flex-shrink: 0;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+  color: var(--muted-color);
+  padding: 14px 18px;
+  white-space: nowrap;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.2s ease, color 0.2s ease;
 }
-nav button.active{
-  color:#1f6f43;
-  font-weight:bold;
-  border-bottom:3px solid #1f6f43; 
+
+nav button:hover {
+  background: var(--primary-light);
+  color: var(--primary-dark);
 }
+
+nav button.active {
+  color: var(--primary);
+  font-weight: 700;
+  border-bottom: 3px solid var(--primary);
+  background: var(--primary-light);
+}
+
+nav button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: -3px;
+}
+
   #moreMenu{
   display:flex;
   gap:8px;
@@ -64,7 +87,7 @@ nav button.active{
   background:white;
   padding:10px 16px;
   white-space:nowrap;
-  border-radius:6px;pp
+  border-radius:8px;
 }
 
 main{padding:15px}
