@@ -6,13 +6,31 @@
 <title>Shop Manager</title>
 
 <style>
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:Arial,sans-serif;
-  background:#f4f6f8;
-  color:#222;
+
+* {
+  box-sizing: border-box;
 }
+
+:root {
+  --primary: #176b3a;
+  --primary-dark: #10532d;
+  --primary-light: #eaf6ee;
+  --page-bg: #f3f7f4;
+  --card-bg: #ffffff;
+  --border-color: #dfe9e2;
+  --text-color: #202b24;
+  --muted-color: #68786d;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: var(--page-bg);
+  color: var(--text-color);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
 header{
   background:white;
   border-bottom:1px solid #ddd;
