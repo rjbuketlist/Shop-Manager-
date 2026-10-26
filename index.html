@@ -10037,6 +10037,55 @@ function updateSalePayment() {
     formatted.color;
 }
 
+
+function updateCashSaleDiscount() {
+
+  const grandTotal =
+    Number(
+      document.getElementById("saleConfirmSaleItemsTotal")
+        .textContent
+    ) || 0;
+
+  const discountType =
+    document.getElementById("cashSaleDiscountType").value;
+
+  const discountValue =
+    Number(
+      document.getElementById("cashSaleDiscountValue").value
+    ) || 0;
+
+  let discountAmount = 0;
+
+  if (discountValue > 0) {
+    if (discountType === "percent") {
+      discountAmount =
+        grandTotal * discountValue / 100;
+    } else {
+      discountAmount = discountValue;
+    }
+  }
+
+  discountAmount = Math.min(
+    Math.max(discountAmount, 0),
+    grandTotal
+  );
+
+  const payableAmount =
+    grandTotal - discountAmount;
+
+  document.getElementById("cashSaleDiscountAmount")
+    .textContent = discountAmount.toFixed(2);
+
+  document.getElementById("cashSalePayableAmount")
+    .textContent = payableAmount.toFixed(2);
+
+  document.getElementById("saleConfirmGrandTotal")
+    .textContent = payableAmount.toFixed(2);
+
+  updateSalePayment();
+  }
+  
+  
 function backFromSaleConfirmation() {
 
   document.getElementById("saleConfirmationBox").style.display =
