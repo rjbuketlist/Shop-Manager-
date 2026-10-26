@@ -1624,8 +1624,63 @@ main{padding:15px}
     margin-top:8px;">
   Return History
 </button>
-
       
+      
+    </div>
+
+  </div>
+
+  <!-- Stock Controls -->
+  <h4 style="margin:18px 0 10px;">
+    Stock Controls
+  </h4>
+
+  <div style="
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:10px;">
+
+    
+<button
+  type="button"
+  onclick="viewProductStockIn()"
+  style="
+    padding:14px 8px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:5px;">
+  <strong>Stock In</strong>
+  <small>Product Returns</small>
+</button>
+    
+<button
+  type="button"
+  onclick="viewProductStockOut()"
+  style="
+    padding:14px 8px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:5px;">
+  <strong>Stock Out</strong>
+  <small>Damage, Expiry & Other Loss</small>
+</button>
+
+  </div>
+
+  
+<!-- Stock Out History -->
+<button type="button" 
+  id="stockOutHistoryBtn" 
+  onclick="viewProductStockOutHistory()" 
+  style="width:100%;
+  padding:12px;
+  margin-top:10px;">
+  Stock History
+</button>
+
+        
 <!-- Product Return Form Container -->
 <div
   id="productReturnForm"
@@ -1714,63 +1769,8 @@ main{padding:15px}
   
   
 </div>
-      
-      
-    </div>
 
-  </div>
-
-  <!-- Stock Controls -->
-  <h4 style="margin:18px 0 10px;">
-    Stock Controls
-  </h4>
-
-  <div style="
-    display:grid;
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:10px;">
-
-    
-<button
-  type="button"
-  onclick="viewProductStockIn()"
-  style="
-    padding:14px 8px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:5px;">
-  <strong>Stock In</strong>
-  <small>Product Returns</small>
-</button>
-    
-<button
-  type="button"
-  onclick="viewProductStockOut()"
-  style="
-    padding:14px 8px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:5px;">
-  <strong>Stock Out</strong>
-  <small>Damage, Expiry & Other Loss</small>
-</button>
-
-  </div>
-
-  
-<!-- Stock Out History -->
-<button type="button" 
-  id="stockOutHistoryBtn" 
-  onclick="viewProductStockOutHistory()" 
-  style="width:100%;
-  padding:12px;
-  margin-top:10px;">
-  Stock History
-</button>
-
-<!-- Stock Out Form Container -->
+  <!-- Stock Out Form Container -->
 <div
   id="stockOutForm"
   style="
