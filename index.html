@@ -7594,18 +7594,26 @@ function renderStockProductList() {
 
 
   
+
 function toggleStockProductList() {
   const list = document.getElementById("stockProductList");
+  const filter = document.getElementById("stockCategoryFilter");
 
   if (!list) return;
 
-  if (list.style.display === "none") {
-    list.style.display = "block";
+  if (list.style.display === "none" || !list.style.display) {
+    list.style.display = "flex";
+
+    if (filter) {
+      filter.parentElement.style.display = "block";
+    }
+
     renderStockProductList();
   } else {
     list.style.display = "none";
   }
-  }
+}
+
 
   
 function hideDashboardStockFilter() {
