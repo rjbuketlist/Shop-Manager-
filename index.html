@@ -3549,6 +3549,44 @@ button[onclick="viewProductStockOut()"] {
     </div>
 
 
+<!-- Cash Customer Discount -->
+<div id="cashCustomerDiscountBox"
+     style="display:none;margin-bottom:12px;">
+
+  <label>Discount Type</label>
+
+  <select id="cashSaleDiscountType"
+          onchange="updateCashSaleDiscount()"
+          style="width:100%;padding:12px;margin:6px 0;">
+    <option value="amount">Fixed Amount (₹)</option>
+    <option value="percent">Percentage (%)</option>
+  </select>
+
+  <label>Discount Value</label>
+
+  <input id="cashSaleDiscountValue"
+         type="number"
+         min="0"
+         step="0.01"
+         value="0"
+         oninput="updateCashSaleDiscount()"
+         placeholder="Enter discount"
+         style="width:100%;padding:12px;margin:6px 0;box-sizing:border-box;">
+
+  <div style="display:flex;justify-content:space-between;margin-top:8px;">
+    <span>Discount</span>
+    <strong>₹<span id="cashSaleDiscountAmount">0.00</span></strong>
+  </div>
+
+  <div style="display:flex;justify-content:space-between;margin-top:8px;">
+    <span>Payable Amount</span>
+    <strong>₹<span id="cashSalePayableAmount">0.00</span></strong>
+  </div>
+
+</div>
+    
+
+    
     <label>
       Payment Amount
     </label>
@@ -9762,6 +9800,13 @@ let previousBalance = 0;
 
 const customerType =
   document.getElementById("saleCustomerType").value;
+const cashDiscountBox =
+  document.getElementById("cashCustomerDiscountBox");
+
+if (cashDiscountBox) {
+  cashDiscountBox.style.display =
+    customerType === "cash" ? "block" : "none";
+  }
 
 if (customerType === "existing") {
 
