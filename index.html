@@ -1577,38 +1577,43 @@ main{padding:15px}
     </button>
 
       
-<!-- Product List Display Area -->
+
+<!-- Product List and Category Filter Container -->
 <div
-  id="stockProductList"
-  style="
-    margin-top:12px;
-    display:none;
-    flex-direction:column;
-    gap:8px;">
+  id="stockProductListSection"
+  style="display:none;margin-top:12px;">
 
-  <div>
-      <label for="stockCategoryFilter">
-        Filter by Category
-      </label>
+  <div style="margin-bottom:12px;">
+    <label for="stockCategoryFilter">
+      Filter by Category
+    </label>
 
-      <select
-        id="stockCategoryFilter"
-        onchange="renderStockProductList()"
-        style="
-          width:100%;
-          padding:12px;
-          margin-top:6px;">
-        <option value="all">All Categories</option>
-      </select>
+    <select
+      id="stockCategoryFilter"
+      onchange="renderStockProductList()"
+      style="width:100%;padding:12px;margin-top:6px;">
+      <option value="all">All Categories</option>
+    </select>
   </div>
-  <p style="
-    padding:12px;
-    text-align:center;
-    color:#777;
-    border:1px dashed #ccc;
-    border-radius:8px;">
-    Products will appear here
-  </p>
+
+  <!-- Product List Display Area -->
+  <div
+    id="stockProductList"
+    style="
+      display:flex;
+      flex-direction:column;
+      gap:8px;">
+
+    <p style="
+      padding:12px;
+      text-align:center;
+      color:#777;
+      border:1px dashed #ccc;
+      border-radius:8px;">
+      Products will appear here
+    </p>
+
+  </div>
 
 </div>
 
@@ -7593,29 +7598,26 @@ function renderStockProductList() {
 }
 
 
-  
-
 function toggleStockProductList() {
-  const list = document.getElementById("stockProductList");
-  const filter = document.getElementById("stockCategoryFilter");
+  const section =
+    document.getElementById("stockProductListSection");
 
-  if (!list) return;
+  if (!section) {
+    alert("Product List section not found.");
+    return;
+  }
 
-  if (list.style.display === "none" || !list.style.display) {
-    list.style.display = "flex";
-
-    if (filter) {
-      filter.parentElement.style.display = "block";
-    }
-
+  if (
+    section.style.display === "none" ||
+    !section.style.display
+  ) {
+    section.style.display = "block";
     renderStockProductList();
   } else {
-    list.style.display = "none";
+    section.style.display = "none";
   }
 }
 
-
-  
 function hideDashboardStockFilter() {
   
   const panel = document.getElementById("dashboardStockFilterPanel");
