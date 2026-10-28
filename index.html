@@ -5264,6 +5264,10 @@ if (customerType === "existing") {
             </th>
 
             <th style="padding:10px;border-bottom:1px solid #ddd;">
+              Payable Amount
+            </th>
+            
+            <th style="padding:10px;border-bottom:1px solid #ddd;">
               Payment
             </th>
 
@@ -5314,6 +5318,15 @@ if (customerType === "existing") {
             ₹${Number(sale.currentBillAmount || 0).toFixed(2)}
           </td>
 
+          <td style="padding:10px;border-bottom:1px solid #eee;text-align:right;">
+             ₹${Number
+             (
+             sale.grandTotal != null
+             ? sale.grandTotal
+             : (sale.currentBillAmount || 0)
+             ).toFixed(2)}
+          </td>
+          
           <td style="padding:10px;border-bottom:1px solid #eee;text-align:right;">
             ₹${Number(sale.payment || 0).toFixed(2)}
           </td>
