@@ -2119,6 +2119,41 @@ button[onclick="viewProductStockOut()"] {
 
   <h2>Purchase</h2>
 
+  <div style="
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin:15px 0;">
+
+  <button
+    type="button"
+    onclick="showPurchaseView('new')"
+    style="
+      padding:14px 8px;
+      background:#1f6f43;
+      color:white;
+      border:0;
+      border-radius:8px;
+      font-weight:bold;">
+    + New Purchase
+  </button>
+
+  <button
+    type="button"
+    onclick="showPurchaseView('history')"
+    style="
+      padding:14px 8px;
+      background:#555;
+      color:white;
+      border:0;
+      border-radius:8px;
+      font-weight:bold;">
+    View History
+  </button>
+
+  </div>
+
+  <div id="purchaseNewView">
   <div class="card">
 
     <div style="position:relative;">
@@ -2517,10 +2552,28 @@ button[onclick="viewProductStockOut()"] {
       Print
     </button>
 
+   </div>
+
+   </div>
+    
   </div>
+  <div id="purchaseHistoryView"
+     style="display:none;margin-top:15px;">
+
+  <div class="card">
+
+    <h3>Purchase History</h3>
+
+    <div id="purchaseHistoryList">
+      <p style="color:#777;">
+        Purchase history will appear here.
+      </p>
+    </div>
 
   </div>
 
+  </div>
+  
 </section>
 
 <section id="products" class="section">
@@ -7169,6 +7222,28 @@ let currentPurchase = {
 };
 
   let editingPurchaseIndex = null;
+
+  function showPurchaseView(view) {
+
+    const newView =
+        document.getElementById("purchaseNewView");
+
+    const historyView =
+        document.getElementById("purchaseHistoryView");
+
+    if (view === "new") {
+
+        newView.style.display = "block";
+        historyView.style.display = "none";
+
+    } else if (view === "history") {
+
+        newView.style.display = "none";
+        historyView.style.display = "block";
+
+    }
+
+  }
 
   function continuePurchase() {
 
