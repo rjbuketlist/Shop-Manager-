@@ -8005,14 +8005,15 @@ const newBalance =
   });
 }
 
-  function renderPurchaseHistory() {
+  
+function renderPurchaseHistory() {
 
   const list =
     document.getElementById("purchaseHistoryList");
 
   if (!list) return;
 
-      const detailsView =
+  const detailsView =
     document.getElementById("purchaseDetailsView");
 
   if (detailsView) {
@@ -8047,135 +8048,108 @@ const newBalance =
     );
   };
 
-  list.innerHTML = db.purchases
-    .slice()
-    .reverse()
-    .map(function(purchase) {
+  const rows = db.purchases
+    .map(function(purchase, index) {
+
+      const originalIndex = index;
 
       const date = purchase.date
-        ? new Date(purchase.date).toLocaleString()
+        ? new Date(purchase.date).toLocaleDateString()
         : "—";
 
-      const products = Array.isArray(purchase.products)
-        ? purchase.products
-        : [];
-
-      const productHTML = products.map(function(item) {
-
-        return `
-          <div style="
-            padding:8px 0;
-            border-bottom:1px solid #eee;">
-
-            <strong>${safeText(item.productName)}</strong>
-
-            <div style="font-size:13px;color:#666;">
-              Qty: ${safeText(item.quantity)}
-              ${safeText(item.unit)}
-            </div>
-
-          </div>
-        `;
-
-      }).join("");
-
       return `
-        <div style="
-          border:1px solid #ddd;
-          border-radius:9px;
-          padding:13px;
-          margin-bottom:12px;
-          background:white;">
+        <tr>
 
-          <div style="
-            display:flex;
-            justify-content:space-between;
-            gap:8px;
-            flex-wrap:wrap;">
+          <td>${safeText(purchase.id)}</td>
 
-            <strong>${safeText(purchase.id)}</strong>
+          <td>${safeText(date)}</td>
 
-            <span style="font-size:12px;color:#777;">
-              ${safeText(date)}
-            </span>
+          <td>${safeText(purchase.supplierName)}</td>
 
-          </div>
+          <td>
+            ₹${Number(purchase.billAmount || 0).toFixed(2)}
+          </td>
 
-          <hr style="border:0;border-top:1px solid #eee;">
+          <td>
+            ₹${Number(purchase.payment || 0).toFixed(2)}
+          </td>
 
-          <p>
-            <strong>Supplier:</strong>
-            ${safeText(purchase.supplierName)}
-          </p>
+          <td>
+            ₹${Number(purchase.balance || 0).toFixed(2)}
+          </td>
 
-          <p>
-            <strong>Supplier Bill No.:</strong>
-            ${safeText(purchase.supplierBillNo || "—")}
-          </p>
-
-          <strong>Products</strong>
-
-          ${productHTML}
-
-          <div style="
-            margin-top:10px;
-            font-size:14px;
-            line-height:1.9;">
-
-            <div>
-              Total Purchase:
-              <strong>₹${Number(purchase.totalPurchase || 0).toFixed(2)}</strong>
-            </div>
-
-            <div>
-              Discount:
-              ₹${Number(purchase.discount || 0).toFixed(2)}
-            </div>
-
-            <div>
-              Bill Amount:
-              ₹${Number(purchase.billAmount || 0).toFixed(2)}
-            </div>
-
-            <div>
-              Payment:
-              ₹${Number(purchase.payment || 0).toFixed(2)}
-            </div>
-
-            <div>
-              Payment Method:
-              ${safeText(purchase.paymentMethod || "—")}
-            </div>
-
-            <div>
-              Balance:
-              ₹${Number(purchase.balance || 0).toFixed(2)}
-            </div>
-
+          <td>
             <button
-  type="button"
-  onclick="viewPurchaseDetails(${db.purchases.indexOf(purchase)})"
-  style="
-    width:100%;
-    padding:12px;
-    margin-top:12px;
-    background:#eaf2ff;
-    color:#245b9b;
-    border:1px solid #cbdcf5;
-    border-radius:7px;
-    font-weight:bold;">
+              type="button"
+              onclick="viewPurchaseDetails(${originalIndex})"
+              style="
+                padding:7px 12px;
+                background:#eaf2ff;
+                color:#245b9b;
+                border:1px solid #cbdcf5;
+                border-radius:6px;
+                font-weight:bold;">
 
-  View Purchase Details
+              View
 
-</button>
-          </div>
+            </button>
+          </td>
 
-        </div>
+        </tr>
       `;
 
-    }).join("");
+    }).reverse().join("");
 
-  }
+  list.innerHTML = `
+
+    <div style="
+      width:100%;
+      overflow-x:auto;">
+
+      <table style="
+        width:100%;
+        min-width:750px;
+        border-collapse:collapse;
+        font-size:13px;">
+
+        <thead>
+
+          <tr style="
+            background:#f1f3f5;
+            text-align:left;">
+
+            <th style="padding:12px;border:1px solid #ddd;">Purchase ID</th>
+
+            <th style="padding:12px;border:1px solid #ddd;">Date</th>
+
+            <th style="padding:12px;border:1px solid #ddd;">Supplier</th>
+
+            <th style="padding:12px;border:1px solid #ddd;">Bill Amount</th>
+
+            <th style="padding:12px;border:1px solid #ddd;">Payment</th>
+
+            <th style="padding:12px;border:1px solid #ddd;">Balance</th>
+
+            <th style="padding:12px;border:1px solid #ddd;">Action</th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          ${rows}
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  `;
+
+}
+
 
   function viewPurchaseDetails(index) {
 
