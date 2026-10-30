@@ -1718,7 +1718,11 @@ button[onclick="viewProductStockOut()"] {
   <button onclick="showSection('payments',this);toggleMore();">
     Payments
   </button>
-
+    
+  <button onclick="showSection('backup',this);toggleMore();">
+    Backup & Restore
+  </button>
+  
 </div>
 <main>
   <section id="home" class="section active">
@@ -4529,6 +4533,44 @@ button[onclick="viewProductStockOut()"] {
 
 </section>
 
+  <!-- Backup & Restore Section -->
+<section id="backup" class="section">
+
+  <h2>Backup & Restore</h2>
+
+  <div class="card">
+    <h3>Manual Backup</h3>
+    <p>Save your complete shop data in a backup file.</p>
+
+    <button type="button"
+      onclick="downloadShopBackup()">
+      Download Backup
+    </button>
+  </div>
+
+  <div class="card">
+    <h3>Restore Backup</h3>
+    <p>Select a previously saved Shop Manager backup file.</p>
+
+    <input
+      type="file"
+      id="restoreBackupFile"
+      accept=".json,application/json">
+
+    <button type="button"
+      onclick="restoreShopBackup()">
+      Restore Backup
+    </button>
+  </div>
+
+  <div class="card">
+    <h3>Daily Backup Reminder</h3>
+    <p id="backupReminderStatus">
+      Backup reminder will appear here.
+    </p>
+  </div>
+
+</section>
 
 </main>
 
