@@ -7222,8 +7222,9 @@ let currentPurchase = {
 };
 
   let editingPurchaseIndex = null;
+  
 
-  function showPurchaseView(view) {
+   function showPurchaseView(view) {
 
     const newView =
         document.getElementById("purchaseNewView");
@@ -7241,9 +7242,11 @@ let currentPurchase = {
         newView.style.display = "none";
         historyView.style.display = "block";
 
+        renderPurchaseHistory();
+
     }
 
-  }
+}
 
   function continuePurchase() {
 
@@ -7968,6 +7971,153 @@ const newBalance =
   });
 }
 
+  function renderPurchaseHistory() {
+
+  const list =
+    document.getElementById("purchaseHistoryList");
+
+  if (!list) return;
+
+  if (!db.purchases || db.purchases.length === 0) {
+
+    list.innerHTML = `
+      <p style="text-align:center;color:#777;padding:20px;">
+        No purchase history available.
+      </p>
+    `;
+
+    return;
+  }
+
+  const safeText = function(value) {
+    return String(value ?? "").replace(
+      /[&<>"']/g,
+      function(char) {
+        return {
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#39;"
+        }[char];
+      }
+    );
+  };
+
+  list.innerHTML = db.purchases
+    .slice()
+    .reverse()
+    .map(function(purchase) {
+
+      const date = purchase.date
+        ? new Date(purchase.date).toLocaleString()
+        : "—";
+
+      const products = Array.isArray(purchase.products)
+        ? purchase.products
+        : [];
+
+      const productHTML = products.map(function(item) {
+
+        return `
+          <div style="
+            padding:8px 0;
+            border-bottom:1px solid #eee;">
+
+            <strong>${safeText(item.productName)}</strong>
+
+            <div style="font-size:13px;color:#666;">
+              Qty: ${safeText(item.quantity)}
+              ${safeText(item.unit)}
+            </div>
+
+          </div>
+        `;
+
+      }).join("");
+
+      return `
+        <div style="
+          border:1px solid #ddd;
+          border-radius:9px;
+          padding:13px;
+          margin-bottom:12px;
+          background:white;">
+
+          <div style="
+            display:flex;
+            justify-content:space-between;
+            gap:8px;
+            flex-wrap:wrap;">
+
+            <strong>${safeText(purchase.id)}</strong>
+
+            <span style="font-size:12px;color:#777;">
+              ${safeText(date)}
+            </span>
+
+          </div>
+
+          <hr style="border:0;border-top:1px solid #eee;">
+
+          <p>
+            <strong>Supplier:</strong>
+            ${safeText(purchase.supplierName)}
+          </p>
+
+          <p>
+            <strong>Supplier Bill No.:</strong>
+            ${safeText(purchase.supplierBillNo || "—")}
+          </p>
+
+          <strong>Products</strong>
+
+          ${productHTML}
+
+          <div style="
+            margin-top:10px;
+            font-size:14px;
+            line-height:1.9;">
+
+            <div>
+              Total Purchase:
+              <strong>₹${Number(purchase.totalPurchase || 0).toFixed(2)}</strong>
+            </div>
+
+            <div>
+              Discount:
+              ₹${Number(purchase.discount || 0).toFixed(2)}
+            </div>
+
+            <div>
+              Bill Amount:
+              ₹${Number(purchase.billAmount || 0).toFixed(2)}
+            </div>
+
+            <div>
+              Payment:
+              ₹${Number(purchase.payment || 0).toFixed(2)}
+            </div>
+
+            <div>
+              Payment Method:
+              ${safeText(purchase.paymentMethod || "—")}
+            </div>
+
+            <div>
+              Balance:
+              ₹${Number(purchase.balance || 0).toFixed(2)}
+            </div>
+
+          </div>
+
+        </div>
+      `;
+
+    }).join("");
+
+  }
+  
 function saveFinalPurchase() {
 
   const supplierName =
@@ -8345,9 +8495,8 @@ product.minStockPercent = 20;
 
   editingPurchaseIndex = null;
 
-  document.querySelector("#purchase > .card").style.display =
+  document.querySelector("#purchaseNewView > .card").style.display =
     "block";
-
   document.getElementById("purchaseSummary").style.display =
     "none";
 
