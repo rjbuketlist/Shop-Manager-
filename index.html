@@ -4611,6 +4611,203 @@ function saveDB() {
     localStorage.setItem(DB_KEY, JSON.stringify(db));
 }
 
+/* ================================
+   SHOP MANAGER - BACKUP & RESTORE
+   ================================ */
+
+const LAST_BACKUP_KEY = "shop_manager_last_backup_date";
+
+
+function downloadShopBackup() {
+
+    const backupData = {
+        app: "Shop Manager",
+        version: 1,
+        backupDate: new Date().toISOString(),
+        database: db
+    };
+
+    const blob = new Blob(
+        [JSON.stringify(backupData, null, 2)],
+        { type: "application/json" }
+    );
+
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+
+    link.href = url;
+
+    link.download =
+        "ShopManager_Backup_" +
+        new Date().toISOString().slice(0, 10) +
+        ".json";
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
+
+    localStorage.setItem(
+        LAST_BACKUP_KEY,
+        new Date().toISOString().slice(0, 10)
+    );
+
+    updateBackupReminder();
+
+    alert("Backup download started successfully.");
+}
+
+
+function updateBackupReminder() {
+
+    const status =
+        document.getElementById("backupReminderStatus");
+
+    if (!status) return;
+
+    const today =
+        new Date().toISOString().slice(0, 10);
+
+    const lastBackup =
+        localStorage.getItem(LAST_BACKUP_KEY);
+
+    if (lastBackup === today) {
+
+        status.textContent =
+            "Backup completed today. Your data is protected.";
+
+    } else {
+
+        status.textContent =
+            "Reminder: Please download today's shop data backup.";
+
+    }
+  }
+
+  /* Check backup reminder when app opens */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+        updateBackupReminder();
+    }
+);
+  
+  function restoreShopBackup() {
+
+    const fileInput =
+        document.getElementById("restoreBackupFile");
+
+    const file = fileInput.files[0];
+
+    if (!file) {
+        alert("Please select a backup JSON file.");
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function(event) {
+
+        try {
+
+            const backupData =
+                JSON.parse(event.target.result);
+
+            if (
+                backupData.app !== "Shop Manager" ||
+                !backupData.database
+            ) {
+                alert("Invalid Shop Manager backup file.");
+                return;
+            }
+
+            const restoredDB =
+                backupData.database;
+
+            const requiredArrays = [
+                "products",
+                "purchases",
+                "sales",
+                "customers",
+                "stockMovements",
+                "suppliers",
+                "payments"
+            ];
+
+            const valid =
+                restoredDB.shop &&
+                typeof restoredDB.shop === "object" &&
+                requiredArrays.every(function(key) {
+                    return Array.isArray(restoredDB[key]);
+                }) &&
+                restoredDB.settings &&
+                typeof restoredDB.settings === "object";
+
+            if (!valid) {
+                alert("Backup file data is incomplete or invalid.");
+                return;
+            }
+
+            const confirmRestore = confirm(
+                "Restoring this backup will replace your current shop data. Continue?"
+            );
+
+            if (!confirmRestore) return;
+
+            // Preserve current database as emergency backup
+            const emergencyBackup = {
+                app: "Shop Manager",
+                version: 1,
+                backupDate: new Date().toISOString(),
+                database: db
+            };
+
+            const emergencyBlob = new Blob(
+                [JSON.stringify(emergencyBackup, null, 2)],
+                { type: "application/json" }
+            );
+
+            const emergencyURL =
+                URL.createObjectURL(emergencyBlob);
+
+            const emergencyLink =
+                document.createElement("a");
+
+            emergencyLink.href = emergencyURL;
+            emergencyLink.download =
+                "ShopManager_Before_Restore_Backup.json";
+
+            document.body.appendChild(emergencyLink);
+            emergencyLink.click();
+            document.body.removeChild(emergencyLink);
+
+            URL.revokeObjectURL(emergencyURL);
+
+            localStorage.setItem(
+                DB_KEY,
+                JSON.stringify(restoredDB)
+            );
+
+            alert("Backup restored successfully. App will reload.");
+
+            location.reload();
+
+        } catch (error) {
+
+            alert("Unable to restore backup. The file may be damaged.");
+
+        }
+
+    };
+
+    reader.readAsText(file);
+  }
+  
 function generatePurId() {
     const id = "PUR-" + String(db.settings.nextPurNo).padStart(5, "0");
     db.settings.nextPurNo++;
