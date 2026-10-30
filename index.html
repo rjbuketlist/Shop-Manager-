@@ -8151,7 +8151,7 @@ function renderPurchaseHistory() {
 }
 
 
-  function viewPurchaseDetails(index) {
+function viewPurchaseDetails(index) {
 
   const purchase = db.purchases[index];
 
@@ -8189,111 +8189,185 @@ function renderPurchaseHistory() {
     );
   };
 
+  const money = function(value) {
+    return Number(value || 0).toFixed(2);
+  };
+
+  const shopName =
+    safeText(db.shop.name || "Shop Manager");
+
+  const shopAddress =
+    safeText(db.shop.address || "");
+
   const date = purchase.date
-    ? new Date(purchase.date).toLocaleString()
+    ? new Date(purchase.date).toLocaleDateString("en-IN")
     : "—";
+
+  let productRows = "";
 
   const products = Array.isArray(purchase.products)
     ? purchase.products
     : [];
 
-  const productHTML = products.map(function(item) {
+  products.forEach(function(item) {
 
     const quantity = Number(item.quantity || 0);
     const price = Number(item.purchasePrice || 0);
 
-    return `
+    const amount = item.amount !== undefined
+      ? Number(item.amount || 0)
+      : quantity * price;
+
+    productRows += `
+      <tr>
+        <td>${safeText(item.productName)}</td>
+        <td>${safeText(item.quantity)}</td>
+        <td>${safeText(item.unit)}</td>
+        <td>₹${money(price)}</td>
+        <td>₹${money(amount)}</td>
+      </tr>
+    `;
+
+  });
+
+  content.innerHTML = `
+
+    <div style="
+      background:white;
+      color:#222;
+      padding:18px;
+      border:1px solid #ddd;
+      border-radius:8px;
+      overflow-x:auto;">
+
       <div style="
-        padding:12px 0;
-        border-bottom:1px solid #eee;">
+        text-align:center;
+        border-bottom:2px solid #222;
+        padding-bottom:12px;
+        margin-bottom:15px;">
 
-        <strong>${safeText(item.productName)}</strong>
-
-        <div style="font-size:13px;color:#666;margin-top:5px;">
-          Quantity: ${safeText(item.quantity)}
-          ${safeText(item.unit)}
+        <div style="font-size:23px;font-weight:bold;">
+          ${shopName}
         </div>
 
-        <div style="font-size:13px;color:#666;">
-          Purchase Price: ₹${price.toFixed(2)}
+        <div style="font-size:13px;margin-top:5px;">
+          ${shopAddress}
         </div>
 
-        <div style="font-weight:bold;margin-top:5px;">
-          Amount: ₹${(quantity * price).toFixed(2)}
+        <div style="font-size:19px;font-weight:bold;margin-top:12px;">
+          PURCHASE INVOICE
         </div>
 
       </div>
-    `;
 
-  }).join("");
+      <div style="
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:10px;
+        margin-bottom:20px;
+        font-size:13px;">
 
-  content.innerHTML = `
-    <div class="card">
+        <div><strong>PUR ID:</strong> ${safeText(purchase.id)}</div>
 
-      <h3>Purchase Details</h3>
+        <div><strong>Date:</strong> ${safeText(date)}</div>
 
-      <p><strong>Purchase ID:</strong>
-        ${safeText(purchase.id)}</p>
+        <div><strong>Supplier:</strong> ${safeText(purchase.supplierName)}</div>
 
-      <p><strong>Date:</strong>
-        ${safeText(date)}</p>
+        <div><strong>Supplier Bill No.:</strong> ${safeText(purchase.supplierBillNo || "—")}</div>
 
-      <p><strong>Supplier:</strong>
-        ${safeText(purchase.supplierName)}</p>
+      </div>
 
-      <p><strong>Supplier Bill No.:</strong>
-        ${safeText(purchase.supplierBillNo || "—")}</p>
+      <div style="overflow-x:auto;">
 
-      <hr>
+        <table style="
+          width:100%;
+          min-width:500px;
+          border-collapse:collapse;
+          font-size:13px;">
 
-      <h4>Products</h4>
+          <thead>
+            <tr style="background:#eee;">
+              <th style="border:1px solid #999;padding:8px;">Product</th>
+              <th style="border:1px solid #999;padding:8px;">Qty</th>
+              <th style="border:1px solid #999;padding:8px;">Unit</th>
+              <th style="border:1px solid #999;padding:8px;">Purchase Rate</th>
+              <th style="border:1px solid #999;padding:8px;">Amount</th>
+            </tr>
+          </thead>
 
-      ${productHTML || "<p>No product details available.</p>"}
+          <tbody>
+            ${productRows}
+          </tbody>
 
-      <hr>
+        </table>
 
-      <p>Total Purchase:
-        <strong>₹${Number(purchase.totalPurchase || 0).toFixed(2)}</strong>
-      </p>
+      </div>
 
-      <p>Discount:
-        ₹${Number(purchase.discount || 0).toFixed(2)}
-      </p>
+      <div style="
+        margin-top:20px;
+        margin-left:auto;
+        max-width:350px;
+        font-size:14px;">
 
-      <p>Bill Amount:
-        ₹${Number(purchase.billAmount || 0).toFixed(2)}
-      </p>
+        <div style="display:flex;justify-content:space-between;padding:5px 0;">
+          <span>Total Purchase</span>
+          <span>₹${money(purchase.totalPurchase)}</span>
+        </div>
 
-      <p>Previous Payable:
-        ₹${Number(purchase.previousPayable || 0).toFixed(2)}
-      </p>
+        <div style="display:flex;justify-content:space-between;padding:5px 0;">
+          <span>Discount</span>
+          <span>₹${money(purchase.discount)}</span>
+        </div>
 
-      <p>Total Payable:
-        <strong>₹${Number(purchase.totalPayable || 0).toFixed(2)}</strong>
-      </p>
+        <div style="display:flex;justify-content:space-between;padding:5px 0;">
+          <span>Current Bill</span>
+          <span>₹${money(purchase.billAmount)}</span>
+        </div>
 
-      <p>Payment:
-        ₹${Number(purchase.payment || 0).toFixed(2)}
-      </p>
+        <div style="display:flex;justify-content:space-between;padding:5px 0;">
+          <span>Previous Balance</span>
+          <span>₹${money(purchase.previousPayable)}</span>
+        </div>
 
-      <p>Payment Method:
-        ${safeText(purchase.paymentMethod || "—")}
-      </p>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-top:2px solid #222;font-weight:bold;">
+          <span>Total Payable</span>
+          <span>₹${money(purchase.totalPayable)}</span>
+        </div>
 
-      <p>Balance:
-        <strong>₹${Number(purchase.balance || 0).toFixed(2)}</strong>
-      </p>
+        <div style="display:flex;justify-content:space-between;padding:5px 0;">
+          <span>Payment</span>
+          <span>₹${money(purchase.payment)}</span>
+        </div>
 
-      <p><strong>Note:</strong>
-        ${safeText(purchase.note || "—")}</p>
+        <div style="display:flex;justify-content:space-between;padding:5px 0;">
+          <span>Payment Method</span>
+          <span>${safeText(purchase.paymentMethod || "—")}</span>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-top:2px solid #222;font-weight:bold;">
+          <span>Balance / Advance</span>
+          <span>₹${money(purchase.balance)}</span>
+        </div>
+
+      </div>
+
+      <div style="margin-top:20px;font-size:13px;">
+        <strong>Note:</strong> ${safeText(purchase.note || "—")}
+      </div>
+
+      <div style="margin-top:60px;text-align:right;font-size:13px;">
+        Authorized Signature
+      </div>
 
     </div>
+
   `;
 
   list.style.display = "none";
   detailsView.style.display = "block";
 
-  }
+}
+
 
   function backToPurchaseHistory() {
 
