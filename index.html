@@ -8012,6 +8012,15 @@ const newBalance =
 
   if (!list) return;
 
+      const detailsView =
+    document.getElementById("purchaseDetailsView");
+
+  if (detailsView) {
+    detailsView.style.display = "none";
+  }
+
+  list.style.display = "block";
+
   if (!db.purchases || db.purchases.length === 0) {
 
     list.innerHTML = `
@@ -8143,6 +8152,22 @@ const newBalance =
               ₹${Number(purchase.balance || 0).toFixed(2)}
             </div>
 
+            <button
+  type="button"
+  onclick="viewPurchaseDetails(${db.purchases.indexOf(purchase)})"
+  style="
+    width:100%;
+    padding:12px;
+    margin-top:12px;
+    background:#eaf2ff;
+    color:#245b9b;
+    border:1px solid #cbdcf5;
+    border-radius:7px;
+    font-weight:bold;">
+
+  View Purchase Details
+
+</button>
           </div>
 
         </div>
@@ -8151,6 +8176,169 @@ const newBalance =
     }).join("");
 
   }
+
+  function viewPurchaseDetails(index) {
+
+  const purchase = db.purchases[index];
+
+  if (!purchase) {
+    alert("Purchase record not found.");
+    return;
+  }
+
+  const list =
+    document.getElementById("purchaseHistoryList");
+
+  const detailsView =
+    document.getElementById("purchaseDetailsView");
+
+  const content =
+    document.getElementById("purchaseDetailsContent");
+
+  if (!list || !detailsView || !content) {
+    alert("Purchase details section not found.");
+    return;
+  }
+
+  const safeText = function(value) {
+    return String(value ?? "").replace(
+      /[&<>"']/g,
+      function(char) {
+        return {
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#39;"
+        }[char];
+      }
+    );
+  };
+
+  const date = purchase.date
+    ? new Date(purchase.date).toLocaleString()
+    : "—";
+
+  const products = Array.isArray(purchase.products)
+    ? purchase.products
+    : [];
+
+  const productHTML = products.map(function(item) {
+
+    const quantity = Number(item.quantity || 0);
+    const price = Number(item.purchasePrice || 0);
+
+    return `
+      <div style="
+        padding:12px 0;
+        border-bottom:1px solid #eee;">
+
+        <strong>${safeText(item.productName)}</strong>
+
+        <div style="font-size:13px;color:#666;margin-top:5px;">
+          Quantity: ${safeText(item.quantity)}
+          ${safeText(item.unit)}
+        </div>
+
+        <div style="font-size:13px;color:#666;">
+          Purchase Price: ₹${price.toFixed(2)}
+        </div>
+
+        <div style="font-weight:bold;margin-top:5px;">
+          Amount: ₹${(quantity * price).toFixed(2)}
+        </div>
+
+      </div>
+    `;
+
+  }).join("");
+
+  content.innerHTML = `
+    <div class="card">
+
+      <h3>Purchase Details</h3>
+
+      <p><strong>Purchase ID:</strong>
+        ${safeText(purchase.id)}</p>
+
+      <p><strong>Date:</strong>
+        ${safeText(date)}</p>
+
+      <p><strong>Supplier:</strong>
+        ${safeText(purchase.supplierName)}</p>
+
+      <p><strong>Supplier Bill No.:</strong>
+        ${safeText(purchase.supplierBillNo || "—")}</p>
+
+      <hr>
+
+      <h4>Products</h4>
+
+      ${productHTML || "<p>No product details available.</p>"}
+
+      <hr>
+
+      <p>Total Purchase:
+        <strong>₹${Number(purchase.totalPurchase || 0).toFixed(2)}</strong>
+      </p>
+
+      <p>Discount:
+        ₹${Number(purchase.discount || 0).toFixed(2)}
+      </p>
+
+      <p>Bill Amount:
+        ₹${Number(purchase.billAmount || 0).toFixed(2)}
+      </p>
+
+      <p>Previous Payable:
+        ₹${Number(purchase.previousPayable || 0).toFixed(2)}
+      </p>
+
+      <p>Total Payable:
+        <strong>₹${Number(purchase.totalPayable || 0).toFixed(2)}</strong>
+      </p>
+
+      <p>Payment:
+        ₹${Number(purchase.payment || 0).toFixed(2)}
+      </p>
+
+      <p>Payment Method:
+        ${safeText(purchase.paymentMethod || "—")}
+      </p>
+
+      <p>Balance:
+        <strong>₹${Number(purchase.balance || 0).toFixed(2)}</strong>
+      </p>
+
+      <p><strong>Note:</strong>
+        ${safeText(purchase.note || "—")}</p>
+
+    </div>
+  `;
+
+  list.style.display = "none";
+  detailsView.style.display = "block";
+
+  }
+
+  function backToPurchaseHistory() {
+
+  const list =
+    document.getElementById("purchaseHistoryList");
+
+  const detailsView =
+    document.getElementById("purchaseDetailsView");
+
+  if (detailsView) {
+    detailsView.style.display = "none";
+  }
+
+  if (list) {
+    list.style.display = "block";
+  }
+
+  }
+  
   
 function saveFinalPurchase() {
 
