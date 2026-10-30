@@ -1,0 +1,13 @@
+
+{
+  "id": "/Shop-Manager-/",
+  "name": "Shop Manager",
+  "short_name": "Shop Manager",
+  "description": "Offline Shop Management Application",
+  "start_url": "/Shop-Manager-/",
+  "scope": "/Shop-Manager-/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f3f7f4",
+  "theme_color": "#176b3a"
+}
