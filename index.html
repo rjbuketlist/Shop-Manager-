@@ -4688,6 +4688,332 @@ function updateBackupReminder() {
     }
   }
 
+  /* ================================
+   BACKUP SCHEDULE SETTINGS
+   ================================ */
+
+const BACKUP_SCHEDULE_KEY =
+    "shop_manager_backup_schedule";
+
+
+function changeBackupFrequency() {
+
+    const frequency =
+        document.getElementById("backupFrequency").value;
+
+    document.getElementById(
+        "backupWeeklyOptions"
+    ).style.display =
+        frequency === "Weekly" ? "block" : "none";
+
+    document.getElementById(
+        "backupMonthlyOptions"
+    ).style.display =
+        frequency === "Monthly" ? "block" : "none";
+
+    document.getElementById(
+        "backupDateOptions"
+    ).style.display =
+        frequency === "Select Date" ? "block" : "none";
+}
+
+
+function saveBackupSchedule() {
+
+    const frequency =
+        document.getElementById("backupFrequency").value;
+
+    const time =
+        document.getElementById("backupScheduleTime").value;
+
+    if (!time) {
+        alert("Please select backup reminder time.");
+        return;
+    }
+
+    const schedule = {
+        frequency: frequency,
+        time: time,
+        createdAt: new Date().toISOString(),
+        weekDay:
+            document.getElementById("backupWeekDay").value,
+        monthDay:
+            Number(document.getElementById("backupMonthDay").value),
+        selectedDate:
+            document.getElementById("backupSelectedDate").value
+    };
+
+    if (
+        frequency === "Monthly" &&
+        (
+            schedule.monthDay < 1 ||
+            schedule.monthDay > 31
+        )
+    ) {
+        alert("Please select a valid day of the month.");
+        return;
+    }
+
+    if (
+        frequency === "Select Date" &&
+        !schedule.selectedDate
+    ) {
+        alert("Please select a backup date.");
+        return;
+    }
+
+    localStorage.setItem(
+        BACKUP_SCHEDULE_KEY,
+        JSON.stringify(schedule)
+    );
+
+    document.getElementById(
+        "backupScheduleStatus"
+    ).textContent =
+        "Schedule saved: " +
+        frequency +
+        " at " +
+        time;
+
+    alert("Backup schedule saved successfully.");
+  }
+
+  /* ================================
+   BACKUP SCHEDULE REMINDER ENGINE
+   ================================ */
+
+const BACKUP_HANDLED_KEY =
+    "shop_manager_backup_last_handled";
+
+
+function getBackupDueTime(schedule) {
+
+    const now = new Date();
+
+    const createdAt =
+        new Date(schedule.createdAt);
+
+    let due = null;
+
+    if (schedule.frequency === "Now") {
+
+        due = createdAt;
+
+    } else if (schedule.frequency === "Select Date") {
+
+        if (!schedule.selectedDate) return null;
+
+        const parts = schedule.selectedDate.split("-");
+
+        due = new Date(
+            Number(parts[0]),
+            Number(parts[1]) - 1,
+            Number(parts[2]),
+            Number(schedule.time.split(":")[0]),
+            Number(schedule.time.split(":")[1])
+        );
+
+    } else {
+
+        const timeParts = schedule.time.split(":");
+
+        const hour = Number(timeParts[0]);
+        const minute = Number(timeParts[1]);
+
+        due = new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate(),
+            hour,
+            minute
+        );
+
+        if (schedule.frequency === "Daily") {
+
+            // Today's scheduled time
+
+        } else if (schedule.frequency === "Weekly") {
+
+            const difference =
+                (now.getDay() - Number(schedule.weekDay) + 7) % 7;
+
+            due.setDate(due.getDate() - difference);
+
+        } else if (schedule.frequency === "Monthly") {
+
+            const year = now.getFullYear();
+            const month = now.getMonth();
+
+            const lastDay =
+                new Date(year, month + 1, 0).getDate();
+
+            due.setDate(
+                Math.min(Number(schedule.monthDay), lastDay)
+            );
+
+        } else {
+
+            return null;
+        }
+    }
+
+    if (due < createdAt) return null;
+
+    if (due > now) return null;
+
+    return due;
+}
+
+
+function checkBackupSchedule() {
+
+    if (
+        document.getElementById("backupReminderPopup")
+    ) return;
+
+    const saved =
+        localStorage.getItem(BACKUP_SCHEDULE_KEY);
+
+    if (!saved) return;
+
+    let schedule;
+
+    try {
+        schedule = JSON.parse(saved);
+    } catch (error) {
+        return;
+    }
+
+    const dueTime =
+        getBackupDueTime(schedule);
+
+    if (!dueTime) return;
+
+    const occurrence =
+        dueTime.getTime().toString();
+
+    const lastHandled =
+        localStorage.getItem(BACKUP_HANDLED_KEY);
+
+    if (lastHandled === occurrence) return;
+
+    showBackupReminderPopup(occurrence);
+}
+
+
+function showBackupReminderPopup(occurrence) {
+
+    const popup =
+        document.createElement("div");
+
+    popup.id = "backupReminderPopup";
+
+    popup.style.cssText = `
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,0.65);
+        z-index:99999;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        padding:20px;
+    `;
+
+    popup.innerHTML = `
+        <div style="
+            background:white;
+            width:100%;
+            max-width:350px;
+            padding:20px;
+            border-radius:12px;
+            text-align:center;
+        ">
+
+            <h3>Shop Manager Backup</h3>
+
+            <p>
+                Your scheduled backup is due.
+                Would you like to download
+                your shop data backup?
+            </p>
+
+            <button id="backupPopupOK"
+                style="
+                    width:100%;
+                    padding:13px;
+                    background:#176b3a;
+                    color:white;
+                    border:0;
+                    border-radius:6px;
+                    font-weight:bold;
+                ">
+                OK - Download Backup
+            </button>
+
+            <button id="backupPopupCancel"
+                style="
+                    width:100%;
+                    padding:13px;
+                    margin-top:10px;
+                    background:#777;
+                    color:white;
+                    border:0;
+                    border-radius:6px;
+                    font-weight:bold;
+                ">
+                Cancel
+            </button>
+
+        </div>
+    `;
+
+    document.body.appendChild(popup);
+
+
+    document.getElementById(
+        "backupPopupOK"
+    ).onclick = function() {
+
+        localStorage.setItem(
+            BACKUP_HANDLED_KEY,
+            occurrence
+        );
+
+        popup.remove();
+
+        downloadShopBackup();
+    };
+
+
+    document.getElementById(
+        "backupPopupCancel"
+    ).onclick = function() {
+
+        localStorage.setItem(
+            BACKUP_HANDLED_KEY,
+            occurrence
+        );
+
+        popup.remove();
+    };
+}
+
+
+/* Check when app opens */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        checkBackupSchedule();
+
+        setInterval(
+            checkBackupSchedule,
+            30000
+        );
+
+    }
+);
   /* Check backup reminder when app opens */
 
 document.addEventListener(
