@@ -3166,7 +3166,51 @@ button[onclick="viewProductStockOut()"] {
   <h3 style="margin-top:0;">
     Sales Records
   </h3>
+  
+  <div style="
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-bottom:15px;">
 
+    <label for="salesRecordsFilter"
+      style="font-weight:bold;">
+      Filter Sales
+    </label>
+
+    <select
+      id="salesRecordsFilter"
+      onchange="filterSalesRecords()"
+      style="
+        width:100%;
+        padding:12px;
+        border:1px solid #ccc;
+        border-radius:6px;
+        background:#fff;">
+
+      <option value="all">All Sales</option>
+      <option value="today">Today</option>
+      <option value="yesterday">Yesterday</option>
+      <option value="date">Select Date</option>
+      <option value="cash">Cash Customers</option>
+      <option value="existing">Existing Customers</option>
+
+    </select>
+
+    <input
+      id="salesRecordsFilterDate"
+      type="date"
+      onchange="filterSalesRecords()"
+      style="
+        display:none;
+        width:100%;
+        box-sizing:border-box;
+        padding:12px;
+        border:1px solid #ccc;
+        border-radius:6px;">
+
+  </div>
+  
   <div id="salesRecordsList">
   </div>
 
