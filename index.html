@@ -17238,6 +17238,15 @@ setupDashboardDueToggle();
 
   
 </script>
-
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function() {
+    navigator.serviceWorker.register(
+      "/Shop-Manager-/service-worker.js"
+    );
+  });
+}
+</script>
+  
 </body>
 </html>
