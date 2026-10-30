@@ -5246,6 +5246,88 @@ if (customerType === "existing") {
   }
 
   
+function filterSalesRecords() {
+
+  const filter =
+    document.getElementById("salesRecordsFilter").value;
+
+  const dateInput =
+    document.getElementById("salesRecordsFilterDate");
+
+  dateInput.style.display =
+    filter === "date" ? "block" : "none";
+
+  const list =
+    document.getElementById("salesRecordsList");
+
+  const today = new Date();
+
+  const startOfDay = function(date) {
+    return new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate()
+    );
+  };
+
+  const todayStart = startOfDay(today);
+
+  const yesterdayStart = new Date(todayStart);
+  yesterdayStart.setDate(yesterdayStart.getDate() - 1);
+
+  let filteredSales = (db.sales || []).filter(function(sale) {
+
+    if (filter === "all") return true;
+
+    if (filter === "cash") {
+      return !sale.customerId;
+    }
+
+    if (filter === "existing") {
+      return !!sale.customerId;
+    }
+
+    if (!sale.date) return false;
+
+    const saleDate = new Date(sale.date);
+
+    if (filter === "today") {
+      return saleDate >= todayStart &&
+             saleDate < new Date(todayStart.getTime() + 86400000);
+    }
+
+    if (filter === "yesterday") {
+      return saleDate >= yesterdayStart &&
+             saleDate < todayStart;
+    }
+
+    if (filter === "date") {
+      if (!dateInput.value) return false;
+
+      const selectedDate = new Date(
+        dateInput.value + "T00:00:00"
+      );
+
+      const nextDate = new Date(selectedDate);
+      nextDate.setDate(nextDate.getDate() + 1);
+
+      return saleDate >= selectedDate &&
+             saleDate < nextDate;
+    }
+
+    return true;
+  });
+
+  const originalSales = db.sales;
+
+  db.sales = filteredSales;
+
+  viewSalesRecords();
+
+  db.sales = originalSales;
+  }
+  
+  
  function viewSalesRecords() {
 
   const recordsBox =
