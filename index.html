@@ -2306,7 +2306,7 @@ button[onclick="viewProductStockOut()"] {
        padding:12px;
        display:none;">
 </div>
-  <button onclick="finishPurchase()"
+  <button onclick="alert('Done Button Click Working')"
   style="padding:12px 22px;
          background:#555;
          color:white;
@@ -7704,7 +7704,6 @@ function editPurchaseItem(index) {
     const supplierBillNo =
   document.getElementById("purchaseSupplierBillNo").value.trim();
 
-    alert("Done button function is working");
     
   if (currentPurchase.products.length === 0) {
     alert("Please add at least one product first.");
