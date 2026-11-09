@@ -8558,6 +8558,52 @@ product.minStockPercent = 20;
 
       db.products.push(product);
 
+      db.stockMovements.push({
+
+  id:
+    "STKIN-" +
+    String(db.stockMovements.length + 1).padStart(5, "0"),
+
+  date:
+    new Date().toISOString(),
+
+  type:
+    "stock_in",
+
+  source:
+    "purchase",
+
+  productId:
+    product.id,
+
+  productName:
+    product.name,
+
+  quantity:
+    Number(item.quantity || 0),
+
+  unit:
+    item.unit,
+
+  previousStock:
+    0,
+
+  newStock:
+    Number(product.stock || 0),
+
+  referenceId:
+    purId,
+
+  supplierId:
+    supplier.id,
+
+  supplierName:
+    supplier.name,
+
+  note:
+    "Stock added through purchase."
+
+});
     }
 
   });
