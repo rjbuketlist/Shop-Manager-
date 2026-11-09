@@ -17249,6 +17249,13 @@ if ("serviceWorker" in navigator) {
   });
 }
 </script>
+<script>
+document.addEventListener("click", function(e) {
+  if (e.target.closest("#purchaseNewView button")) {
+    alert("Purchase button click detected");
+  }
+});
+</script>
   
 </body>
 </html>
