@@ -2306,12 +2306,8 @@ button[onclick="viewProductStockOut()"] {
        padding:12px;
        display:none;">
 </div>
-
-    <p style="color:red;font-weight:bold;">
-  NEW TEST VERSION 123
-    </p>
     
-  <button type="button" onclick="alert('BUTTON CLICK WORKING')"
+    <button onclick="finishPurchase()"  
   style="padding:12px 22px;
          background:#555;
          color:white;
@@ -7705,7 +7701,6 @@ function editPurchaseItem(index) {
 }
   
   function finishPurchase() {
-    alert("FINISH PURCHASE STARTED");
 
     const supplierBillNo =
   document.getElementById("purchaseSupplierBillNo").value.trim();
@@ -17254,13 +17249,5 @@ if ("serviceWorker" in navigator) {
   });
 }
 </script>
-<script>
-document.addEventListener("click", function(e) {
-  if (e.target.closest("#purchaseNewView button")) {
-    alert("Purchase button click detected");
-  }
-});
-</script>
-  
 </body>
 </html>
