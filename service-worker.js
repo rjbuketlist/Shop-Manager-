@@ -1,4 +1,5 @@
-const CACHE_NAME = "shop-manager-v1";
+
+const CACHE_NAME = "shop-manager-v2";
 
 const APP_FILES = [
   "/Shop-Manager-/",
@@ -40,12 +41,20 @@ self.addEventListener("fetch", function(event) {
   if (event.request.method !== "GET") return;
 
   event.respondWith(
-    caches.match(event.request).then(function(cachedResponse) {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
+    fetch(event.request, { cache: "no-cache" })
+      .then(function(response) {
+        if (response && response.ok) {
+          return caches.open(CACHE_NAME).then(function(cache) {
+            return cache.put(event.request, response.clone()).then(function() {
+              return response;
+            });
+          });
+        }
 
-      return fetch(event.request);
-    })
+        return response;
+      })
+      .catch(function() {
+        return caches.match(event.request);
+      })
   );
 });
